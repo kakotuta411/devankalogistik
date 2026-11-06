@@ -1,0 +1,11 @@
+.env
+/bootstrap/cache
+/.idea
+/.vscode
+node_modules
+vendor
+Dockerfile
+docker-compose.yml
+.dockerignore
+.env.example.bak
+mysql_data/

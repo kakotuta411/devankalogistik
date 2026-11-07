@@ -95,6 +95,11 @@
 - CI/CD workflows: .github/workflows/ci.yml + deploy.yml sudah dibuat
 - Deploy guide: docs/referensi/14-deploy-github-cicd.md
 
+## Recent Changes (2026-11-08)
+- CI fix: example test GET /login (bukan /) karena auth redirect
+- VPS deploy: devakalogistik.web.id, IP 43.173.50.217
+- DB_TIMEZONE=+07:00 (hindari timezone table issue)
+
 ## Pending
 - Staf UI testing (create 5 shipments, 2 invoices, 3 manifests, print all docs)
 - Template: user will verify new resi layout matches original PDF

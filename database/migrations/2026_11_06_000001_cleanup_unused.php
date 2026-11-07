@@ -8,10 +8,15 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // Remove po_id from invoices (unused)
+        // Remove po_id from invoices (unused) - only if exists
         if (Schema::hasColumn('invoices', 'po_id')) {
             Schema::table('invoices', function (Blueprint $table) {
-                $table->dropForeign(['po_id']);
+                // Drop FK if exists (may not exist on fresh installs)
+                try {
+                    $table->dropForeign(['po_id']);
+                } catch (\Exception $e) {
+                    // FK doesn't exist, ignore
+                }
                 $table->dropColumn('po_id');
             });
         }

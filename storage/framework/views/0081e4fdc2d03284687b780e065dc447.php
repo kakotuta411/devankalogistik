@@ -4,7 +4,7 @@
 <?php $inv = $invoice; ?>
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div class="btn-group">
-        <?php if(auth()->user()->role !== "Executive_Viewer"): ?>
+        <?php if(auth()->user()->canManageInvoices() && $inv->childInvoices->count() === 0): ?>
         <button type="button" class="btn btn-outline-secondary edit-btn" data-edit-url="/invoices/<?php echo e($inv->id); ?>/edit" data-edit-title="Edit Invoice"><i class="bi bi-pencil"></i> Edit</button>
         <?php endif; ?>
         <a href="/print/invoices/<?php echo e($inv->id); ?>/pdf" target="_blank" class="btn btn-success"><i class="bi bi-printer me-2"></i>Print</a>
@@ -15,7 +15,7 @@
         <div class="card h-100">
             <div class="card-header"><strong>Info Invoice</strong></div>
             <div class="card-body">
-                <p class="mb-1"><strong>Status:</strong> <span class="badge <?php echo e($inv->invoice_status === 'Paid' ? 'text-bg-success' : ($inv->invoice_status === 'Cancelled' ? 'text-bg-danger' : 'text-bg-warning')); ?>"><?php echo e($inv->invoice_status); ?></span></p>
+                <p class="mb-1"><strong>Status:</strong> <span class="badge <?php echo e($inv->invoice_status === 'Paid' ? 'text-bg-success' : ($inv->invoice_status === 'Cancelled' ? 'text-bg-danger' : ($inv->invoice_status === 'Partial' ? 'text-bg-warning' : 'text-bg-primary'))); ?>"><?php echo e($inv->invoice_status); ?></span></p>
                 <p class="mb-1"><strong>Customer:</strong> <?php echo e($inv->customer_name ?? '-'); ?></p>
                 <p class="mb-1"><strong>Telepon:</strong> <?php echo e($inv->customer_phone ?? '-'); ?></p>
                 <p class="mb-1"><strong>Alamat:</strong> <?php echo e($inv->customer_address ?? '-'); ?></p>
@@ -23,6 +23,17 @@
                 <p class="mb-1"><strong>Cabang:</strong> <?php echo e($inv->branch?->name ?? '-'); ?></p>
                 <p class="mb-1"><strong>Tanggal:</strong> <?php echo e($inv->invoice_date?->format('d/m/Y') ?? '-'); ?></p>
                 <p class="mb-0"><strong>Due Date:</strong> <?php echo e($inv->due_date?->format('d/m/Y') ?? '-'); ?></p>
+                <?php if($inv->childInvoices->count() > 0): ?>
+                <hr class="my-2">
+                <p class="mb-1"><strong>Invoice Pecahan (Sisa):</strong></p>
+                <?php $__currentLoopData = $inv->childInvoices; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $child): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <p class="mb-1"><a href="/invoices/<?php echo e($child->id); ?>" class="text-decoration-none"><?php echo e($child->invoice_no); ?></a> — Rp <?php echo e(number_format($child->total_amount, 0, ',', '.')); ?> (<?php echo e($child->invoice_status); ?>)</p>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                <?php endif; ?>
+                <?php if($inv->parentInvoice): ?>
+                <hr class="my-2">
+                <p class="mb-1"><strong>Invoice Induk:</strong> <a href="/invoices/<?php echo e($inv->parentInvoice->id); ?>" class="text-decoration-none"><?php echo e($inv->parentInvoice->invoice_no); ?></a> — Rp <?php echo e(number_format($inv->parentInvoice->total_amount, 0, ',', '.')); ?> (<?php echo e($inv->parentInvoice->invoice_status); ?>)</p>
+                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -31,14 +42,14 @@
             <div class="card-header"><strong>Ringkasan Finansial</strong></div>
             <div class="card-body">
                 <table class="table table-borderless mb-0">
-                    <tr><td>Biaya Pengiriman</td><td class="text-end">Rp <?php echo e(number_format($inv->shipping_cost, 0, ',', '.')); ?></td></tr>
+                    <tr><td>Biaya Pengiriman (<?php echo e(number_format($inv->shipping_cost, 0, ',', '.')); ?>/kg x <?php echo e(number_format($inv->total_weight, 2, ',', '.')); ?> kg)</td><td class="text-end">Rp <?php echo e(number_format($inv->shipping_cost * $inv->total_weight, 0, ',', '.')); ?></td></tr>
                     <tr><td>Biaya Packaging</td><td class="text-end">Rp <?php echo e(number_format($inv->packaging_cost, 0, ',', '.')); ?></td></tr>
                     <tr><td>Charge Alat</td><td class="text-end">Rp <?php echo e(number_format($inv->equipment_charge, 0, ',', '.')); ?></td></tr>
-                    <tr><td>PPFTZ 03</td><td class="text-end">Rp <?php echo e(number_format($inv->ppftz03, 0, ',', '.')); ?></td></tr>
-                    <tr><td>PPN</td><td class="text-end">Rp <?php echo e(number_format($inv->ppn, 0, ',', '.')); ?></td></tr>
-                    <tr><td>PPH</td><td class="text-end">Rp <?php echo e(number_format($inv->pph, 0, ',', '.')); ?></td></tr>
                     <tr><td>Biaya Lain-lain</td><td class="text-end">Rp <?php echo e(number_format($inv->other_costs, 0, ',', '.')); ?></td></tr>
-                    <tr><td>Diskon</td><td class="text-end">-Rp <?php echo e(number_format($inv->discount, 0, ',', '.')); ?></td></tr>
+                    <tr><td>Diskon (<?php echo e(number_format($inv->discount_value, 2, ',', '.')); ?>%)</td><td class="text-end">-Rp <?php echo e(number_format($inv->discount, 0, ',', '.')); ?></td></tr>
+                    <tr><td>PPFTZ 03</td><td class="text-end">Rp <?php echo e(number_format($inv->ppftz03, 0, ',', '.')); ?></td></tr>
+                    <tr><td>PPN (<?php echo e(number_format($inv->ppn, 2, ',', '.')); ?>%)</td><td class="text-end">Rp <?php echo e(number_format($inv->ppnAmount(), 0, ',', '.')); ?></td></tr>
+                    <tr><td>PPH (<?php echo e(number_format($inv->pph, 2, ',', '.')); ?>%)</td><td class="text-end">Rp <?php echo e(number_format($inv->pphAmount(), 0, ',', '.')); ?></td></tr>
                     <tr class="table-active"><td><strong>TOTAL</strong></td><td class="text-end"><strong>Rp <?php echo e(number_format($inv->grandTotal(), 0, ',', '.')); ?></strong></td></tr>
                     <tr><td>Dibayar</td><td class="text-end">Rp <?php echo e(number_format($inv->amount_paid ?? 0, 0, ',', '.')); ?></td></tr>
                     <tr class="table-warning"><td><strong>Tunggakan</strong></td><td class="text-end"><strong>Rp <?php echo e(number_format($inv->grandTotal() - ($inv->amount_paid ?? 0), 0, ',', '.')); ?></strong></td></tr>
@@ -78,7 +89,14 @@
 <?php if($inv->notes): ?>
 <div class="mt-4 card">
     <div class="card-header"><strong>Catatan</strong></div>
-    <div class="card-body"><?php echo e($inv->notes); ?></div>
+    <div class="card-body">
+        <?php if($inv->parentInvoice): ?>
+            Sisa dari invoice <a href="/invoices/<?php echo e($inv->parentInvoice->id); ?>" class="text-decoration-none"><?php echo e($inv->parentInvoice->invoice_no); ?></a>
+        <?php else: ?>
+            <?php echo e($inv->notes); ?>
+
+        <?php endif; ?>
+    </div>
 </div>
 <?php endif; ?>
 <div class="mt-4 card">
@@ -93,7 +111,7 @@
         <div class="progress mb-3" style="height: 20px;">
             <div class="progress-bar bg-success" role="progressbar" style="width: <?php echo e($pct); ?>%;" aria-valuenow="<?php echo e($pct); ?>" aria-valuemin="0" aria-valuemax="100"><?php echo e($pct); ?>%</div>
         </div>
-        <?php if(auth()->user()->role !== "Executive_Viewer" && $inv->invoice_status !== 'Paid' && $inv->invoice_status !== 'Cancelled'): ?>
+        <?php if(auth()->user()->canManageInvoices() && $inv->invoice_status !== 'Paid' && $inv->invoice_status !== 'Cancelled' && $inv->childInvoices->count() === 0): ?>
         <form action="/invoices/<?php echo e($inv->id); ?>/payment" method="POST" class="row g-2">
             <?php echo csrf_field(); ?>
             <div class="col-md-3">
@@ -133,12 +151,14 @@
     </div>
 </div>
 <div class="mt-4 d-flex gap-2">
-    <?php if(auth()->user()->role !== "Executive_Viewer"): ?>
-    <?php if($inv->invoice_status !== 'Paid' && $inv->invoice_status !== 'Cancelled'): ?>
+    <?php if(auth()->user()->canManageInvoices()): ?>
+    <?php if($inv->invoice_status !== 'Paid' && $inv->invoice_status !== 'Cancelled' && $inv->childInvoices->count() === 0): ?>
         <form action="/invoices/<?php echo e($inv->id); ?>/mark-paid" method="POST">
             <?php echo csrf_field(); ?>
             <button type="submit" class="btn btn-success">Tandai Lunas</button>
         </form>
+    <?php endif; ?>
+    <?php if($inv->invoice_status !== 'Paid' && $inv->invoice_status !== 'Cancelled'): ?>
         <form action="/invoices/<?php echo e($inv->id); ?>/mark-cancelled" method="POST">
             <?php echo csrf_field(); ?>
             <button type="submit" class="btn btn-danger">Batalkan</button>

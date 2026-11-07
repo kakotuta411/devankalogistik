@@ -11,8 +11,6 @@ Route::post('/login', [ApiAuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [ApiAuthController::class, 'logout']);
     Route::apiResource('shipments', ApiShipmentController::class)->names('api.shipments');
-    Route::post('/shipments/{id}/adjust-koli', [ApiShipmentController::class, 'adjustKoli']);
-    Route::post('/shipments/{id}/upload-pod', [ApiShipmentController::class, 'uploadPod']);
     Route::apiResource('manifests', ApiManifestController::class)->names('api.manifests');
     Route::post('/manifests/{id}/dispatch', [ApiManifestController::class, 'dispatch']);
     Route::post('/manifests/{id}/receive', [ApiManifestController::class, 'receive']);

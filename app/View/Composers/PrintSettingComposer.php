@@ -12,9 +12,9 @@ class PrintSettingComposer
         $settingsPath = storage_path('app/public/print_settings.json');
 
         $defaults = [
-            'company_name' => config('app.name', 'Logistik Tracking System'),
-            'header_text' => 'Dokumen ini dicetak secara otomatis',
-            'footer_text' => 'AKL LOGISTIK - Simpan resi ini sebagai bukti pengiriman',
+            'company_name' => config('app.name', 'PT. Devanka Logistik Indonesia'),
+            'header_text' => 'Kami siap menangani setiap kebutuhan logistik Anda. Hubungi kami sekarang!',
+            'footer_text' => 'PT. Devanka Logistik Indonesia - Simpan dokumen ini sebagai bukti pengiriman',
             'paper_format' => 'A4',
             'company_logo' => null,
         ];

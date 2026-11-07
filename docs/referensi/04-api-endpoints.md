@@ -73,10 +73,20 @@
 | GET | /print/manifests/{id}/sheet | print.manifest-sheet | Print manifest sheet |
 | GET | /print/shipments/list | print.shipment-list | Print shipment list |
 
-### Public Tracking (no auth)
+### Purchase Orders
+| Method | Path | Name | Description |
+|--------|------|------|-------------|
+| GET | /purchase-orders | purchase-orders.index | List POs |
+| GET | /purchase-orders/create | purchase-orders.create | Create form |
+| POST | /purchase-orders | purchase-orders.store | Create PO |
+| GET | /purchase-orders/{id} | purchase-orders.show | Detail |
+| GET | /purchase-orders/{id}/edit | purchase-orders.edit | Edit form |
+| PUT | /purchase-orders/{id} | purchase-orders.update | Update |
+
+### Public Tracking (no auth, CORS enabled)
 | Method | Path | Description |
 |--------|------|-------------|
-| GET | /api/tracking/search?resi= | Search by resi |
+| GET | /api/tracking/search?resi= | Search by resi (min 3 chars) |
 | GET | /api/tracking/{resi} | Tracking detail (limited PII) |
 
 ### Admin Only

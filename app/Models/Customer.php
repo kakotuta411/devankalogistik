@@ -27,8 +27,4 @@ class Customer extends Model
         return $this->hasMany(Invoice::class);
     }
 
-    public function purchaseOrders()
-    {
-        return $this->hasMany(PurchaseOrder::class);
-    }
 }

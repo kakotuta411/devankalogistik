@@ -259,38 +259,6 @@ class ManifestController extends Controller
         return back()->with('success', 'Manifest diterima');
     }
 
-    public function outForDelivery(Request $request, $id)
-    {
-        $manifest = Manifest::withoutGlobalScopes()->findOrFail($id);
-        if ($manifest->destination_branch_id !== auth()->user()->branch_id && !auth()->user()->isSuperAdmin()) {
-            return back()->withErrors(['access' => 'Hanya cabang tujuan yang dapat memulai pengiriman']);
-        }
-        if ($manifest->manifest_status !== 'Received') {
-            return back()->withErrors(['status' => 'Manifest harus berstatus Received terlebih dahulu']);
-        }
-        $manifest->update([
-            'manifest_status' => 'Out for Delivery',
-        ]);
-        // Sync shipment status: Arrived at Destination → Out for Delivery
-        $manifest->shipments()->update(['shipment_status' => 'Out for Delivery']);
-        // Create tracking events
-        foreach ($manifest->shipments as $s) {
-            TrackingEvent::create([
-                'shipment_id' => $s->id,
-                'event_type' => 'Out for Delivery',
-                'location' => $manifest->destinationBranch?->name,
-                'actor_id' => auth()->id(),
-                'event_time' => now(),
-                'notes' => 'Manifest ' . $manifest->manifest_no . ' out for delivery to customer',
-            ]);
-        }
-        AuditService::log('Out for Delivery', 'OUT_FOR_DELIVERY', $manifest, [
-            'manifest_no' => $manifest->manifest_no,
-            'shipments' => $manifest->shipments->pluck('resi_no')->toArray(),
-        ]);
-        return back()->with('success', 'Manifest dalam pengiriman ke customer');
-    }
-
     public function complete(Request $request, $id)
     {
         $manifest = Manifest::withoutGlobalScopes()->findOrFail($id);

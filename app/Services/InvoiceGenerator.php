@@ -9,7 +9,7 @@ class InvoiceGenerator
     {
         $year = now()->year;
         $month = now()->format('m');
-        $prefix = 'AKL-INV';
+        $prefix = 'DLI-INV';
 
         $max = Invoice::withoutGlobalScopes()
             ->where('invoice_no', 'like', $prefix . '-%')

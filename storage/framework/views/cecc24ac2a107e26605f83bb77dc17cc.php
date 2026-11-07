@@ -4,7 +4,7 @@
 <?php $s = $shipment; ?>
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div class="btn-group">
-        <?php if(auth()->user()->role !== "Executive_Viewer"): ?>
+        <?php if(auth()->user()->canManageShipments()): ?>
         <button type="button" class="btn btn-outline-secondary btn-sm edit-btn" data-edit-url="/shipments/<?php echo e($s->id); ?>/edit" data-edit-title="Edit Shipment"><i class="bi bi-pencil"></i> Edit</button>
         <?php if(!in_array($s->shipment_status, ['Delivered', 'Cancelled', 'On Hold'])): ?>
         <form action="/shipments/<?php echo e($s->id); ?>/hold" method="POST" style="display:inline;">
@@ -17,8 +17,8 @@
         </form>
         <?php endif; ?>
         <?php endif; ?>
-        <a href="/print/shipments/<?php echo e($s->id); ?>/resi" target="_blank" class="btn btn-outline-primary btn-sm"><i class="bi bi-printer"></i> Print Resi</a>
-        <a href="/print/shipments/<?php echo e($s->id); ?>/label" target="_blank" class="btn btn-outline-success btn-sm"><i class="bi bi-printer"></i> Print Label</a>
+        <a href="/print/shipments/<?php echo e($s->id); ?>/resi?v=<?php echo e(time()); ?>" target="_blank" class="btn btn-outline-primary btn-sm"><i class="bi bi-printer"></i> Print Resi</a>
+        <a href="/print/shipments/<?php echo e($s->id); ?>/label?v=<?php echo e(time()); ?>" target="_blank" class="btn btn-outline-success btn-sm"><i class="bi bi-printer"></i> Print Label</a>
     </div>
 </div>
 

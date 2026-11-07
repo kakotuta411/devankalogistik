@@ -3,6 +3,7 @@
 <?php $__env->startSection('content'); ?>
 <form action="/invoices" method="POST" data-bs-validate="" novalidate="" id="invoiceForm">
     <?php echo csrf_field(); ?>
+    <input type="hidden" name="po_id" value="<?php echo e($po->id ?? ''); ?>">
     <div class="row g-5">
         <div class="col-md-7 col-lg-8">
             <h4 class="mb-3">Data Customer</h4>
@@ -83,8 +84,8 @@
                     <input type="date" name="due_date" class="form-control" id="due_date">
                 </div>
                 <div class="col-sm-4">
-                    <label for="shipping_cost" class="form-label">Biaya Pengiriman</label>
-                    <input type="number" name="shipping_cost" class="form-control" id="shipping_cost" step="1" value="0">
+                    <label for="shipping_cost" class="form-label">Biaya Pengiriman (per kg)</label>
+                    <input type="number" name="shipping_cost" class="form-control" id="shipping_cost" step="0.01" value="0">
                 </div>
                 <div class="col-sm-4">
                     <label for="packaging_cost" class="form-label">Biaya Packaging</label>
@@ -99,16 +100,16 @@
                     <input type="number" name="ppftz03" class="form-control" id="ppftz03" step="1" value="0">
                 </div>
                 <div class="col-sm-4">
-                    <label for="ppn" class="form-label">PPN</label>
-                    <input type="number" name="ppn" class="form-control" id="ppn" step="1" value="0">
+                    <label for="ppn" class="form-label">PPN (%)</label>
+                    <input type="number" name="ppn" class="form-control" id="ppn" step="0.01" value="0">
                 </div>
                 <div class="col-sm-4">
-                    <label for="pph" class="form-label">PPH</label>
-                    <input type="number" name="pph" class="form-control" id="pph" step="1" value="0">
+                    <label for="pph" class="form-label">PPH (%)</label>
+                    <input type="number" name="pph" class="form-control" id="pph" step="0.01" value="0">
                 </div>
                 <div class="col-sm-4">
-                    <label for="discount_value" class="form-label">Diskon (Nominal)</label>
-                    <input type="number" name="discount_value" class="form-control" id="discount_value" step="1" value="0">
+                    <label for="discount_value" class="form-label">Diskon (%)</label>
+                    <input type="number" name="discount_value" class="form-control" id="discount_value" step="0.01" value="0">
                 </div>
                 <div class="col-sm-4">
                     <label for="other_costs" class="form-label">Biaya Lain-lain</label>
@@ -201,9 +202,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 sel.appendChild(opt);
             });
         });
-
-    // Auto-fill + load PO groups when customer selected
-    document.getElementById('customer_id').addEventListener('change', function() {
+        var poId = '<?php echo e($po->id ?? ''); ?>';
+        var poCustomerId = '<?php echo e($po->customer_id ?? ''); ?>';
+        if (poId && poCustomerId) {
+            // Auto-select customer after dropdown loaded
+            setTimeout(function() {
+                var sel = document.getElementById('customer_id');
+                sel.value = poCustomerId;
+                sel.dispatchEvent(new Event('change'));
+                // After PO groups load, check all shipments from this PO
+                var checkInterval = setInterval(function() {
+                    var checkboxes = document.querySelectorAll('input[name="shipment_ids[]"]');
+                    if (checkboxes.length > 0) {
+                        clearInterval(checkInterval);
+                        checkboxes.forEach(function(cb) { cb.checked = true; });
+                    }
+                }, 500);
+                setTimeout(function() { clearInterval(checkInterval); }, 10000);
+            }, 500);
+        }
+        document.getElementById('customer_id').addEventListener('change', function() {
         var opt = this.options[this.selectedIndex];
         if (!opt.value) return;
         document.getElementById('customer_name').value = opt.dataset.name || '';

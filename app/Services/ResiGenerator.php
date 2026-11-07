@@ -15,6 +15,6 @@ class ResiGenerator
             ->get()
             ->count();
         $sequence = str_pad((string) ($dailyCount + 1), 5, '0', STR_PAD_LEFT);
-        return "AKL-{$sequence}";
+        return "DLI-{$sequence}";
     }
 }

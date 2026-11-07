@@ -256,5 +256,44 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 });
+
+// PO number duplicate check
+var poInput = document.getElementById('po_number');
+if (poInput) {
+    poInput.addEventListener('blur', function() {
+        var poVal = this.value.trim();
+        if (!poVal) return;
+        var custSelect = document.querySelector('select[name="customer_id"]');
+        var custId = custSelect ? custSelect.value : '';
+        fetch('/api/check-po?po_number=' + encodeURIComponent(poVal) + '&customer_id=' + encodeURIComponent(custId))
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.exists) {
+                    var modal = new bootstrap.Modal(document.getElementById('poWarningModal'));
+                    document.getElementById('poWarningText').textContent = 'Nomor PO "' + poVal + '" sudah digunakan oleh customer "' + data.customer_name + '" (resi: ' + data.resi_no + ').';
+                    modal.show();
+                }
+            });
+    });
+}
 </script>
+
+<!-- PO Warning Modal -->
+<div class="modal fade" id="poWarningModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title">Peringatan: PO Number Duplikat</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p id="poWarningText"></p>
+                <p class="text-muted small">Anda tetap bisa melanjutkan, tapi pastikan PO number ini memang benar untuk customer ini.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection

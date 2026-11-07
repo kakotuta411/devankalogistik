@@ -1,6 +1,6 @@
 # Database Schema
 
-## Tables (22)
+## Tables (23)
 
 ### Core
 | Table | PK | Description |
@@ -10,7 +10,7 @@
 | `shipments` | uuid | Shipment records (resi_no, sender/receiver, customer_id, po_number, payment_type, region codes) |
 | `manifests` | uuid | Manifest records (manifest_no, origin/dest branch, status, driver_name) |
 | `manifest_items` | uuid | Pivot: manifest ↔ shipment (belongsToMany) |
-| `invoices` | uuid | Invoice records (invoice_no, customer, costs, payment tracking) |
+| `invoices` | uuid | Invoice records (invoice_no, customer, costs, payment tracking, po_id, parent_invoice_id) |
 | `invoice_items` | uuid | Pivot: invoice ↔ shipment |
 | `invoice_payments` | uuid | Partial payment records |
 | `tracking_events` | uuid | Shipment tracking timeline |
@@ -18,6 +18,7 @@
 | `regions` | string (code) | Indonesian regions (province/regency/district/village) |
 | `packages` | uuid | Package types |
 | `audit_logs` | uuid | Audit trail |
+| `purchase_orders` | uuid | PO records (po_number, customer_id, total_amount, paid_amount, status) |
 
 ### Laravel System
 | Table | Description |
@@ -29,10 +30,7 @@
 | `password_reset_tokens` | Password reset |
 | `personal_access_tokens` | Sanctum API tokens |
 
-### Removed/Unused
-| Table | Status |
-|-------|--------|
-| `purchase_orders` | ❌ Not used (PO grouped from shipments) |
+### Tables (23 total)
 
 ## Key Columns
 
@@ -45,11 +43,16 @@
 - shipment_status (Created/In Transit/Arrived at Destination/Delivered/On Hold/Cancelled)
 
 ### invoices
-- invoice_no, branch_id, customer_id, po_id (unused)
+- invoice_no, branch_id, customer_id, po_id (FK purchase_orders), parent_invoice_id (FK invoices, self)
 - customer_name, customer_phone, customer_address, customer_email, customer_province/regency/district/village_code
 - subtotal, total_koli, total_weight
 - shipping_cost, packaging_cost, equipment_charge, ppftz03, ppn, pph, discount_type, discount_value, other_costs, discount, amount_paid, total_amount
-- invoice_status (Draft/Paid/Cancelled), invoice_date, due_date, notes
+- invoice_status (Draft/Paid/Partial/Cancelled), invoice_date, due_date, notes
+
+### purchase_orders
+- po_number (unique), customer_id (FK customers)
+- total_amount, paid_amount, status (draft/active/paid/partial/cancelled)
+- notes, created_at, updated_at
 
 ### customers
 - name, company_name, phone, email, address

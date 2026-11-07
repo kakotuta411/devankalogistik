@@ -2,7 +2,7 @@
 <?php $__env->startSection('toolbar'); ?>
     <div class="btn-group">
         <?php if(auth()->user()?->canWrite()): ?>
-        <?php if(auth()->user()->role !== "Executive_Viewer"): ?>
+        <?php if(auth()->user()->canManageManifests()): ?>
         <a href="/manifests/create" class="btn btn-sm btn-primary"><i class="bi bi-plus-lg"></i> Buat Manifest</a>
         <?php endif; ?>
         <?php endif; ?>

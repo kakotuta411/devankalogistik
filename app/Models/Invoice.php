@@ -33,7 +33,7 @@ class Invoice extends Model
     ];
 
     protected $fillable = [
-        'invoice_no', 'branch_id', 'customer_id', 'po_id', 'customer_name', 'customer_phone',
+        'invoice_no', 'branch_id', 'customer_id', 'po_id', 'parent_invoice_id', 'customer_name', 'customer_phone',
         'customer_address', 'customer_email',
         'customer_province_code', 'customer_regency_code', 'customer_district_code', 'customer_village_code',
         'subtotal', 'total_koli', 'total_weight', 'shipping_cost', 'packaging_cost',
@@ -49,10 +49,21 @@ class Invoice extends Model
         return $this->belongsTo(Customer::class);
     }
 
-    public function purchaseOrder()
+    public function po()
     {
         return $this->belongsTo(PurchaseOrder::class, 'po_id');
     }
+
+    public function parentInvoice()
+    {
+        return $this->belongsTo(Invoice::class, 'parent_invoice_id');
+    }
+
+    public function childInvoices()
+    {
+        return $this->hasMany(Invoice::class, 'parent_invoice_id');
+    }
+
 
     public function payments()
     {
@@ -81,9 +92,38 @@ class Invoice extends Model
 
     public function grandTotal(): float
     {
-        return (float)$this->shipping_cost + (float)$this->packaging_cost + (float)$this->equipment_charge
-            + (float)$this->ppftz03 + (float)$this->ppn + (float)$this->pph + (float)$this->other_costs
-            - (float)$this->discount;
+        $totalWeight = (float) ($this->total_weight ?? 0);
+        $totalLayanan = ((float)$this->shipping_cost * $totalWeight) + (float)$this->packaging_cost
+            + (float)$this->equipment_charge + (float)$this->other_costs;
+        $diskonPct = (float) ($this->discount_value ?? 0);
+        $ppnPct = (float) ($this->ppn ?? 0);
+        $pphPct = (float) ($this->pph ?? 0);
+        $diskonAmt = $totalLayanan * ($diskonPct / 100);
+        $ppnAmt = $totalLayanan * ($ppnPct / 100);
+        $pphAmt = $totalLayanan * ($pphPct / 100);
+        return $totalLayanan - $diskonAmt + (float)$this->ppftz03 + $ppnAmt + $pphAmt;
+    }
+
+    public function totalLayanan(): float
+    {
+        $totalWeight = (float) ($this->total_weight ?? 0);
+        return ((float)$this->shipping_cost * $totalWeight) + (float)$this->packaging_cost
+            + (float)$this->equipment_charge + (float)$this->other_costs;
+    }
+
+    public function diskonAmount(): float
+    {
+        return $this->totalLayanan() * ((float)($this->discount_value ?? 0) / 100);
+    }
+
+    public function ppnAmount(): float
+    {
+        return $this->totalLayanan() * ((float)($this->ppn ?? 0) / 100);
+    }
+
+    public function pphAmount(): float
+    {
+        return $this->totalLayanan() * ((float)($this->pph ?? 0) / 100);
     }
 
     public function getStatusBadgeClass(): string

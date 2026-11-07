@@ -31,13 +31,19 @@
 
 ### Invoice
 - belongsTo: Branch, Customer
-- hasMany: InvoiceItem, InvoicePayment
+- hasMany: InvoiceItem, InvoicePayment, childInvoices (self)
+- belongsTo: PurchaseOrder, parentInvoice (self)
 
 ### InvoiceItem
 - belongsTo: Invoice, Shipment
 
+### PurchaseOrder
+- belongsTo: Customer
+- hasMany: Invoice (via po_id)
+- Fields: po_number (unique), total_amount, paid_amount, status (draft/active/paid/partial/cancelled)
+
 ### Customer
-- hasMany: Shipment, Invoice
+- hasMany: Shipment, Invoice, PurchaseOrder
 
 ### TrackingEvent
 - belongsTo: Shipment, User (actor)

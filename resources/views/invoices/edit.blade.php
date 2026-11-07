@@ -61,8 +61,8 @@
         </div>
         <div class="row g-3 mt-1">
             <div class="col-md-3">
-                <label class="form-label">Biaya Pengiriman</label>
-                <input type="number" name="shipping_cost" value="{{ $invoice->shipping_cost }}" class="form-control" step="1">
+                <label class="form-label">Biaya Pengiriman (per kg)</label>
+                <input type="number" name="shipping_cost" value="{{ $invoice->shipping_cost }}" class="form-control" step="0.01">
             </div>
             <div class="col-md-3">
                 <label class="form-label">Biaya Packaging</label>
@@ -79,16 +79,16 @@
         </div>
         <div class="row g-3 mt-1">
             <div class="col-md-3">
-                <label class="form-label">PPN</label>
-                <input type="number" name="ppn" value="{{ $invoice->ppn }}" class="form-control" step="1">
+                <label class="form-label">PPN (%)</label>
+                <input type="number" name="ppn" value="{{ $invoice->ppn }}" class="form-control" step="0.01">
             </div>
             <div class="col-md-3">
-                <label class="form-label">PPH</label>
-                <input type="number" name="pph" value="{{ $invoice->pph }}" class="form-control" step="1">
+                <label class="form-label">PPH (%)</label>
+                <input type="number" name="pph" value="{{ $invoice->pph }}" class="form-control" step="0.01">
             </div>
             <div class="col-md-3">
-                <label class="form-label">Diskon (Nominal)</label>
-                <input type="number" name="discount_value" value="{{ $invoice->discount }}" class="form-control" step="1">
+                <label class="form-label">Diskon (%)</label>
+                <input type="number" name="discount_value" value="{{ $invoice->discount_value }}" class="form-control" step="0.01">
             </div>
             <div class="col-md-3">
                 <label class="form-label">Biaya Lain-lain</label>

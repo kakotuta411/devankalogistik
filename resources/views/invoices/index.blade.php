@@ -24,6 +24,26 @@
     }
 @endphp
 
+<div class="row g-3 mb-3">
+    <div class="col">
+        <div class="card text-bg-success">
+            <div class="card-header text-center">Invoice Lunas</div>
+            <div class="card-body text-center">
+                <h5>{{ $paidCount ?? 0 }}</h5>
+                <small>{{ number_format($paidAmount ?? 0, 0, ',', '.') }}</small>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card text-bg-warning">
+            <div class="card-header text-center">Invoice Pending</div>
+            <div class="card-body text-center">
+                <h5>{{ $pendingCount ?? 0 }}</h5>
+                <small>{{ number_format($pendingAmount ?? 0, 0, ',', '.') }}</small>
+            </div>
+        </div>
+    </div>
+</div>
 <p class="text-body-secondary small mb-3">{{ $invoices->total() }} invoice(s)</p>
 
 <form method="GET" class="d-flex flex-wrap gap-1 align-items-end mb-3">
@@ -86,11 +106,11 @@
                         <td>{{ $inv->branch?->name ?? '-' }}</td>
                         <td>
                             @php
-                                $statusClasses = ['Draft'=>'secondary','Sent'=>'info','Paid'=>'success','Overdue'=>'danger','Cancelled'=>'danger'];
+                                $statusClasses = ['Draft'=>'primary','Sent'=>'info','Paid'=>'success','Overdue'=>'danger','Cancelled'=>'danger','Partial'=>'warning'];
                             @endphp
                             <span class="badge text-bg-{{ $statusClasses[$inv->invoice_status] ?? 'secondary' }}">{{ $inv->invoice_status }}</span>
                         </td>
-                        <td class="text-end">Rp {{ number_format($inv->grandTotal(), 0, ',', '.') }}</td>
+                        <td class="text-end">Rp {{ number_format($inv->childInvoices->isNotEmpty() ? ($inv->amount_paid ?? 0) : ($inv->total_amount ?? 0), 0, ',', '.') }}</td>
                         <td><small class="text-body-secondary" data-uts="{{ $inv->created_at?->getTimestamp() }}">{{ $inv->created_at?->format('d/m/Y H:i') }}</small></td>
                         <td class="text-end">
                             <div class="btn-group btn-group-sm" role="group">

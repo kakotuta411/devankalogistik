@@ -61,6 +61,10 @@ class DashboardController extends Controller
             'recent_manifests' => Manifest::whereBetween('created_at', [$startStr, $endStr])->latest()->limit(10)->get(),
             'recent_invoices' => Invoice::whereBetween('created_at', [$startStr, $endStr])->latest()->limit(10)->get(),
             'invoices_today' => Invoice::whereBetween('created_at', [$startStr, $endStr])->count(),
+            'invoices_paid' => Invoice::where('invoice_status', 'Paid')->count(),
+            'invoices_pending' => Invoice::whereIn('invoice_status', ['Draft', 'Partial', 'Active'])->count(),
+            'invoices_paid_amount' => Invoice::where('invoice_status', 'Paid')->sum('total_amount'),
+            'invoices_pending_amount' => Invoice::whereIn('invoice_status', ['Draft', 'Partial', 'Active'])->sum('total_amount'),
             'recent_audits' => AuditLog::latest()->limit(10)->get(),
             'date_range' => ['start' => $startStr, 'end' => $endStr, 'start_date' => $start->toDateString(), 'end_date' => $end->toDateString()],
         ];

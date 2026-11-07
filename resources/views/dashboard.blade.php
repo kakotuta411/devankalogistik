@@ -71,6 +71,24 @@
                 </div>
             </div>
         </div>
+        <div class="col ">
+            <div class="card text-bg-success mb-3">
+                <div class="card-header">Invoice Lunas</div>
+                <div class="card-body text-center">
+                    <h5 class="card-title">{{ $stats['invoices_paid'] }}</h5>
+                    <p class="card-text small">{{ number_format($stats['invoices_paid_amount'], 0, ',', '.') }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col ">
+            <div class="card text-bg-warning mb-3">
+                <div class="card-header">Invoice Pending</div>
+                <div class="card-body text-center">
+                    <h5 class="card-title">{{ $stats['invoices_pending'] }}</h5>
+                    <p class="card-text small">{{ number_format($stats['invoices_pending_amount'], 0, ',', '.') }}</p>
+                </div>
+            </div>
+        </div>
         <!-- <div class="col ">
                                                     <div class="card">
                                                         <div class="card-body">

@@ -2,7 +2,7 @@
 <?php $__env->startSection('toolbar'); ?>
     <div class="btn-group">
         <?php if(auth()->user()?->canWrite()): ?>
-        <?php if(auth()->user()->role !== "Executive_Viewer"): ?>
+        <?php if(auth()->user()->canManageShipments()): ?>
         <a href="/shipments/create" class="btn btn-sm btn-primary"><i class="bi bi-plus-lg"></i> Buat Resi</a>
         <?php endif; ?>
         <?php endif; ?>

@@ -14,7 +14,7 @@
 <body class="bg-light">
     <form method="POST" action="/login" class="sign-in-card bg-white p-4 pb-5 m-3 shadow-sm rounded-3 text-center">
         @csrf
-        <img src="{{ asset('images/logo.png') }}" alt="{{ config('app.name') }}" style="max-height: 120px; max-width: 100%; margin-bottom: 1rem;" onerror="this.style.display='none';">
+        <img src="{{ asset('images/logo.png') . '?v=' . filemtime(public_path('images/logo.png')) }}" alt="{{ config('app.name') }}" style="max-height: 120px; max-width: 100%; margin-bottom: 1rem;" onerror="this.style.display='none';">
         <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
 
         @if($errors->any())

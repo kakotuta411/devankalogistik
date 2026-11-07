@@ -1,66 +1,198 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
+
 <head>
     <meta charset="utf-8">
     <title>Resi <?php echo e($shipment->resi_no); ?></title>
     <style>
-        @page { size: A5; margin: 1cm; }
-        body { font-family: DejaVu Sans, sans-serif; font-size: 11px; }
-        .header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 8px; margin-bottom: 10px; }
-        .header h2 { margin: 0; font-size: 16px; }
-        .header p { margin: 2px 0; font-size: 10px; color: #555; }
-        .section { margin-bottom: 10px; }
-        .section h4 { font-size: 12px; margin: 0 0 4px 0; border-bottom: 1px solid #ccc; padding-bottom: 2px; }
-        .row { display: flex; justify-content: space-between; margin-bottom: 2px; }
-        .row .label { font-weight: bold; width: 40%; }
-        .row .value { width: 60%; text-align: right; }
-        .payment-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-weight: bold; }
-        .kredit { background: #fff3cd; color: #856404; }
-        .lunas { background: #d4edda; color: #155724; }
-        .cod { background: #cce5ff; color: #004085; }
-        .footer { margin-top: 15px; font-size: 9px; color: #888; text-align: center; border-top: 1px solid #ccc; padding-top: 5px; }
+        @page {
+            size: 9.5in 5.5in;
+            margin: 0;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: DejaVu Sans, sans-serif;
+            font-size: 10px;
+            margin: 0;
+            padding: 0;
+            position: relative;
+            width: 912px;
+            height: 528px;
+        }
+
+        .abs {
+            position: absolute;
+        }
+
+        .title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .company {
+            font-size: 11px;
+            color: #333;
+        }
+
+        .label {
+            font-size: 10px;
+        }
+
+        .value {
+            font-size: 10px;
+        }
+
+        .section {
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-weight: bold;
+            font-size: 10px;
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .tagline {
+            font-size: 9px;
+            color: #555;
+        }
+
+        .small {
+            font-size: 8px;
+            color: #888;
+        }
+
+        .sig {
+            font-size: 9px;
+        }
+
+        .maxw {
+            max-width: 300px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .maxw-narrow {
+            max-width: 200px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
     </style>
 </head>
+
 <body>
-    <div class="header">
-        <h2>RESI PENGIRIMAN</h2>
-        <p><?php echo e($shipment->originBranch?->name ?? 'Logistik'); ?> → <?php echo e($shipment->destinationBranch?->name ?? '-'); ?></p>
-        <p>No. Resi: <strong><?php echo e($shipment->resi_no); ?></strong></p>
+    
+    <?php if($logoUrl): ?>
+        <div class="abs" style="left: 20px; top: 15px;">
+            <img src="<?php echo e($logoUrl); ?>" alt="Logo" style="max-height: 60px; max-width: 120px;">
+        </div>
+    <?php endif; ?>
+
+    
+    <div class="abs title" style="left: 187px; top: 20px;">RESI PENGIRIMAN</div>
+
+    
+    <div class="abs label" style="left: 587px; top: 28px;">NO. RESI</div>
+    <div class="abs value" style="left: 582px; top: 48px; font-weight: bold; font-size: 12px;"><?php echo e($shipment->resi_no); ?>
+
     </div>
 
-    <div class="section">
-        <h4>Informasi Pengiriman</h4>
-        <div class="row"><span class="label">Tanggal Masuk</span><span class="value"><?php echo e($shipment->created_at?->format('d/m/Y H:i')); ?></span></div>
-        <div class="row"><span class="label">Status</span><span class="value"><?php echo e($shipment->shipment_status); ?></span></div>
-        <div class="row"><span class="label">Jenis Layanan</span><span class="value"><?php echo e($shipment->service_type); ?></span></div>
-        <div class="row"><span class="label">Total Koli</span><span class="value"><?php echo e($shipment->total_koli); ?></span></div>
-        <div class="row"><span class="label">Total Berat</span><span class="value"><?php echo e($shipment->total_weight); ?> kg</span></div>
-        <?php if($shipment->package_description): ?>
-        <div class="row"><span class="label">Isi Barang</span><span class="value"><?php echo e($shipment->package_description); ?></span></div>
-        <?php endif; ?>
-        <?php if($shipment->po_number): ?>
-        <div class="row"><span class="label">Nomor PO</span><span class="value"><?php echo e($shipment->po_number); ?></span></div>
-        <?php endif; ?>
-        <div class="row"><span class="label">Tipe Pembayaran</span><span class="value"><span class="payment-badge <?php echo e($shipment->payment_type ?? 'kredit'); ?>"><?php echo e(strtoupper($shipment->payment_type ?? 'KREDIT')); ?></span></span></div>
-    </div>
+    
+    <div class="abs label" style="left: 771px; top: 28px;">NO. PO</div>
+    <div class="abs value" style="left: 772px; top: 48px; font-weight: bold; font-size: 12px;">
+        <?php echo e($shipment->po_number ?? '-'); ?></div>
 
-    <div class="section">
-        <h4>Pengirim</h4>
-        <div class="row"><span class="label">Nama</span><span class="value"><?php echo e($shipment->sender_name); ?></span></div>
-        <div class="row"><span class="label">Telepon</span><span class="value"><?php echo e($shipment->sender_phone); ?></span></div>
-        <div class="row"><span class="label">Alamat</span><span class="value"><?php echo e($shipment->sender_address); ?></span></div>
-    </div>
+    
+    <div class="abs company" style="left: 190px; top: 55px;">PT. DEVANKA LOGISTIK INDONESIA</div>
 
-    <div class="section">
-        <h4>Penerima</h4>
-        <div class="row"><span class="label">Nama</span><span class="value"><?php echo e($shipment->receiver_name); ?></span></div>
-        <div class="row"><span class="label">Telepon</span><span class="value"><?php echo e($shipment->receiver_phone); ?></span></div>
-        <div class="row"><span class="label">Alamat</span><span class="value"><?php echo e($shipment->receiver_address); ?></span></div>
-    </div>
+    
+    <div class="abs section" style="left: 21px; top: 104px;">INFORMASI PENGIRIMAN</div>
 
-    <div class="footer">
-        <p>Dokumen ini dicetak secara otomatis. Simpan resi ini sebagai bukti pengiriman.</p>
-    </div>
+    
+    <div class="abs label" style="left: 24px; top: 149px;">Tanggal Masuk</div>
+    <div class="abs" style="left: 190px; top: 149px;">:</div>
+    <div class="abs value" style="left: 206px; top: 149px;"><?php echo e($shipment->created_at?->format('d/m/Y H:i')); ?></div>
+
+    
+    <div class="abs label" style="left: 24px; top: 184px;">Status</div>
+    <div class="abs" style="left: 190px; top: 184px;">:</div>
+    <div class="abs value" style="left: 206px; top: 184px;"><?php echo e($shipment->shipment_status); ?></div>
+
+    
+    <div class="abs label" style="left: 24px; top: 219px;">Jenis Layanan</div>
+    <div class="abs" style="left: 190px; top: 219px;">:</div>
+    <div class="abs value" style="left: 206px; top: 219px;"><?php echo e($shipment->service_type); ?></div>
+
+    
+    <div class="abs label" style="left: 24px; top: 254px;">Total Koli</div>
+    <div class="abs" style="left: 190px; top: 254px;">:</div>
+    <div class="abs value" style="left: 206px; top: 254px;"><?php echo e($shipment->total_koli); ?></div>
+
+    
+    <div class="abs label" style="left: 24px; top: 289px;">Total Berat</div>
+    <div class="abs" style="left: 190px; top: 289px;">:</div>
+    <div class="abs value" style="left: 206px; top: 289px;"><?php echo e($shipment->total_weight); ?> kg</div>
+
+    
+    <div class="abs label" style="left: 24px; top: 324px;">Isi Barang</div>
+    <div class="abs" style="left: 190px; top: 324px;">:</div>
+    <div class="abs value maxw" style="left: 206px; top: 324px;"><?php echo e($shipment->package_description ?? '-'); ?></div>
+
+    
+    <div class="abs label" style="left: 24px; top: 394px;">Tipe Pembayaran</div>
+    <div class="abs" style="left: 190px; top: 394px;">:</div>
+    <div class="abs" style="left: 206px; top: 391px;"><span
+            class="badge"><?php echo e(strtoupper($shipment->payment_type ?? 'KREDIT')); ?></span></div>
+
+    
+    <div class="abs section" style="left: 468px; top: 147px;">PENGIRIM</div>
+
+    <div class="abs label" style="left: 472px; top: 182px;">Nama</div>
+    <div class="abs" style="left: 553px; top: 181px;">:</div>
+    <div class="abs value maxw-narrow" style="left: 565px; top: 181px;"><?php echo e($shipment->sender_name); ?></div>
+
+    <div class="abs label" style="left: 472px; top: 211px;">Telepon</div>
+    <div class="abs" style="left: 553px; top: 210px;">:</div>
+    <div class="abs value maxw-narrow" style="left: 565px; top: 210px;"><?php echo e($shipment->sender_phone); ?></div>
+
+    <div class="abs label" style="left: 472px; top: 240px;">Alamat</div>
+    <div class="abs" style="left: 553px; top: 238px;">:</div>
+    <div class="abs value maxw-narrow" style="left: 565px; top: 238px;"><?php echo e($shipment->sender_address); ?></div>
+
+    
+    <div class="abs section" style="left: 468px; top: 280px;">PENERIMA</div>
+
+    <div class="abs label" style="left: 472px; top: 315px;">Nama</div>
+    <div class="abs" style="left: 553px; top: 314px;">:</div>
+    <div class="abs value maxw-narrow" style="left: 565px; top: 314px;"><?php echo e($shipment->receiver_name); ?></div>
+
+    <div class="abs label" style="left: 472px; top: 344px;">Telepon</div>
+    <div class="abs" style="left: 553px; top: 343px;">:</div>
+    <div class="abs value maxw-narrow" style="left: 565px; top: 343px;"><?php echo e($shipment->receiver_phone); ?></div>
+
+    <div class="abs label" style="left: 472px; top: 373px;">Alamat</div>
+    <div class="abs" style="left: 553px; top: 372px;">:</div>
+    <div class="abs value maxw-narrow" style="left: 565px; top: 372px;"><?php echo e($shipment->receiver_address); ?></div>
+
+    
+    <div class="abs tagline" style="left: 24px; top: 424px;">PARTNER LOGISTIK PROFESIONAL UNTUK BISNIS ANDA</div>
+    <div class="abs small" style="left: 24px; top: 443px;">www.devankalogistik.com</div>
+
+    
+    <div class="abs sig" style="left: 548px; top: 435px;">PENERIMA</div>
+    <div class="abs sig" style="left: 765px; top: 435px;">PETUGAS</div>
+
+    
+    <div class="abs small" style="left: 23px; top: 480px;">Simpan resi ini sebagai bukti pengiriman.</div>
 </body>
-</html>
-<?php /**PATH /var/www/html/resources/views/print/resi-detail.blade.php ENDPATH**/ ?>
+
+</html><?php /**PATH /var/www/html/resources/views/print/resi-detail.blade.php ENDPATH**/ ?>

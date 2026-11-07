@@ -42,12 +42,12 @@ class User extends Authenticatable
 
     public function canManageShipments(): bool
     {
-        return in_array($this->role, ['Admin', 'Staff_Shipment'], true);
+        return in_array($this->role, ['Admin', 'Staff_Shipment', 'Staff_Invoice'], true);
     }
 
     public function canManageManifests(): bool
     {
-        return in_array($this->role, ['Admin', 'Staff_Shipment'], true);
+        return in_array($this->role, ['Admin', 'Staff_Shipment', 'Staff_Invoice'], true);
     }
 
     public function canManageInvoices(): bool
@@ -56,6 +56,11 @@ class User extends Authenticatable
     }
 
     public function canManageCustomers(): bool
+    {
+        return in_array($this->role, ['Admin', 'Staff_Invoice'], true);
+    }
+
+    public function canManagePurchaseOrders(): bool
     {
         return in_array($this->role, ['Admin', 'Staff_Invoice'], true);
     }

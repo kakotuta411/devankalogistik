@@ -15,6 +15,6 @@ class ManifestGenerator
             ->get()
             ->count();
         $sequence = str_pad((string) ($dailyCount + 1), 5, '0', STR_PAD_LEFT);
-        return "AKL-MNF-{$date}-{$sequence}";
+        return "DLI-MNF-{$date}-{$sequence}";
     }
 }

@@ -19,13 +19,9 @@ class PrintController extends Controller
     public function shipmentLabel($id)
     {
         $shipment = Shipment::withoutGlobalScopes()->findOrFail($id);
-        // Generate QR code locally using chillerlan/php-qrcode
-        $options = new \chillerlan\QRCode\QROptions([
-            'outputType' => \chillerlan\QRCode\QRCode::OUTPUT_IMAGE_PNG,
-        ]);
-        $qr = new \chillerlan\QRCode\QRCode($options);
-        $qrBase64 = $qr->render($shipment->resi_no);
-        $pdf = Pdf::loadView('print.resi-label', compact('shipment', 'qrBase64'))->setPaper([0, 0, 283.46, 283.46]); // 10x10cm
+        // Generate barcode (Code 128) locally using GD
+        $barcodeBase64 = \App\Helpers\BarcodeGenerator::code128($shipment->resi_no);
+        $pdf = Pdf::loadView('print.resi-label', compact('shipment', 'barcodeBase64'))->setPaper([0, 0, 283.46, 283.46]); // 10x10cm
         return $pdf->stream('label-' . $shipment->resi_no . '.pdf');
     }
 
@@ -33,7 +29,7 @@ class PrintController extends Controller
     {
         $shipment = Shipment::withoutGlobalScopes()->findOrFail($id);
         $shipment->load(['originBranch', 'destinationBranch', 'customer']);
-        $pdf = Pdf::loadView('print.resi-detail', compact('shipment'))->setPaper('a4');
+        $pdf = Pdf::loadView('print.resi-detail', compact('shipment'))->setPaper([0, 0, 684, 396]); // 9.5x5.5in from original PDF
         return $pdf->stream('resi-detail-' . $shipment->resi_no . '.pdf');
     }
 

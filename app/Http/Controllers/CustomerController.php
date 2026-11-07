@@ -62,4 +62,30 @@ class CustomerController extends Controller
         $customer = Customer::create($data);
         return response()->json($customer);
     }
+
+    public function checkPoNumber(Request $request)
+    {
+        $poNumber = $request->input('po_number');
+        $customerId = $request->input('customer_id');
+
+        if (empty($poNumber)) {
+            return response()->json(['exists' => false]);
+        }
+
+        $existing = \App\Models\Shipment::where('po_number', $poNumber)
+            ->whereNotNull('customer_id')
+            ->where('customer_id', '!=', $customerId)
+            ->with('customer:id,name')
+            ->first();
+
+        if ($existing) {
+            return response()->json([
+                'exists' => true,
+                'customer_name' => $existing->customer?->name ?? 'Unknown',
+                'resi_no' => $existing->resi_no,
+            ]);
+        }
+
+        return response()->json(['exists' => false]);
+    }
 }

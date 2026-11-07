@@ -23,19 +23,27 @@ class TrackingController extends Controller
         $deliveredAt = null;
         if ($shipment->shipment_status === 'Delivered') {
             $lastEvent = $shipment->trackingEvents()->where('event_type', 'Delivered')->orderBy('event_time', 'desc')->first();
-            $receiverName = $lastEvent?->notes;
+            $receiverName = $shipment->receiver_name;
             $deliveredAt = $lastEvent?->event_time;
         }
         return response()->json([
             'resi_no' => $shipment->resi_no,
-            'entry_date' => $shipment->created_at?->format('d/m/Y'),
+            'entry_date' => $shipment->created_at?->format('d/m/Y H:i'),
             'sender' => $shipment->sender_name,
             'receiver' => $shipment->receiver_name,
             'shipment_status' => $shipment->shipment_status,
             'tracking_events' => $shipment->trackingEvents()
                 ->select('event_type', 'location', 'event_time', 'notes')
                 ->orderBy('event_time', 'asc')
-                ->get(),
+                ->get()
+                ->map(function ($event) {
+                    return [
+                        'event_type' => $event->event_type,
+                        'location' => $event->location,
+                        'event_time' => $event->event_time?->format('d/m/Y H:i'),
+                        'notes' => $event->notes,
+                    ];
+                }),
             'receiver_name' => $receiverName,
             'delivered_at' => $deliveredAt ? $deliveredAt->format('d/m/Y H:i') : null,
         ]);

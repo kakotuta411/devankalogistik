@@ -3,48 +3,48 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Resi {{ $shipment->resi_no }}</title>
+    <title>Label {{ $shipment->resi_no }}</title>
     <style>
         @page {
-            size: 10cm 14cm;
+            size: 4in 6in;
             margin: 0.2cm;
         }
 
         body {
-            font-family: Arial, sans-serif;
-            font-size: 9pt;
+            font-family: DejaVu Sans, sans-serif;
+            font-size: 8pt;
             margin: 0;
         }
 
         .wrap {
             border: 1px solid #000;
-            padding: 2px;
+            padding: 3px;
         }
 
-        .top {
+        .koli-badge {
             text-align: center;
-            margin-bottom: 4px;
-        }
-
-        .svc {
-            font-size: 13pt;
             font-weight: bold;
-            letter-spacing: 1px;
+            font-size: 10pt;
+            margin-bottom: 3px;
+            border-bottom: 1px solid #000;
+            padding-bottom: 2px;
         }
 
-        .meta {
+        .company {
+            text-align: center;
             font-size: 8pt;
-            color: #333;
+            font-weight: bold;
+            margin-bottom: 2px;
         }
 
         .resi {
             text-align: center;
-            font-size: 16pt;
+            font-size: 14pt;
             font-weight: bold;
-            margin: 2px 0;
+            margin: 3px 0;
             border-top: 1px dashed #000;
             border-bottom: 1px dashed #000;
-            padding: 4px 0;
+            padding: 3px 0;
         }
 
         .qr {
@@ -54,145 +54,150 @@
 
         .route {
             text-align: center;
-            font-size: 11pt;
+            font-size: 9pt;
             font-weight: bold;
-            margin-bottom: 2px;
+            margin-bottom: 3px;
         }
 
         .block {
-            margin-bottom: 2px;
-            margin-left: 3px;
+            margin-bottom: 3px;
+            margin-left: 2px;
         }
 
         .lbl {
             font-weight: bold;
-            font-size: 8pt;
+            font-size: 7pt;
             text-transform: uppercase;
             color: #555;
         }
 
         .name {
             font-weight: bold;
-            font-size: 10pt;
-        }
-
-        .phone {
             font-size: 9pt;
         }
 
-        .addr {
-            font-size: 8.5pt;
-            line-height: 1.3;
-        }
-
-        .row {
-            display: flex;
-            justify-content: space-between;
-            gap: 4px;
-            margin-top: 2px;
-        }
-
-        .box {
-            flex: 1;
-            border: 1px solid #000;
-            padding: 4px;
-            text-align: center;
-        }
-
-        .box .k {
+        .phone {
             font-size: 8pt;
+        }
+
+        .addr {
+            font-size: 7.5pt;
+            line-height: 1.2;
+        }
+
+        .box-table {
+            width: 100%;
+            margin-top: 3px;
+        }
+
+        .box-table td {
+            border: 1px solid #000;
+            padding: 2px;
+            text-align: center;
+            width: 50%;
+        }
+
+        .box-table .k {
+            font-size: 6.5pt;
             color: #555;
         }
 
-        .box .v {
-            font-size: 12pt;
+        .box-table .v {
+            font-size: 10pt;
             font-weight: bold;
         }
 
         .footer {
             text-align: center;
-            font-size: 8pt;
-            margin-top: 0;
+            font-size: 7pt;
+            margin-top: 2px;
             border-top: 1px solid #ccc;
-            padding-top: 4px;
+            padding-top: 2px;
+        }
+
+        .tagline {
+            text-align: center;
+            font-size: 6.5pt;
+            color: #555;
+            margin-top: 1px;
         }
     </style>
 </head>
 
 <body>
     @for($koli = 1; $koli <= $shipment->total_koli; $koli++)
-    <div class="wrap">
-        <div style="text-align: center; font-weight: bold; font-size: 11pt; margin-bottom: 4px;">KOLI {{ $koli }} / {{ $shipment->total_koli }}</div>
-        <div class="top">
+        <div class="wrap">
             @if($logoUrl)
-                <img src="{{ $logoUrl }}" style="max-height: 36px; max-width: 100%; margin-bottom: 6px;" alt="Logo"><br>
+                <div style="text-align: center; margin-bottom: 3px;">
+                    <img src="{{ $logoUrl }}" alt="Logo" style="max-height: 40px; max-width: 120px;">
+                </div>
             @endif
-            <!-- <strong>{{ $printSettings['company_name'] ?? config('app.name') }}</strong><br>
-            <span class="meta">{{ $shipment->created_at?->format('d M Y, H:i') }}</span><br> -->
-            <span
-                class="svc">{{ strtoupper($shipment->service_type ?? 'REGULER ') }}{{ $shipment->created_at?->format(' d M Y, H:i') }}</span>
-        </div>
-        <div class="resi">{{ $shipment->resi_no }}</div>
-        <div class="qr">
-            <img src="{{ $qrBase64 }}" alt="QR" style="width: 70px; height: 70px;">
-        </div>
-        <div class="route">{{ strtoupper($shipment->originBranch?->city ?? '') }} -
-            {{ strtoupper($shipment->destinationBranch?->city ?? '') }}
-        </div>
-
-        <div class="block">
-            <div class="lbl">Penerima</div>
-            <div class="name">{{ $shipment->receiver_name }}</div>
-            <div class="phone">{{ $shipment->receiver_phone }}</div>
-            <div class="addr">
-                {{ $shipment->receiver_address }}
-                @if($shipment->receiver_village_code || $shipment->receiver_district_code || $shipment->receiver_regency_code || $shipment->receiver_province_code)
-                    <br>
-                    {{ strtolower(\App\Models\Region::where('code', $shipment->receiver_province_code)->value('name') ?? '') }},
-                    {{ strtolower(\App\Models\Region::where('code', $shipment->receiver_regency_code)->value('name') ?? '') }},
-                    {{ strtolower(\App\Models\Region::where('code', $shipment->receiver_village_code)->value('name') ?? '') }}
-                @endif
+            <div class="koli-badge">KOLI {{ $koli }} / {{ $shipment->total_koli }}</div>
+            <div class="company">PT. DEVANKA LOGISTIK INDONESIA</div>
+            <div class="resi">{{ $shipment->resi_no }}</div>
+            <div class="qr">
+                <img src="{{ $barcodeBase64 }}" alt="Barcode" style="width: 100%; max-width: 180px; height: 40px;">
             </div>
-        </div>
-
-        <div class="block">
-            <div class="lbl">Pengirim</div>
-            <div class="name">{{ $shipment->sender_name }}</div>
-            <div class="phone">{{ $shipment->sender_phone }}</div>
-            <div class="addr">
-                {{ $shipment->sender_address }}
-                @if($shipment->sender_village_code || $shipment->sender_district_code || $shipment->sender_regency_code || $shipment->sender_province_code)
-                    <br>
-                    {{ strtolower(\App\Models\Region::where('code', $shipment->sender_province_code)->value('name') ?? '') }},
-                    {{ strtolower(\App\Models\Region::where('code', $shipment->sender_regency_code)->value('name') ?? '') }},
-                    {{ strtolower(\App\Models\Region::where('code', $shipment->sender_village_code)->value('name') ?? '') }}
-                @endif
+            <div class="route">{{ strtoupper($shipment->originBranch?->city ?? '') }} -
+                {{ strtoupper($shipment->destinationBranch?->city ?? '') }}
             </div>
-        </div>
 
-        <div class="block">
-            <div class="lbl">Isi Barang</div>
-            <div>{{ $shipment->package_description ?? '-' }}</div>
-        </div>
-
-        <div class="row">
-            <div class="box">
-                <div class="k">Qty/Koli</div>
-                <div class="v">{{ $shipment->total_koli }}</div>
+            <div class="block">
+                <div class="lbl">Penerima</div>
+                <div class="name">{{ $shipment->receiver_name }}</div>
+                <div class="phone">{{ $shipment->receiver_phone }}</div>
+                <div class="addr">
+                    {{ $shipment->receiver_address }}
+                    @if($shipment->receiver_village_code || $shipment->receiver_district_code || $shipment->receiver_regency_code || $shipment->receiver_province_code)
+                        <br>
+                        {{ strtolower(\App\Models\Region::where('code', $shipment->receiver_province_code)->value('name') ?? '') }},
+                        {{ strtolower(\App\Models\Region::where('code', $shipment->receiver_regency_code)->value('name') ?? '') }},
+                        {{ strtolower(\App\Models\Region::where('code', $shipment->receiver_village_code)->value('name') ?? '') }}
+                    @endif
+                </div>
             </div>
-            <div class="box">
-                <div class="k">Berat</div>
-                <div class="v">{{ $shipment->total_weight }} kg</div>
-            </div>
-        </div>
 
-        <div class="footer">
-            {{ $printSettings['footer_text'] ?? 'AKL LOGISTIK - Simpan resi ini sebagai bukti pengiriman' }}
+            <div class="block">
+                <div class="lbl">Pengirim</div>
+                <div class="name">{{ $shipment->sender_name }}</div>
+                <div class="phone">{{ $shipment->sender_phone }}</div>
+                <div class="addr">
+                    {{ $shipment->sender_address }}
+                    @if($shipment->sender_village_code || $shipment->sender_district_code || $shipment->sender_regency_code || $shipment->sender_province_code)
+                        <br>
+                        {{ strtolower(\App\Models\Region::where('code', $shipment->sender_province_code)->value('name') ?? '') }},
+                        {{ strtolower(\App\Models\Region::where('code', $shipment->sender_regency_code)->value('name') ?? '') }},
+                        {{ strtolower(\App\Models\Region::where('code', $shipment->sender_village_code)->value('name') ?? '') }}
+                    @endif
+                </div>
+            </div>
+
+            <div class="block">
+                <div class="lbl">Isi Barang</div>
+                <div>{{ $shipment->package_description ?? '-' }}</div>
+            </div>
+
+            <table class="box-table">
+                <tr>
+                    <td>
+                        <div class="k">Qty/Koli</div>
+                        <div class="v">{{ $shipment->total_koli }}</div>
+                    </td>
+                    <td>
+                        <div class="k">Berat</div>
+                        <div class="v">{{ $shipment->total_weight }} kg</div>
+                    </td>
+                </tr>
+            </table>
+
+            <div class="footer">
+                {{ $printSettings['footer_text'] ?? 'AKL LOGISTIK - Simpan resi ini sebagai bukti pengiriman' }}
+            </div>
+            <div class="tagline">PARTNER LOGISTIK PROFESIONAL UNTUK BISNIS ANDA</div>
         </div>
-    </div>
-    @if($koli < $shipment->total_koli)
-    <div style="page-break-after: always;"></div>
-    @endif
+        @if($koli < $shipment->total_koli)
+            <div style="page-break-after: always;"></div>
+        @endif
     @endfor
 </body>
 

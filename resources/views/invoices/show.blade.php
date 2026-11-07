@@ -5,7 +5,7 @@
 @php $inv = $invoice; @endphp
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div class="btn-group">
-        @if(auth()->user()->canManageInvoices())
+        @if(auth()->user()->canManageInvoices() && $inv->childInvoices->count() === 0)
         <button type="button" class="btn btn-outline-secondary edit-btn" data-edit-url="/invoices/{{ $inv->id }}/edit" data-edit-title="Edit Invoice"><i class="bi bi-pencil"></i> Edit</button>
         @endif
         <a href="/print/invoices/{{ $inv->id }}/pdf" target="_blank" class="btn btn-success"><i class="bi bi-printer me-2"></i>Print</a>
@@ -16,7 +16,7 @@
         <div class="card h-100">
             <div class="card-header"><strong>Info Invoice</strong></div>
             <div class="card-body">
-                <p class="mb-1"><strong>Status:</strong> <span class="badge {{ $inv->invoice_status === 'Paid' ? 'text-bg-success' : ($inv->invoice_status === 'Cancelled' ? 'text-bg-danger' : 'text-bg-warning') }}">{{ $inv->invoice_status }}</span></p>
+                <p class="mb-1"><strong>Status:</strong> <span class="badge {{ $inv->invoice_status === 'Paid' ? 'text-bg-success' : ($inv->invoice_status === 'Cancelled' ? 'text-bg-danger' : ($inv->invoice_status === 'Partial' ? 'text-bg-warning' : 'text-bg-primary')) }}">{{ $inv->invoice_status }}</span></p>
                 <p class="mb-1"><strong>Customer:</strong> {{ $inv->customer_name ?? '-' }}</p>
                 <p class="mb-1"><strong>Telepon:</strong> {{ $inv->customer_phone ?? '-' }}</p>
                 <p class="mb-1"><strong>Alamat:</strong> {{ $inv->customer_address ?? '-' }}</p>
@@ -24,6 +24,17 @@
                 <p class="mb-1"><strong>Cabang:</strong> {{ $inv->branch?->name ?? '-' }}</p>
                 <p class="mb-1"><strong>Tanggal:</strong> {{ $inv->invoice_date?->format('d/m/Y') ?? '-' }}</p>
                 <p class="mb-0"><strong>Due Date:</strong> {{ $inv->due_date?->format('d/m/Y') ?? '-' }}</p>
+                @if($inv->childInvoices->count() > 0)
+                <hr class="my-2">
+                <p class="mb-1"><strong>Invoice Pecahan (Sisa):</strong></p>
+                @foreach($inv->childInvoices as $child)
+                <p class="mb-1"><a href="/invoices/{{ $child->id }}" class="text-decoration-none">{{ $child->invoice_no }}</a> — Rp {{ number_format($child->total_amount, 0, ',', '.') }} ({{ $child->invoice_status }})</p>
+                @endforeach
+                @endif
+                @if($inv->parentInvoice)
+                <hr class="my-2">
+                <p class="mb-1"><strong>Invoice Induk:</strong> <a href="/invoices/{{ $inv->parentInvoice->id }}" class="text-decoration-none">{{ $inv->parentInvoice->invoice_no }}</a> — Rp {{ number_format($inv->parentInvoice->total_amount, 0, ',', '.') }} ({{ $inv->parentInvoice->invoice_status }})</p>
+                @endif
             </div>
         </div>
     </div>
@@ -32,14 +43,14 @@
             <div class="card-header"><strong>Ringkasan Finansial</strong></div>
             <div class="card-body">
                 <table class="table table-borderless mb-0">
-                    <tr><td>Biaya Pengiriman</td><td class="text-end">Rp {{ number_format($inv->shipping_cost, 0, ',', '.') }}</td></tr>
+                    <tr><td>Biaya Pengiriman ({{ number_format($inv->shipping_cost, 0, ',', '.') }}/kg x {{ number_format($inv->total_weight, 2, ',', '.') }} kg)</td><td class="text-end">Rp {{ number_format($inv->shipping_cost * $inv->total_weight, 0, ',', '.') }}</td></tr>
                     <tr><td>Biaya Packaging</td><td class="text-end">Rp {{ number_format($inv->packaging_cost, 0, ',', '.') }}</td></tr>
                     <tr><td>Charge Alat</td><td class="text-end">Rp {{ number_format($inv->equipment_charge, 0, ',', '.') }}</td></tr>
-                    <tr><td>PPFTZ 03</td><td class="text-end">Rp {{ number_format($inv->ppftz03, 0, ',', '.') }}</td></tr>
-                    <tr><td>PPN</td><td class="text-end">Rp {{ number_format($inv->ppn, 0, ',', '.') }}</td></tr>
-                    <tr><td>PPH</td><td class="text-end">Rp {{ number_format($inv->pph, 0, ',', '.') }}</td></tr>
                     <tr><td>Biaya Lain-lain</td><td class="text-end">Rp {{ number_format($inv->other_costs, 0, ',', '.') }}</td></tr>
-                    <tr><td>Diskon</td><td class="text-end">-Rp {{ number_format($inv->discount, 0, ',', '.') }}</td></tr>
+                    <tr><td>Diskon ({{ number_format($inv->discount_value, 2, ',', '.') }}%)</td><td class="text-end">-Rp {{ number_format($inv->discount, 0, ',', '.') }}</td></tr>
+                    <tr><td>PPFTZ 03</td><td class="text-end">Rp {{ number_format($inv->ppftz03, 0, ',', '.') }}</td></tr>
+                    <tr><td>PPN ({{ number_format($inv->ppn, 2, ',', '.') }}%)</td><td class="text-end">Rp {{ number_format($inv->ppnAmount(), 0, ',', '.') }}</td></tr>
+                    <tr><td>PPH ({{ number_format($inv->pph, 2, ',', '.') }}%)</td><td class="text-end">Rp {{ number_format($inv->pphAmount(), 0, ',', '.') }}</td></tr>
                     <tr class="table-active"><td><strong>TOTAL</strong></td><td class="text-end"><strong>Rp {{ number_format($inv->grandTotal(), 0, ',', '.') }}</strong></td></tr>
                     <tr><td>Dibayar</td><td class="text-end">Rp {{ number_format($inv->amount_paid ?? 0, 0, ',', '.') }}</td></tr>
                     <tr class="table-warning"><td><strong>Tunggakan</strong></td><td class="text-end"><strong>Rp {{ number_format($inv->grandTotal() - ($inv->amount_paid ?? 0), 0, ',', '.') }}</strong></td></tr>
@@ -79,7 +90,13 @@
 @if($inv->notes)
 <div class="mt-4 card">
     <div class="card-header"><strong>Catatan</strong></div>
-    <div class="card-body">{{ $inv->notes }}</div>
+    <div class="card-body">
+        @if($inv->parentInvoice)
+            Sisa dari invoice <a href="/invoices/{{ $inv->parentInvoice->id }}" class="text-decoration-none">{{ $inv->parentInvoice->invoice_no }}</a>
+        @else
+            {{ $inv->notes }}
+        @endif
+    </div>
 </div>
 @endif
 <div class="mt-4 card">
@@ -94,7 +111,7 @@
         <div class="progress mb-3" style="height: 20px;">
             <div class="progress-bar bg-success" role="progressbar" style="width: {{ $pct }}%;" aria-valuenow="{{ $pct }}" aria-valuemin="0" aria-valuemax="100">{{ $pct }}%</div>
         </div>
-        @if(auth()->user()->canManageInvoices() && $inv->invoice_status !== 'Paid' && $inv->invoice_status !== 'Cancelled')
+        @if(auth()->user()->canManageInvoices() && $inv->invoice_status !== 'Paid' && $inv->invoice_status !== 'Cancelled' && $inv->childInvoices->count() === 0)
         <form action="/invoices/{{ $inv->id }}/payment" method="POST" class="row g-2">
             @csrf
             <div class="col-md-3">
@@ -135,11 +152,13 @@
 </div>
 <div class="mt-4 d-flex gap-2">
     @if(auth()->user()->canManageInvoices())
-    @if($inv->invoice_status !== 'Paid' && $inv->invoice_status !== 'Cancelled')
+    @if($inv->invoice_status !== 'Paid' && $inv->invoice_status !== 'Cancelled' && $inv->childInvoices->count() === 0)
         <form action="/invoices/{{ $inv->id }}/mark-paid" method="POST">
             @csrf
             <button type="submit" class="btn btn-success">Tandai Lunas</button>
         </form>
+    @endif
+    @if($inv->invoice_status !== 'Paid' && $inv->invoice_status !== 'Cancelled')
         <form action="/invoices/{{ $inv->id }}/mark-cancelled" method="POST">
             @csrf
             <button type="submit" class="btn btn-danger">Batalkan</button>

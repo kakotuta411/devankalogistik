@@ -18,8 +18,8 @@
         </form>
         @endif
         @endif
-        <a href="/print/shipments/{{ $s->id }}/resi" target="_blank" class="btn btn-outline-primary btn-sm"><i class="bi bi-printer"></i> Print Resi</a>
-        <a href="/print/shipments/{{ $s->id }}/label" target="_blank" class="btn btn-outline-success btn-sm"><i class="bi bi-printer"></i> Print Label</a>
+        <a href="/print/shipments/{{ $s->id }}/resi?v={{ time() }}" target="_blank" class="btn btn-outline-primary btn-sm"><i class="bi bi-printer"></i> Print Resi</a>
+        <a href="/print/shipments/{{ $s->id }}/label?v={{ time() }}" target="_blank" class="btn btn-outline-success btn-sm"><i class="bi bi-printer"></i> Print Label</a>
     </div>
 </div>
 

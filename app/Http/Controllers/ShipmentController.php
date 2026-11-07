@@ -88,6 +88,21 @@ class ShipmentController extends Controller
 
         $shipment = Shipment::create($data);
 
+        // Auto-create or link Purchase Order if po_number provided
+        if (!empty($data['po_number']) && !empty($data['customer_id'])) {
+            $po = \App\Models\PurchaseOrder::firstOrCreate(
+                ['po_number' => $data['po_number']],
+                [
+                    'customer_id' => $data['customer_id'],
+                    'total_amount' => 0,
+                    'paid_amount' => 0,
+                    'status' => 'draft',
+                ]
+            );
+            // PO total will be set when invoice is created (no placeholder calc here)
+            // Keep total_amount = 0 until invoice calculation is done
+        }
+
         // Create tracking event
         TrackingEvent::create([
             'shipment_id' => $shipment->id,
@@ -128,26 +143,6 @@ class ShipmentController extends Controller
         AuditService::log('Delete Shipment', 'DELETE', $shipment);
         $shipment->delete();
         return redirect()->route('shipments.index')->with('success', 'Resi dihapus');
-    }
-
-    public function adjustKoli(Request $request, $id)
-    {
-        $shipment = Shipment::withoutGlobalScopes()->findOrFail($id);
-        if ($shipment->shipment_status !== 'Created') {
-            return back()->withErrors(['status' => 'Hanya bisa adjust koli sebelum keberangkatan']);
-        }
-        $shipment->update(['total_koli' => $request->total_koli]);
-        AuditService::log('Adjust Koli', 'ADJUST_KOLI', $shipment);
-        return back()->with('success', 'Jumlah koli diperbarui');
-    }
-
-    public function uploadPod(Request $request, $id)
-    {
-        $shipment = Shipment::withoutGlobalScopes()->findOrFail($id);
-        $path = $request->file('pod_image')->store('pods', 's3');
-        $shipment->update(['pod_url' => $path]);
-        AuditService::log('Upload POD', 'UPLOAD_POD', $shipment);
-        return back()->with('success', 'POD berhasil diupload');
     }
 
     public function hold($id)

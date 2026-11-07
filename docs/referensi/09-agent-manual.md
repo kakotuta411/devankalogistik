@@ -64,3 +64,7 @@ docker compose restart app nginx
 - Checkpoint: docs/referensi/07-checkpoint.md
 - API: docs/referensi/04-api-endpoints.md
 - DB: docs/referensi/03-database.md
+- RBAC: docs/referensi/11-rbac-breakdown.md
+- Tracking API: docs/referensi/12-tracking-api.md
+- Tracking Page: docs/referensi/13-tracking-page.html
+- Deploy CI/CD: docs/referensi/14-deploy-github-cicd.md

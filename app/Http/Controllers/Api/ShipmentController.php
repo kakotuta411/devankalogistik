@@ -43,18 +43,4 @@ class ShipmentController extends Controller
         return response()->json($shipment);
     }
 
-    public function adjustKoli(Request $request, $id)
-    {
-        $shipment = Shipment::withoutGlobalScopes()->findOrFail($id);
-        $shipment->update(['total_koli' => $request->total_koli]);
-        return response()->json(['message' => 'OK']);
-    }
-
-    public function uploadPod(Request $request, $id)
-    {
-        $shipment = Shipment::withoutGlobalScopes()->findOrFail($id);
-        $path = $request->file('pod_image')->store('pods', 's3');
-        $shipment->update(['pod_url' => $path]);
-        return response()->json(['url' => $path]);
-    }
 }

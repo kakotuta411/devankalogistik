@@ -6,6 +6,7 @@ use App\Http\Controllers\BranchController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ManifestController;
 use App\Http\Controllers\PrintController;
+use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\PrintSettingController;
 use App\Http\Controllers\RegionController;
 use App\Http\Controllers\ShipmentController;
@@ -25,8 +26,6 @@ Route::middleware(['auth', 'readonly'])->group(function () {
     Route::resource('shipments', ShipmentController::class);
     Route::get('/shipments/export/csv', [ShipmentController::class, 'exportCsv'])->name('shipments.export.csv');
     Route::get('/shipments/export/pdf', [ShipmentController::class, 'exportPdf'])->name('shipments.export.pdf');
-    Route::post('/shipments/{id}/adjust-koli', [ShipmentController::class, 'adjustKoli'])->name('shipments.adjust-koli');
-    Route::post('/shipments/{id}/upload-pod', [ShipmentController::class, 'uploadPod'])->name('shipments.upload-pod');
     Route::post('/shipments/{id}/hold', [ShipmentController::class, 'hold'])->name('shipments.hold');
     Route::post('/shipments/{id}/cancel', [ShipmentController::class, 'cancel'])->name('shipments.cancel');
 
@@ -64,13 +63,13 @@ Route::middleware(['auth', 'readonly'])->group(function () {
     Route::get('/print/shipments/list', [PrintController::class, 'shipmentList'])->name('print.shipment-list');
 
     // Purchase Orders
-    Route::get('/api/purchase-orders', [\App\Http\Controllers\PurchaseOrderController::class, 'search'])->name('api.purchase-orders.search');
-    Route::resource('purchase-orders', \App\Http\Controllers\PurchaseOrderController::class);
+    Route::resource('purchase-orders', PurchaseOrderController::class);
 
     // Customer API
     Route::get('/api/customers/search', [\App\Http\Controllers\CustomerController::class, 'search'])->name('api.customers.search');
     Route::post('/api/customers', [\App\Http\Controllers\CustomerController::class, 'store'])->name('api.customers.store');
     Route::get('/api/customers/{customer}/shipments', [\App\Http\Controllers\CustomerController::class, 'shipmentsByCustomer'])->name('api.customers.shipments');
+    Route::get('/api/check-po', [\App\Http\Controllers\CustomerController::class, 'checkPoNumber'])->name('api.check-po');
 
     // Region API for cascading selects
     Route::get('/api/regions/provinces', [RegionController::class, 'provinces']);

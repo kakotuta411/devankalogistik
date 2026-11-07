@@ -15,7 +15,6 @@ return new class extends Migration
             }
             if (!Schema::hasColumn('invoices', 'po_id')) {
                 $table->uuid('po_id')->nullable()->after('customer_id');
-                $table->foreign('po_id')->references('id')->on('purchase_orders')->nullOnDelete();
             }
             if (!Schema::hasColumn('invoices', 'packaging_cost')) {
                 $table->decimal('packaging_cost', 15, 2)->default(0)->after('shipping_cost');

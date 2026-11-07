@@ -8,10 +8,12 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('invoices', function (Blueprint $table) {
-            $table->uuid('parent_invoice_id')->nullable()->after('po_id');
-            $table->foreign('parent_invoice_id')->references('id')->on('invoices')->nullOnDelete();
-        });
+        if (!Schema::hasColumn('invoices', 'parent_invoice_id')) {
+            Schema::table('invoices', function (Blueprint $table) {
+                $table->uuid('parent_invoice_id')->nullable()->after('po_id');
+                $table->foreign('parent_invoice_id')->references('id')->on('invoices')->nullOnDelete();
+            });
+        }
     }
 
     public function down(): void

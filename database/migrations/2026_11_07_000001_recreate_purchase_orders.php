@@ -19,8 +19,17 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // Re-add po_id to invoices
-        if (!Schema::hasColumn('invoices', 'po_id')) {
+        // Re-add po_id FK to invoices (column may exist from earlier migration without FK)
+        if (Schema::hasColumn('invoices', 'po_id')) {
+            // Try to add FK if not already exists
+            try {
+                Schema::table('invoices', function (Blueprint $table) {
+                    $table->foreign('po_id')->references('id')->on('purchase_orders')->nullOnDelete();
+                });
+            } catch (\Exception $e) {
+                // FK already exists, ignore
+            }
+        } else {
             Schema::table('invoices', function (Blueprint $table) {
                 $table->foreignUuid('po_id')->nullable()->constrained('purchase_orders')->nullOnDelete();
             });

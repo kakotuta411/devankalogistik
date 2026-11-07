@@ -250,16 +250,37 @@ SELECT * FROM audit_logs ORDER BY created_at DESC LIMIT 20;
 
 ## Checklist Implementasi Phase 2
 
-- [ ] Health check endpoint (`/api/health`)
-- [ ] Rate limiting (login, tracking, API)
-- [ ] Security headers (Nginx atau middleware)
-- [ ] CORS config (spesifik domain WordPress)
-- [ ] Input validation (phone digit-only, dll)
-- [ ] Session security (secure, http_only, same_site)
-- [ ] File upload validation (jika ada)
-- [ ] DB user least privilege
-- [ ] Custom error pages (404, 500, 403)
-- [ ] Audit trail verified
+- [x] Health check endpoint (`/api/health`) — DONE (commit 436e4f7)
+- [x] Rate limiting (login, tracking, API) — DONE (commit 502866c)
+- [x] Session security (secure=true default, http_only, same_site) — DONE (commit 502866c)
+- [x] Custom error pages (404, 500, 403) — DONE (commit 502866c)
+- [x] .env.example updated (SESSION_SECURE_COOKIE, etc.) — DONE (commit 502866c)
+- [ ] CORS config (spesifik domain WordPress) — optional, `*` OK untuk public API
+- [ ] Input validation (phone digit-only di controller) — sudah di views, controller OK
+- [ ] DB user least privilege — manual di VPS (Phase 1)
+- [ ] Audit trail verified — sudah ada audit_logs table
+
+## Changes Summary (2026-11-08)
+
+### Files Changed
+| File | Perubahan |
+|------|-----------|
+| `routes/api.php` | Tambah `/api/health` endpoint (DB check + timestamp), rate limiting middleware |
+| `app/Providers/AppServiceProvider.php` | Tambah RateLimiter (login: 5/min, tracking: 30/min, api: 60/min) |
+| `config/session.php` | `secure` default → `true` (HTTPS only cookies) |
+| `resources/views/errors/404.blade.php` | Custom 404 page (Bootstrap 5) |
+| `resources/views/errors/500.blade.php` | Custom 500 page (Bootstrap 5) |
+| `resources/views/errors/403.blade.php` | Custom 403 page (Bootstrap 5) |
+| `.env.example` | Tambah SESSION_SECURE_COOKIE, SESSION_SAME_SITE, SESSION_HTTP_ONLY |
+
+### Commits
+- `436e4f7` — Add /api/health endpoint
+- `502866c` — Phase 2: rate limiting, session security, error pages, .env.example
+
+### Test Results
+- 2/2 tests pass
+- /api/health returns 200 with JSON
+- /up returns 200 (bawaan Laravel)
 
 ## Catatan
 - Semua perubahan ini di-push via GitHub

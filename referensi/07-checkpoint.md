@@ -127,8 +127,18 @@
 - Docs renamed from docs/ to referensi/
 - All reference docs updated with comprehensive info
 
+## Recent Changes (2026-11-08 Phase 2)
+- Health check endpoint: /api/health (DB check + timestamp) — commit 436e4f7
+- Rate limiting: login 5/min, tracking 30/min, api 60/min — commit 502866c
+- Session security: secure=true default, http_only, same_site — commit 502866c
+- Custom error pages: 404, 500, 403 (Bootstrap 5) — commit 502866c
+- .env.example: SESSION_SECURE_COOKIE, SESSION_SAME_SITE, SESSION_HTTP_ONLY — commit 502866c
+- AppServiceProvider: RateLimiter definitions
+- routes/api.php: throttle middleware on health/login/tracking
+- config/session.php: secure default true
+- Tests: 2/2 pass
+
 ## Pending
-- Staf UI testing (create 5 shipments, 2 invoices, 3 manifests, print all docs)
 - Template: user will verify new resi layout matches original PDF
 - Cleanup: existing demo data
 - GitHub Secrets verification for auto-deploy

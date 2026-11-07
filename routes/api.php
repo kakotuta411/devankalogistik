@@ -19,9 +19,9 @@ Route::get('/health', function () {
         'db' => $db,
         'time' => now()->toIso8601String(),
     ]);
-});
+})->middleware('throttle:api');
 
-Route::post('/login', [ApiAuthController::class, 'login']);
+Route::post('/login', [ApiAuthController::class, 'login'])->middleware('throttle:login');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [ApiAuthController::class, 'logout']);
@@ -32,5 +32,5 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 // Public tracking (zero PII)
-Route::get('/tracking/search', [TrackingController::class, 'search']);
-Route::get('/tracking/{resi}', [TrackingController::class, 'show']);
+Route::get('/tracking/search', [TrackingController::class, 'search'])->middleware('throttle:tracking');
+Route::get('/tracking/{resi}', [TrackingController::class, 'show'])->middleware('throttle:tracking');

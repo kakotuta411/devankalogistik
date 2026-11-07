@@ -148,3 +148,6 @@
 - 12-tracking-api.md — Public tracking API + WordPress HTML/JS
 - 13-tracking-page.html — Standalone tracking page
 - 14-deploy-github-cicd.md — CI/CD setup guide
+- 15-vps-security.md — Phase 1: VPS security hardening (firewall, SSH, fail2ban, SSL, tuning)
+- 16-vps-monitoring-backup.md — Phase 1: Monitoring, backup, resource analysis
+- 17-laravel-security.md — Phase 2: Laravel security (health check, rate limit, CORS, session, audit)

@@ -90,6 +90,9 @@ sudo chmod -R 775 storage bootstrap/cache
 - Tracking API: referensi/12-tracking-api.md
 - Tracking Page: referensi/13-tracking-page.html
 - Deploy CI/CD: referensi/14-deploy-github-cicd.md
+- VPS Security: referensi/15-vps-security.md
+- VPS Monitoring & Backup: referensi/16-vps-monitoring-backup.md
+- Laravel Security: referensi/17-laravel-security.md
 - Deploy VPS: referensi/08-production-deploy.md
 - DB Schema ERD: referensi/10-database-schema.md
 

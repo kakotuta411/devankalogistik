@@ -1,8 +1,8 @@
 # Environment Configuration
 
-## .env (Production/Shared Hosting)
+## .env (Production/VPS)
 ```
-APP_NAME=AKL Logistik
+APP_NAME=Devanka Logistik
 APP_ENV=production
 APP_DEBUG=false
 APP_URL=https://devakalogistik.web.id
@@ -10,26 +10,31 @@ APP_URL=https://devakalogistik.web.id
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=logistik_min
-DB_USERNAME=logistik
+DB_DATABASE=devanka_logistik
+DB_USERNAME=devanka
 DB_PASSWORD=***
+DB_TIMEZONE=+07:00
 
 CACHE_STORE=file
 SESSION_DRIVER=file
 QUEUE_CONNECTION=sync
 FILESYSTEM_DISK=public
 
-DB_TIMEZONE=Asia/Jakarta
 APP_TIMEZONE=Asia/Jakarta
 ```
 
 ## .env (Docker Dev)
 ```
+APP_NAME=Devanka Logistik
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost:8080
+
 DB_CONNECTION=mysql
 DB_HOST=mysql
 DB_PORT=3306
-DB_DATABASE=logistik_min
-DB_USERNAME=logistik
+DB_DATABASE=devanka_logistik
+DB_USERNAME=devanka
 DB_PASSWORD=secret
 
 CACHE_STORE=file
@@ -59,3 +64,20 @@ SHIPPING_RATE_EXPRESS=15000
 - Pagination: Bootstrap 5 (AppServiceProvider)
 - Timezone: Asia/Jakarta (config/app.php + config/database.php)
 - Trust proxies: * (for Cloudflare tunnel HTTPS detection)
+- CORS: enabled (Access-Control-Allow-Origin: *) for public tracking API
+
+## VPS (Production)
+- OS: Ubuntu 24.04
+- PHP: 8.3 (FPM)
+- MariaDB: 11
+- Nginx: latest
+- IP: 43.173.50.217
+- Domain: devakalogistik.web.id
+- App path: /var/www/devanka-logistik
+- DB: devanka_logistik / user: devanka
+- Web server user: www-data
+
+## Important Notes
+- storage/framework/{sessions,views,cache/data} must exist (gitignored, create manually on fresh deploy)
+- DB_TIMEZONE=+07:00 (avoid MySQL timezone table issues)
+- No Docker in production (native PHP + Nginx + MariaDB)

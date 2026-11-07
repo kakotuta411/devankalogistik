@@ -5,6 +5,21 @@
 - PHP-FPM 8.3 (port 9000 internal)
 - Nginx (port 8080)
 
+## Production (VPS)
+- OS: Ubuntu 24.04
+- PHP 8.3 + MariaDB 11 + Nginx
+- No Docker, no Redis, no MinIO, no queue worker
+- File cache + file session + local disk storage
+- IP: 43.173.50.217, Domain: devakalogistik.web.id
+- App path: /var/www/devanka-logistik
+- Web server user: www-data
+
+## Development (Docker)
+- MariaDB 11 (port 3306, bind mount ./mysql_data)
+- PHP-FPM 8.3 (port 9000 internal)
+- Nginx (port 8080)
+- Access: http://localhost:8080
+
 ## Production (Shared Hosting)
 - Native PHP 8.3 + MariaDB 11
 - No Docker, no Redis, no MinIO, no queue worker

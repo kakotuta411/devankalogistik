@@ -1,4 +1,4 @@
-# Database Schema — AKL Logistik
+# Database Schema — Devanka Logistik
 
 ## Entity Relationship Diagram (Text)
 
@@ -109,6 +109,11 @@
        │    │ invoice_date   │
        │    │ due_date       │
        │    │ notes          │
+       │    │ po_id (FK→    │
+       │    │   purchase_    │
+       │    │   orders)      │
+       │    │ parent_invoice_│
+       │    │   id (FK→self) │
        │    │ created_at/   │
        │    │ updated_at    │
        │    └──────┬────────┘
@@ -124,6 +129,27 @@
        │    │ notes               │
        │    │ created_at/updated_at│
        │    └─────────────────────┘
+       │
+       │    ┌──────────────┐     ┌──────────────────┐
+       │    │purchase_orders│     │   customers      │
+       │    │──────────────│     │──────────────────│ (already above)
+       │    │ id (PK)      │◄────│ (customer_id FK) │
+       │    │ po_number    │     └──────────────────┘
+       │    │   (UNI)      │
+       │    │ customer_id  │
+       │    │   (FK)       │
+       │    │ total_amount │
+       │    │ paid_amount  │
+       │    │ status       │
+       │    │   (draft/    │
+       │    │   active/    │
+       │    │   paid/      │
+       │    │   partial/   │
+       │    │   cancelled) │
+       │    │ notes        │
+       │    │ created_at/  │
+       │    │ updated_at   │
+       │    └──────────────┘
        │
        │    ┌──────────────┐
        │    │   packages   │
@@ -174,7 +200,7 @@
 |-------|---------------|---------|
 | branches | 2 | Cabang (JKT, BTM) |
 | users | 2 | Admin + Management_View |
-| customers | 3+ | Data pelanggan (perusahaan/individual) |
+| customers | 3+ | Data pelanggan |
 | shipments | 12+ | Data resi pengiriman |
 | tracking_events | 48+ | Timeline tracking per resi |
 | manifests | 4+ | Manifest antar cabang |
@@ -182,6 +208,7 @@
 | invoices | 1+ | Invoice konsolidasi |
 | invoice_items | 3+ | Pivot invoice ↔ shipment |
 | invoice_payments | 0+ | Pembayaran parsial invoice |
+| purchase_orders | 0+ | PO tracking (auto-create from shipment) |
 | regions | 88,296 | Data wilayah Indonesia (provinsi → desa) |
 | packages | 0+ | Detail koli per resi (optional) |
 | audit_logs | 100+ | Audit trail semua CRUD |
@@ -200,21 +227,26 @@
 4. **branches** → invoices (1:N, branch_id)
 5. **customers** → shipments (1:N, customer_id)
 6. **customers** → invoices (1:N, customer_id)
-7. **shipments** → tracking_events (1:N, shipment_id)
-8. **shipments** ↔ manifests (M:N via manifest_items)
-9. **shipments** ↔ invoices (M:N via invoice_items)
-10. **invoices** → invoice_payments (1:N, invoice_id)
-11. **users** → tracking_events (1:N, actor_id)
-12. **users** → audit_logs (1:N, actor_id)
-13. **regions** → self (parent_code, 4 levels: province → regency → district → village)
+7. **customers** → purchase_orders (1:N, customer_id)
+8. **shipments** → tracking_events (1:N, shipment_id)
+9. **shipments** ↔ manifests (M:N via manifest_items)
+10. **shipments** ↔ invoices (M:N via invoice_items)
+11. **invoices** → invoice_payments (1:N, invoice_id)
+12. **invoices** → invoices (self, parent_invoice_id for partial payment split)
+13. **invoices** → purchase_orders (N:1, po_id)
+14. **purchase_orders** → invoices (1:N, via po_id)
+15. **users** → tracking_events (1:N, actor_id)
+16. **users** → audit_logs (1:N, actor_id)
+17. **regions** → self (parent_code, 4 levels: province → regency → district → village)
 
-## Updated (2026-11-07)
-- purchase_orders table RECREATED (migration 2026_11_07_000001)
-  - Columns: id (UUID), po_number (unique), customer_id (FK), total_amount, paid_amount, status (draft/active/paid/partial/cancelled), notes, timestamps
-- invoices.po_id (UUID FK → purchase_orders.id) — re-added, auto-linked from shipment po_number
+## Updated (2026-11-08)
+- purchase_orders table: po_number (unique), customer_id (FK), total_amount, paid_amount, status (draft/active/paid/partial/cancelled), notes
+- invoices.po_id (UUID FK → purchase_orders.id) — auto-linked from shipment po_number
 - invoices.parent_invoice_id (UUID FK → invoices.id, nullable) — for partial payment split chain
 - shipments.po_number (string) — links shipment to PO by number
 - PO auto-created when shipment created with po_number + customer_id
 - PO total set from invoice total when invoice created (only if still 0)
-MD
-echo "done"
+- PO status sync: draft → active → paid/partial
+- Partial payment: parent status = Paid, child invoice for remainder, parent locked
+- PO paid_amount = sum amount_paid all invoices
+- Invoice list total: amount_paid if has child, else total_amount

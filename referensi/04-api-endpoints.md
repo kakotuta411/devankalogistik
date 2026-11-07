@@ -86,8 +86,14 @@
 ### Public Tracking (no auth, CORS enabled)
 | Method | Path | Description |
 |--------|------|-------------|
-| GET | /api/tracking/search?resi= | Search by resi (min 3 chars) |
+| GET | /api/tracking/search?resi= | Search by resi (min 3 chars, returns list) |
 | GET | /api/tracking/{resi} | Tracking detail (limited PII) |
+
+Response fields (tracking detail):
+- resi_no, entry_date (d/m/Y H:i), sender_name, receiver_name
+- shipment_status, tracking_events[] (event_type, location, notes, event_time)
+- receiver_name (if delivered), delivered_at (if completed)
+- sender_address, receiver_address (limited)
 
 ### Admin Only
 | Method | Path | Name | Description |

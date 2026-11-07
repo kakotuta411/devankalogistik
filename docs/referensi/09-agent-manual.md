@@ -10,7 +10,7 @@ cd /home/ambon/akl-logistik-hosting
 docker compose up -d
 docker exec lt-hosting-app php artisan migrate --force
 docker exec lt-hosting-app php artisan db:seed --force
-# Access: http://localhost:8080
+# Access: http://43.173.50.217
 # Login: admin@logistik.test / password
 ```
 

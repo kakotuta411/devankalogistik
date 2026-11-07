@@ -5,7 +5,7 @@
 APP_NAME=AKL Logistik
 APP_ENV=production
 APP_DEBUG=false
-APP_URL=https://your-domain.com
+APP_URL=https://devakalogistik.web.id
 
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1

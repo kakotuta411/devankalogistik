@@ -4,7 +4,7 @@
 ```
 GET /api/tracking/{resi_no}
 ```
-Base URL: `https://your-domain.com/api/tracking/{resi_no}`
+Base URL: `https://devakalogistik.web.id/api/tracking/{resi_no}`
 
 ## Response (200 OK)
 ```json
@@ -89,7 +89,7 @@ CORS diaktifkan (`Access-Control-Allow-Origin: *`). Bisa dipanggil dari domain W
 <div id="tracking-error" style="display:none; color:red;"></div>
 
 <script>
-const API_BASE = 'https://your-domain.com/api/tracking';
+const API_BASE = 'https://devakalogistik.web.id/api/tracking';
 
 async function trackResi() {
     const resi = document.getElementById('resi-input').value.trim();
@@ -142,7 +142,7 @@ async function trackResi() {
 ```
 
 ## Catatan
-- Ganti `https://your-domain.com` dengan domain hosting Laravel lo
+- Ganti `https://devakalogistik.web.id` dengan domain hosting Laravel lo
 - CORS sudah diaktifkan, bisa dipanggil dari domain WordPress manapun
 - Endpoint public (tanpa auth), zero PII (hanya info tracking yang dibatasi)
 - Tracking events diurutkan ascending (terlama ke terbaru)

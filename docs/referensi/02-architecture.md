@@ -11,7 +11,7 @@
 - File cache + file session + local disk storage
 
 ## Cloudflare Tunnels (3 active)
-- akl-logistik-hosting → localhost:8080
+- akl-logistik-hosting → 43.173.50.217 (devakalogistik.web.id)
 - Matupa Coffee → localhost:80
 - PromotorOps → localhost:8081
 

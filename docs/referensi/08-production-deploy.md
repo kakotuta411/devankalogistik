@@ -44,7 +44,7 @@ Edit `.env`:
 APP_NAME="AKL Logistik"
 APP_ENV=production
 APP_DEBUG=false
-APP_URL=https://your-domain.com
+APP_URL=https://devakalogistik.web.id
 
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
@@ -87,7 +87,7 @@ chown -R www-data:www-data storage bootstrap/cache
 ```nginx
 server {
     listen 80;
-    server_name your-domain.com;
+    server_name devakalogistik.web.id;
     root /var/www/akl-logistik/public;
     index index.php;
 
@@ -110,7 +110,7 @@ Enable: `ln -s /etc/nginx/sites-available/akl /etc/nginx/sites-enabled/ && nginx
 
 ## Step 8: SSL (Let's Encrypt)
 ```bash
-certbot --nginx -d your-domain.com
+certbot --nginx -d devakalogistik.web.id
 ```
 
 ## Step 9: Cron (Region Sync Daily)
@@ -123,7 +123,7 @@ crontab -e
 ## Step 10: Verify
 ```bash
 php artisan about
-curl -s https://your-domain.com/login | grep -o "AKL"
+curl -s https://devakalogistik.web.id/login | grep -o "AKL"
 ```
 
 ## Default Login
@@ -142,4 +142,4 @@ docker compose up -d
 docker exec lt-hosting-app php artisan migrate --force
 docker exec lt-hosting-app php artisan db:seed --force
 ```
-Access: http://localhost:8080
+Access: http://43.173.50.217

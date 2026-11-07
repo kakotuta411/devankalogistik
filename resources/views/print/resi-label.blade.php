@@ -191,7 +191,7 @@
             </table>
 
             <div class="footer">
-                {{ $printSettings['footer_text'] ?? 'AKL LOGISTIK - Simpan resi ini sebagai bukti pengiriman' }}
+                {{ $printSettings['footer_text'] ?? 'DEVANKA LOGISTIK INDONESIA - Simpan resi ini sebagai bukti pengiriman' }}
             </div>
             <div class="tagline">PARTNER LOGISTIK PROFESIONAL UNTUK BISNIS ANDA</div>
         </div>

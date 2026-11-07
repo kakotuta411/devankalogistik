@@ -62,7 +62,7 @@ class DummyDataSeeder extends Seeder
             $destBranch = $dest === 'JKT' ? $jkt : $btm;
 
             $shipment = Shipment::withoutGlobalScopes()->create([
-                'resi_no' => 'AKL-20261104-' . str_pad($shipmentNo, 5, '0', STR_PAD_LEFT),
+                'resi_no' => 'DLI-20261104-' . str_pad($shipmentNo, 5, '0', STR_PAD_LEFT),
                 'origin_branch_id' => $originBranch->id,
                 'destination_branch_id' => $destBranch->id,
                 'sender_name' => 'Pengirim ' . $shipmentNo,

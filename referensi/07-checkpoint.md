@@ -129,6 +129,7 @@
 
 ## Recent Changes (2026-11-08 Phase 2)
 - Health check endpoint: /api/health (DB check + timestamp) — commit 436e4f7
+- Audit Log view (admin-only): controller, route, view, navbar menu — commit 7202411
 - Rate limiting: login 5/min, tracking 30/min, api 60/min — commit 502866c
 - Session security: secure=true default, http_only, same_site — commit 502866c
 - Custom error pages: 404, 500, 403 (Bootstrap 5) — commit 502866c

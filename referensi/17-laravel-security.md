@@ -258,7 +258,7 @@ SELECT * FROM audit_logs ORDER BY created_at DESC LIMIT 20;
 - [ ] CORS config (spesifik domain WordPress) — optional, `*` OK untuk public API
 - [x] Input validation (phone digit-only di controller) — DONE (commit 2444f98)
 - [ ] DB user least privilege — manual di VPS (Phase 1)
-- [ ] Audit trail verified — sudah ada audit_logs table
+- [x] Audit trail: sudah ada audit_logs table + view (admin-only) — commit 7202411
 
 ## Changes Summary (2026-11-08)
 
@@ -279,12 +279,17 @@ SELECT * FROM audit_logs ORDER BY created_at DESC LIMIT 20;
 | `app/Http/Requests/UpdateUserRequest.php` | Phone validation: `string|max:20` → `digits_between:8,20` |
 | `app/Http/Controllers/CustomerController.php` | Phone validation: `string|max:20` → `digits_between:8,20` |
 | `app/Http/Controllers/Api/ShipmentController.php` | Phone validation: `string` → `digits_between:8,20` |
+| `app/Http/Controllers/AuditLogController.php` | New: index method, filters, pagination |
+| `resources/views/audit-logs/index.blade.php` | New: admin-only audit log view |
+| `resources/views/layouts/app.blade.php` | Add "Audit Log" menu (admin only) |
+| `routes/web.php` | Add `/audit-logs` route (admin role) |
 | `.env.example` | Tambah SESSION_SECURE_COOKIE, SESSION_SAME_SITE, SESSION_HTTP_ONLY |
 
 ### Commits
 - `436e4f7` — Add /api/health endpoint
 - `502866c` — Phase 2: rate limiting, session security, error pages, .env.example
 - `2444f98` — Input validation: phone digit-only (digits_between:8,20)
+- `7202411` — Add Audit Log view (admin-only)
 
 ### Test Results
 - 2/2 tests pass

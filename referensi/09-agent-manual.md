@@ -23,7 +23,7 @@ composer install --no-dev --optimize-autoloader
 php artisan migrate --force
 php artisan config:clear && php artisan cache:clear
 sudo systemctl restart php8.3-fpm
-# Access: http://devakalogistik.web.id (43.173.50.217)
+# Access: http://devankalogistik.web.id (43.173.50.217)
 ```
 
 ## Key Files
@@ -102,7 +102,7 @@ sudo chmod -R 775 storage bootstrap/cache
 - CD: .github/workflows/deploy.yml — SSH deploy on push to master
 - Secrets: DEPLOY_HOST, DEPLOY_USER, DEPLOY_SSH_KEY, DEPLOY_PORT, DEPLOY_PATH
 - VPS IP: 43.173.50.217
-- Domain: devakalogistik.web.id
+- Domain: devankalogistik.web.id
 
 ## Deploy History (VPS)
 - Initial deploy: clone, composer install, migrate, seed

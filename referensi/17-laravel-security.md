@@ -30,7 +30,7 @@ Route::get('/health', function () {
 
 ### Verifikasi
 ```bash
-curl https://devakalogistik.web.id/api/health
+curl https://devankalogistik.web.id/api/health
 # {"status":"ok","db":"connected","time":"2026-11-08T10:00:00+07:00"}
 ```
 

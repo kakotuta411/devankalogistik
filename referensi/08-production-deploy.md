@@ -6,7 +6,7 @@
 - MariaDB: 11
 - Nginx: latest
 - IP: 43.173.50.217
-- Domain: devakalogistik.web.id
+- Domain: devankalogistik.web.id
 - App path: /var/www/devanka-logistik
 - Web server user: www-data
 
@@ -39,7 +39,7 @@ Edit `.env`:
 APP_NAME="Devanka Logistik"
 APP_ENV=production
 APP_DEBUG=false
-APP_URL=https://devakalogistik.web.id
+APP_URL=https://devankalogistik.web.id
 
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
@@ -86,7 +86,7 @@ php artisan storage:link
 ```nginx
 server {
     listen 80;
-    server_name devakalogistik.web.id 43.173.50.217;
+    server_name devankalogistik.web.id 43.173.50.217;
     root /var/www/devanka-logistik/public;
     index index.php;
 
@@ -114,7 +114,7 @@ sudo nginx -t && sudo systemctl reload nginx
 
 ## Step 8: SSL (Let's Encrypt) — Optional
 ```bash
-sudo certbot --nginx -d devakalogistik.web.id
+sudo certbot --nginx -d devankalogistik.web.id
 ```
 
 ## Step 9: Cron (Region Sync Daily)

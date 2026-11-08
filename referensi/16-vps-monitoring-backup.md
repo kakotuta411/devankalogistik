@@ -29,7 +29,7 @@ Route::get('/health', function () {
 
 ### Akses
 ```
-https://devakalogistik.web.id/api/health
+https://devankalogistik.web.id/api/health
 ```
 Response:
 ```json
@@ -45,14 +45,14 @@ Response:
 ### UptimeRobot (Gratis)
 1. Daftar di https://uptimerobot.com
 2. Add Monitor → HTTP(s)
-3. URL: `https://devakalogistik.web.id/api/health`
+3. URL: `https://devankalogistik.web.id/api/health`
 4. Interval: 5 minutes
 5. Alert: Email / Slack / Telegram
 
 ### BetterStack (Gratis tier)
 1. Daftar di https://betterstack.com
 2. Create Monitor → HTTP
-3. URL: `https://devakalogistik.web.id/api/health`
+3. URL: `https://devankalogistik.web.id/api/health`
 4. Alert: Email / Slack / SMS
 
 **Rekomendasi**: Pakai UptimeRobot (gratis, simple) untuk mulai.
@@ -174,7 +174,7 @@ sudo nano /var/www/devanka-logistik/monitor.sh
 Isi:
 ```bash
 #!/bin/bash
-URL="https://devakalogistik.web.id/api/health"
+URL="https://devankalogistik.web.id/api/health"
 RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 $URL)
 if [ "$RESPONSE" != "200" ]; then
     echo "ALERT: Site down (HTTP $RESPONSE) at $(date)" | mail -s "Devanka Alert" admin@email.com

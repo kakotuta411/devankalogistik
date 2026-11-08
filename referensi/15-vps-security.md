@@ -118,7 +118,7 @@ sudo fail2ban-client status sshd
 
 ```bash
 sudo apt install certbot python3-certbot-nginx -y
-sudo certbot --nginx -d devakalogistik.web.id
+sudo certbot --nginx -d devankalogistik.web.id
 ```
 
 Certbot akan otomatis:
@@ -170,7 +170,7 @@ sudo nginx -t && sudo systemctl reload nginx
 
 ### Verifikasi
 ```bash
-curl -I https://devakalogistik.web.id
+curl -I https://devankalogistik.web.id
 # Harus menampilkan security headers
 ```
 

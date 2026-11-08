@@ -53,5 +53,5 @@
 ## Deploy History
 - Initial deploy: clone, composer install, migrate, seed
 - Issues: FK drop, duplicate region, branch not found, timezone, permissions, missing dirs, CI test 302
-- All resolved — site live at devakalogistik.web.id
+- All resolved — site live at devankalogistik.web.id
 - Auto-deploy via GitHub Actions active

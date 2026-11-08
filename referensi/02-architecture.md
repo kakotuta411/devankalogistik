@@ -10,7 +10,7 @@
 - PHP 8.3 + MariaDB 11 + Nginx
 - No Docker, no Redis, no MinIO, no queue worker
 - File cache + file session + local disk storage
-- IP: 43.173.50.217, Domain: devakalogistik.web.id
+- IP: 43.173.50.217, Domain: devankalogistik.web.id
 - App path: /var/www/devanka-logistik
 - Web server user: www-data
 
@@ -26,7 +26,7 @@
 - File cache + file session + local disk storage
 
 ## Cloudflare Tunnels (3 active)
-- akl-logistik-hosting → 43.173.50.217 (devakalogistik.web.id)
+- akl-logistik-hosting → 43.173.50.217 (devankalogistik.web.id)
 - Matupa Coffee → localhost:80
 - PromotorOps → localhost:8081
 

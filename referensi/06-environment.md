@@ -5,7 +5,7 @@
 APP_NAME=Devanka Logistik
 APP_ENV=production
 APP_DEBUG=false
-APP_URL=https://devakalogistik.web.id
+APP_URL=https://devankalogistik.web.id
 
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
@@ -72,7 +72,7 @@ SHIPPING_RATE_EXPRESS=15000
 - MariaDB: 11
 - Nginx: latest
 - IP: 43.173.50.217
-- Domain: devakalogistik.web.id
+- Domain: devankalogistik.web.id
 - App path: /var/www/devanka-logistik
 - DB: devanka_logistik / user: devanka
 - Web server user: www-data

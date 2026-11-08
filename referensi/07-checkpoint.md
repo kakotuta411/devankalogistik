@@ -5,7 +5,7 @@
 ## Project Info
 - **Name**: devanka-logistik
 - **Repo**: github.com/kakotuta411/devankalogistik (private)
-- **VPS**: 43.173.50.217 / devakalogistik.web.id
+- **VPS**: 43.173.50.217 / devankalogistik.web.id
 - **Framework**: Laravel 13 (PHP 8.3), MariaDB 11, Bootstrap 5.3.3
 - **Local Dev**: Docker (port 8080)
 - **Production**: Native PHP-FPM + Nginx + MariaDB (no Docker)
@@ -98,7 +98,7 @@
 
 ### Setup
 - VPS: Ubuntu 24.04, PHP 8.3, MariaDB 11, Nginx
-- IP: 43.173.50.217, Domain: devakalogistik.web.id
+- IP: 43.173.50.217, Domain: devankalogistik.web.id
 - GitHub: kakotuta411/devankalogistik (private)
 - CI/CD: GitHub Actions (ci.yml + deploy.yml)
 
@@ -115,14 +115,14 @@
 10. **Connection timed out** → Firewall/Cloudflare → Ensure Nginx listening on port 80
 
 ### Final Status
-- Site accessible via IP (43.173.50.217) and hostname (devakalogistik.web.id)
+- Site accessible via IP (43.173.50.217) and hostname (devankalogistik.web.id)
 - Login working: admin@logistik.test / password
 - All migrations applied, regions seeded
 - Auto-deploy via GitHub Actions active
 
 ## Recent Changes (2026-11-08)
 - CI fix: example test GET /login (not /) due to auth redirect
-- VPS deploy: devakalogistik.web.id, IP 43.173.50.217
+- VPS deploy: devankalogistik.web.id, IP 43.173.50.217
 - DB_TIMEZONE=+07:00 (avoid timezone table issue)
 - Docs renamed from docs/ to referensi/
 - All reference docs updated with comprehensive info

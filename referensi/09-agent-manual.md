@@ -93,6 +93,7 @@ sudo chmod -R 775 storage bootstrap/cache
 - VPS Security: referensi/15-vps-security.md
 - VPS Monitoring & Backup: referensi/16-vps-monitoring-backup.md
 - Laravel Security: referensi/17-laravel-security.md
+- Phase 1 Implementation: referensi/18-phase1-implementation.md
 - Deploy VPS: referensi/08-production-deploy.md
 - DB Schema ERD: referensi/10-database-schema.md
 

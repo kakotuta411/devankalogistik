@@ -169,3 +169,4 @@
 - 15-vps-security.md — Phase 1: VPS security hardening (firewall, SSH, fail2ban, SSL, tuning)
 - 16-vps-monitoring-backup.md — Phase 1: Monitoring, backup, resource analysis
 - 17-laravel-security.md — Phase 2: Laravel security (health check, rate limit, CORS, session, audit)
+- 18-phase1-implementation.md — Phase 1 VPS implementation tracker (SSH skipped)

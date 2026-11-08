@@ -256,7 +256,7 @@ SELECT * FROM audit_logs ORDER BY created_at DESC LIMIT 20;
 - [x] Custom error pages (404, 500, 403) — DONE (commit 502866c)
 - [x] .env.example updated (SESSION_SECURE_COOKIE, etc.) — DONE (commit 502866c)
 - [ ] CORS config (spesifik domain WordPress) — optional, `*` OK untuk public API
-- [ ] Input validation (phone digit-only di controller) — sudah di views, controller OK
+- [x] Input validation (phone digit-only di controller) — DONE (commit 2444f98)
 - [ ] DB user least privilege — manual di VPS (Phase 1)
 - [ ] Audit trail verified — sudah ada audit_logs table
 
@@ -271,11 +271,20 @@ SELECT * FROM audit_logs ORDER BY created_at DESC LIMIT 20;
 | `resources/views/errors/404.blade.php` | Custom 404 page (Bootstrap 5) |
 | `resources/views/errors/500.blade.php` | Custom 500 page (Bootstrap 5) |
 | `resources/views/errors/403.blade.php` | Custom 403 page (Bootstrap 5) |
+| `app/Http/Requests/StoreShipmentRequest.php` | Phone validation: `string|max:20` → `digits_between:8,20` |
+| `app/Http/Requests/UpdateShipmentRequest.php` | Phone validation: `string|max:20` → `digits_between:8,20` |
+| `app/Http/Requests/StoreInvoiceRequest.php` | Phone validation: `string|max:20` → `digits_between:8,20` |
+| `app/Http/Requests/UpdateInvoiceRequest.php` | Phone validation: `string|max:20` → `digits_between:8,20` |
+| `app/Http/Requests/StoreUserRequest.php` | Phone validation: `string|max:20` → `digits_between:8,20` |
+| `app/Http/Requests/UpdateUserRequest.php` | Phone validation: `string|max:20` → `digits_between:8,20` |
+| `app/Http/Controllers/CustomerController.php` | Phone validation: `string|max:20` → `digits_between:8,20` |
+| `app/Http/Controllers/Api/ShipmentController.php` | Phone validation: `string` → `digits_between:8,20` |
 | `.env.example` | Tambah SESSION_SECURE_COOKIE, SESSION_SAME_SITE, SESSION_HTTP_ONLY |
 
 ### Commits
 - `436e4f7` — Add /api/health endpoint
 - `502866c` — Phase 2: rate limiting, session security, error pages, .env.example
+- `2444f98` — Input validation: phone digit-only (digits_between:8,20)
 
 ### Test Results
 - 2/2 tests pass

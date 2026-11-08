@@ -16,6 +16,7 @@
 | Manifests | /manifests | RW | R | RW | RW |
 | Invoices | /invoices | RW | R | RW | R |
 | Purchase Orders | /purchase-orders | RW | R | RW | — (hidden) |
+| Audit Log | /audit-logs | RW | R | — (hidden) | — (hidden) |
 
 *R = Read only, RW = Read/Write, — = tidak terlihat
 
@@ -25,6 +26,7 @@
 | Branches | /branches | Admin only |
 | Users | /users | Admin only |
 | Template Management | /admin/template-management | Admin only |
+| Audit Log | /audit-logs | Admin + Management_View (read-only) |
 
 ## Permission Methods (User Model)
 | Method | Admin | Management_View | Staff_Invoice | Staff_Shipment |
@@ -35,6 +37,7 @@
 | canManageInvoices() | ✓ | ✗ | ✓ | ✗ |
 | canManageCustomers() | ✓ | ✗ | ✓ | ✗ |
 | canManagePurchaseOrders() | ✓ | ✗ | ✓ | ✗ |
+| canViewAuditLog() | ✓ | ✓ | ✗ | ✗ |
 | isSuperAdmin() | ✓ | ✗ | ✗ | ✗ |
 
 ## Detail Akses per Role
@@ -46,10 +49,10 @@
 - Tidak terkena BranchScope (lihat semua branch)
 
 ### Direktur/Management (Management_View)
-- Menu visible: Dashboard, Shipments, Manifests, Invoices, Purchase Orders
+- Menu visible: Dashboard, Shipments, Manifests, Invoices, Purchase Orders, Audit Log
 - Read only (canWrite = false) — tombol create/edit/delete/submit hidden
 - Tidak terkena BranchScope (lihat semua branch)
-- Tidak bisa akses hidden menus
+- Tidak bisa akses hidden menus (Branches, Users, Template Management)
 
 ### Staff Invoice (Staff_Invoice)
 - Menu visible: Dashboard, Shipments, Manifests, Invoices, Purchase Orders

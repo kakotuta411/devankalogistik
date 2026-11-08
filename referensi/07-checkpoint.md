@@ -127,6 +127,13 @@
 - Docs renamed from docs/ to referensi/
 - All reference docs updated with comprehensive info
 
+## Recent Changes (2026-11-08 RBAC Update)
+- RBAC updated: Audit Log viewable by Admin + Management_View (read-only)
+- User model: canViewAuditLog() method added
+- Route: /audit-logs moved to role:Admin,Management_View group
+- Navbar: Audit Log menu visible for Admin + Management_View
+- Updated 11-rbac-breakdown.md with new permissions
+
 ## Recent Changes (2026-11-08 Phase 2)
 - Health check endpoint: /api/health (DB check + timestamp) — commit 436e4f7
 - Audit Log view (admin-only): controller, route, view, navbar menu — commit 7202411

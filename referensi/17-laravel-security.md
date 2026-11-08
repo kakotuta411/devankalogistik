@@ -116,7 +116,7 @@ public function handle(Request $request, Closure $next): Response
 ```php
 'paths' => ['api/*'],
 'allowed_methods' => ['*'],
-'allowed_origins' => ['*'],  // Atau spesifik: ['https://wordpress-site.com']
+'allowed_origins' => ['https://devankalogistik.com', 'https://www.devankalogistik.com'],  // Restricted dari '*' (2026-11-08)
 'allowed_origins_patterns' => [],
 'allowed_headers' => ['*'],
 'exposed_headers' => [],

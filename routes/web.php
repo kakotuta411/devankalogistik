@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\BranchController;
@@ -45,6 +46,7 @@ Route::middleware(['auth', 'readonly'])->group(function () {
         Route::get('/admin/template-management', [PrintSettingController::class, 'index'])->name('template-management');
         Route::post('/admin/template-management', [PrintSettingController::class, 'store'])->name('template-management.store');
     Route::post('/admin/template-management/upload', [PrintSettingController::class, 'uploadTemplate'])->name('template-management.upload');
+        Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
     });
 
     Route::resource('invoices', InvoiceController::class);

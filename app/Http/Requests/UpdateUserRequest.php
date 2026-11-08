@@ -11,7 +11,7 @@ class UpdateUserRequest extends FormRequest
             'email' => 'required|email',
             'password' => 'nullable|string|min:8',
             'role' => 'required|in:Admin,Management_View,Staff_Invoice,Staff_Shipment',
-            'phone_number' => 'nullable|string|max:20',
+            'phone_number' => 'nullable|digits_between:8,20',
             'branch_id' => 'nullable|uuid|exists:branches,id',
         ];
     }

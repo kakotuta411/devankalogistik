@@ -21,10 +21,10 @@ class ShipmentController extends Controller
         $data = $request->validate([
             'destination_branch_id' => 'required|exists:branches,id',
             'sender_name' => 'nullable|string',
-            'sender_phone' => 'nullable|string',
+            'sender_phone' => 'nullable|digits_between:8,20',
             'sender_address' => 'nullable|string',
             'receiver_name' => 'nullable|string',
-            'receiver_phone' => 'nullable|string',
+            'receiver_phone' => 'nullable|digits_between:8,20',
             'receiver_address' => 'nullable|string',
             'total_koli' => 'nullable|integer',
             'total_weight' => 'nullable|numeric',

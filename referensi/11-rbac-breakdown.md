@@ -20,13 +20,22 @@
 
 *R = Read only, RW = Read/Write, — = tidak terlihat
 
+## Menu Navbar (visible)
+| Menu | URL | Visible to |
+|------|-----|------------|
+| Dashboard | /dashboard | Semua role |
+| Shipments | /shipments | Semua role |
+| Manifests | /manifests | Semua role |
+| Invoices | /invoices | Semua role |
+| Purchase Orders | /purchase-orders | Admin, Management_View, Staff_Invoice |
+| Branches | /branches | Admin only |
+| Users | /users | Admin only |
+| Audit Log | /audit-logs | Admin, Management_View |
+
 ## Menu Tersembunyi (Admin URL only)
 | Menu | URL | Akses |
 |------|-----|-------|
-| Branches | /branches | Admin only |
-| Users | /users | Admin only |
 | Template Management | /admin/template-management | Admin only |
-| Audit Log | /audit-logs | Admin + Management_View (read-only) |
 
 ## Permission Methods (User Model)
 | Method | Admin | Management_View | Staff_Invoice | Staff_Shipment |

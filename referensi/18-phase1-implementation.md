@@ -87,6 +87,10 @@ cd /var/www/devanka-logistik
 chmod 600 .env
 sudo chown -R www-data:www-data storage bootstrap/cache
 sudo chmod -R 775 storage bootstrap/cache
+mkdir -p storage/logs bootstrap/cache
+sudo chown www-data:www-data storage/logs bootstrap/cache
+touch storage/logs/laravel.log
+sudo chown www-data:www-data storage/logs/laravel.log
 ```
 
 ### A5. Disable Unnecessary Services

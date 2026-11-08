@@ -139,6 +139,7 @@
 - Audit Log view (admin-only): controller, route, view, navbar menu — commit 7202411
 - Rate limiting: login 5/min, tracking 30/min, api 60/min — commit 502866c
 - CORS restricted: devankalogistik.com + www.devankalogistik.com (was *)
+- Storage permissions fix (permission denied on deploy): added to Phase 1 checklist
 - Session security: secure=true default, http_only, same_site — commit 502866c
 - Custom error pages: 404, 500, 403 (Bootstrap 5) — commit 502866c
 - .env.example: SESSION_SECURE_COOKIE, SESSION_SAME_SITE, SESSION_HTTP_ONLY — commit 502866c

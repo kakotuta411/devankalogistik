@@ -64,4 +64,9 @@ class User extends Authenticatable
     {
         return in_array($this->role, ['Admin', 'Staff_Invoice'], true);
     }
+
+    public function canViewAuditLog(): bool
+    {
+        return in_array($this->role, ['Admin', 'Management_View'], true);
+    }
 }

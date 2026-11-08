@@ -41,12 +41,15 @@ Route::middleware(['auth', 'readonly'])->group(function () {
         Route::resource('branches', BranchController::class);
     });
 
+    Route::middleware('role:Admin,Management_View')->group(function () {
+        Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
+    });
+
     Route::middleware('role:Admin')->group(function () {
         Route::resource('users', UserController::class);
         Route::get('/admin/template-management', [PrintSettingController::class, 'index'])->name('template-management');
         Route::post('/admin/template-management', [PrintSettingController::class, 'store'])->name('template-management.store');
     Route::post('/admin/template-management/upload', [PrintSettingController::class, 'uploadTemplate'])->name('template-management.upload');
-        Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
     });
 
     Route::resource('invoices', InvoiceController::class);

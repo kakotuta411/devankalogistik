@@ -144,7 +144,7 @@
                                     href="/purchase-orders"><i class="bi bi-receipt me-1"></i>Purchase Orders</a>
                             </li>
                         @endif
-                        @if(auth()->user()->role === 'Admin')
+                        @if(in_array(auth()->user()->role, ['Admin', 'Management_View']))
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->is('audit-logs*') ? 'active' : '' }}"
                                     href="/audit-logs"><i class="bi bi-journal-text me-1"></i>Audit Log</a>

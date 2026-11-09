@@ -43,7 +43,8 @@ class MigrateRegionsV2Command extends Command
         $this->migrateExistingRecords();
 
         $this->info('2. Hapus tabel regions lama...');
-        Region::truncate();
+        // pakai delete() karena user DB production hanya punya privilege DELETE (tanpa DROP)
+        Region::query()->delete();
 
         $this->info('3. Sync region v2 (emsifa)...');
         $service->syncAll(true);

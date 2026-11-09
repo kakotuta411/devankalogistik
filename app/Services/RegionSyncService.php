@@ -6,20 +6,20 @@ use Illuminate\Support\Facades\Http;
 
 class RegionSyncService
 {
-    private const BASE_URL = 'https://www.emsifa.com/api-wilayah-indonesia/api';
+    private const BASE_URL = 'https://www.emsifa.com/api-wilayah-indonesia/v2';
 
-    public function syncAll(): void
+    public function syncAll(bool $force = false): void
     {
-        if (Region::where('level', 'province')->count() < 30) {
+        if ($force || Region::where('level', 'province')->count() < 30) {
             $this->syncProvinces();
         }
-        if (Region::where('level', 'regency')->count() < 500) {
+        if ($force || Region::where('level', 'regency')->count() < 500) {
             $this->syncRegencies();
         }
-        if (Region::where('level', 'district')->count() < 7000) {
+        if ($force || Region::where('level', 'district')->count() < 7000) {
             $this->syncDistricts();
         }
-        $this->syncVillages();
+        $this->syncVillages($force);
     }
 
     private function syncProvinces(): void
@@ -65,12 +65,12 @@ class RegionSyncService
         }
     }
 
-    private function syncVillages(): void
+    private function syncVillages(bool $force = false): void
     {
         $districts = Region::where('level', 'district')->get();
         foreach ($districts as $district) {
-            // Skip if already synced (has villages)
-            if (Region::where('level', 'village')->where('parent_code', $district->code)->exists()) {
+            // Skip if already synced (has villages) unless force
+            if (!$force && Region::where('level', 'village')->where('parent_code', $district->code)->exists()) {
                 continue;
             }
             try {

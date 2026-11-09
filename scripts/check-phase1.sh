@@ -73,9 +73,11 @@ echo ""
 
 # 6. MariaDB Tuning
 echo "6. MariaDB Tuning:"
-BP=$(grep -h "innodb_buffer_pool_size" /etc/mysql/mariadb.conf.d/*.cnf 2>/dev/null | grep -v "^[[:space:]]*#" | grep -v "^[a-z]" | head -1 | awk -F= '{print $2}' | tr -d ' ')
-if [ -n "$BP" ]; then
-    check_item "   MariaDB" "✅ buffer_pool=$BP"
+BP=$(sudo mysql -e "SHOW VARIABLES LIKE 'innodb_buffer_pool_size';" 2>/dev/null | awk 'NR==2{print $2}')
+if [ -n "$BP" ] && [ "$BP" != "innodb_buffer_pool_size" ]; then
+    # Convert bytes to MB
+    BP_MB=$((BP / 1024 / 1024))
+    check_item "   MariaDB" "✅ buffer_pool=${BP_MB}M (${BP} bytes)"
 else
     check_item "   MariaDB" "❌ Not configured"
 fi

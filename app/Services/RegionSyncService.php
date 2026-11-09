@@ -25,7 +25,8 @@ class RegionSyncService
     private function syncProvinces(): void
     {
         $response = Http::get(self::BASE_URL . '/provinces.json');
-        foreach ($response->json() as $item) {
+        $data = $response->json('data', []);
+        foreach ($data as $item) {
             Region::updateOrCreate(
                 ['code' => $item['id']],
                 ['name' => $item['name'], 'level' => 'province', 'parent_code' => null]

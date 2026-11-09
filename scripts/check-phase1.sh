@@ -53,7 +53,7 @@ echo ""
 
 # 4. Disable Services
 echo "4. Unnecessary Services:"
-SVC=$(systemctl list-unit-files --state=enabled 2>/dev/null | grep -cE "acpid|ModemManager|multipathd|udisks2|upower|apport|pollinate" || echo 0)
+SVC=$(systemctl list-unit-files --state=enabled 2>/dev/null | grep -iE "acpid|ModemManager|multipathd|udisks2|upower|apport|pollinate" | wc -l)
 if [ "$SVC" -eq 0 ]; then
     check_item "   Services" "✅ None enabled (clean)"
 else
@@ -73,7 +73,7 @@ echo ""
 
 # 6. MariaDB Tuning
 echo "6. MariaDB Tuning:"
-BP=$(grep -rh "innodb_buffer_pool_size" /etc/mysql/mariadb.conf.d/ 2>/dev/null | grep -v "^[[:space:]]*#" | grep -v "^[a-z]" | head -1 | awk -F= '{print $2}' | tr -d ' ')
+BP=$(grep -h "innodb_buffer_pool_size" /etc/mysql/mariadb.conf.d/*.cnf 2>/dev/null | grep -v "^[[:space:]]*#" | grep -v "^[a-z]" | head -1 | awk -F= '{print $2}' | tr -d ' ')
 if [ -n "$BP" ]; then
     check_item "   MariaDB" "✅ buffer_pool=$BP"
 else

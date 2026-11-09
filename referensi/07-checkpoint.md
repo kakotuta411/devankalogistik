@@ -177,6 +177,10 @@
 - View print: `print/purchase-order-list.blade.php`
 - Controller: `PurchaseOrderController::exportCsv/exportPdf/filteredPos`
 
+## Recent Changes (2026-11-09 Template Breakdown)
+- Dokumen baru `referensi/19-template-breakdown.md`: daftar file template per dokumen + data yang bisa ditarik
+- Menemukan route mati: `/admin/template-management/upload` (method `uploadTemplate` tidak ada)
+
 ## Pending
 - Template: user will verify new resi layout matches original PDF
 - Cleanup: existing demo data
@@ -201,3 +205,4 @@
 - 16-vps-monitoring-backup.md — Phase 1: Monitoring, backup, resource analysis
 - 17-laravel-security.md — Phase 2: Laravel security (health check, rate limit, CORS, session, audit)
 - 18-phase1-implementation.md — Phase 1 VPS implementation tracker (SSH skipped)
+- 19-template-breakdown.md — Template dokumen: file & data per jenis dokumen

@@ -1,8 +1,8 @@
 # Phase 1 Implementation Tracker — VPS Security & Operations
 
-> Status: IN PROGRESS
+> Status: COMPLETE
 > SSH Hardening: SKIPPED (user request)
-> Last Updated: 2026-11-08
+> Last Updated: 2026-11-09
 
 ---
 
@@ -24,6 +24,9 @@
 - [x] PHP-FPM pool tuning (max_children=5) — ✅
 - [x] MariaDB tuning (buffer_pool=128M, slow query log) — ✅
 - [x] Nginx tuning (gzip, keepalive, worker connections) — ✅
+- [x] Redis installed (maxmemory 64MB, allkeys-lru) + PHP Redis ext — ✅
+- [x] OPcache production mode (128M, validate_timestamps=0) — ✅
+- [x] Laravel .env: CACHE/SESSION/QUEUE = redis — ✅
 
 ### C. Backup
 - [x] DB backup cron (setiap 6 jam, retention 3 hari) — ✅ Script + cron
@@ -39,10 +42,51 @@
 
 ### E. Manual (VPS)
 - [x] DB user least privilege (GRANT SELECT/INSERT/UPDATE/DELETE) — ✅
-- [x] Region sync (re-run, villages incomplete) — ✅ 75,412 villages (data source variance)
+- [x] Region sync (emsifa v2, 38 provinces) — ✅
 - [x] CORS restricted to devankalogistik.com — ✅
 - [x] deploy.yml updated (sudo -u www-data) — ✅
 - [x] sudoers setup (ubuntu → www-data NOPASSWD) — ✅
+- [x] php8.3-redis installed (fix 500) — ✅
+- [x] Deploy restart FPM otomatis — ✅
+
+---
+
+## Redis + OPcache Setup (2026-11-09)
+
+### Install Redis
+```bash
+sudo apt install -y redis-server php8.3-redis
+# JANGAN pakai "php-redis" (meta-package) — itu install php8.5-redis, bukan 8.3
+sudo sed -i 's/^bind .*/bind 127.0.0.1/' /etc/redis/redis.conf
+sudo systemctl enable --now redis-server
+redis-cli ping  # PONG
+```
+
+### OPcache Production Mode
+```bash
+sudo tee /etc/php/8.3/mods-available/opcache.ini > /dev/null << 'EOF'
+opcache.enable=1
+opcache.memory_consumption=128
+opcache.interned_strings_buffer=8
+opcache.max_accelerated_files=10000
+opcache.revalidate_freq=60
+opcache.validate_timestamps=0
+opcache.save_comments=1
+opcache.fast_shutdown=1
+EOF
+sudo systemctl restart php8.3-fpm
+```
+Catatan: `validate_timestamps=0` → setelah deploy/perubahan kode, FPM harus di-restart. Sudah otomatis di deploy.yml.
+
+### Laravel .env
+```
+CACHE_DRIVER=redis
+SESSION_DRIVER=redis
+QUEUE_CONNECTION=redis
+REDIS_HOST=127.0.0.1
+REDIS_PASSWORD=null
+REDIS_PORT=6379
+```
 
 ---
 
@@ -332,6 +376,30 @@ php artisan regions:sync
 - SSH Hardening: SKIPPED (user request)
 - SSL: DONE (certbot, devankalogistik.web.id)
 - Health Check: DONE (/api/health)
-- Region sync: INCOMPLETE (10,585/80,532 villages) — re-run needed
+- Region sync: DONE (emsifa v2 — 38 provinsi, 83,762 desa target; data DB saat ini 33/479/6,604/75,412)
 - All commands must be run manually on VPS via SSH/console
 - Update checklist above as items are completed
+
+---
+
+## GitHub Actions Workflows
+
+### Kept (CI/CD + ops reusable)
+| Workflow | Fungsi |
+|---|---|
+| `ci.yml` | Test on push/PR |
+| `deploy.yml` | Auto-deploy ke VPS + restart FPM |
+| `check-phase1.yml` | Verifikasi 17 item Phase 1 |
+| `region-sync-force.yml` | Re-sync region data (emsifa v2) |
+| `restart-fpm.yml` | Restart PHP-FPM manual trigger |
+| `setup-redis-opcache.yml` | Setup Redis + OPcache (idempotent) |
+
+### Deleted (one-off debug/fix — sudah selesai)
+- `diagnose-500.yml` — diagnosis 500 (done)
+- `fix-redis-ext.yml` — install php8.3-redis (done)
+- `diagnostic-app.yml` — diagnostic region/Redis/OPcache/index (done)
+- `debug-mariadb.yml` — debug MariaDB config (done)
+- `fix-phase1.yml` — fix services/MariaDB/region (done)
+- `setup-phase1-remaining.yml` — setup Phase 1 awal (done)
+
+Catatan: script di `scripts/` mengikuti workflow yang dihapus. `check-phase1.sh` & `setup-redis-opcache.sh` dipertahankan.

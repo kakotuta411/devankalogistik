@@ -165,6 +165,12 @@
 - PO controller: koleksi kartu/modal diambil dari semua PO (bukan hanya halaman aktif)
 - Invoice controller: eager load `payments` + `po` untuk kolom tanggal pembayaran & PO
 
+## Recent Changes (2026-11-09 Workflow Cleanup)
+- Workflow one-off dihapus: diagnose-500, fix-redis-ext, diagnostic-app, fix-phase1, setup-phase1-remaining
+- Script turunan dihapus: diagnostic-app.sh, fix-phase1.sh, setup-phase1-remaining.sh
+- Workflow disimpan: ci.yml, deploy.yml, check-phase1.yml, region-sync-force.yml, restart-fpm.yml, setup-redis-opcache.yml
+- referensi/18 diperbarui: status COMPLETE, panduan Redis + OPcache, daftar workflow
+
 ## Pending
 - Template: user will verify new resi layout matches original PDF
 - Cleanup: existing demo data

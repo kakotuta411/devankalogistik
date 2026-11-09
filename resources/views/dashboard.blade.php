@@ -99,44 +99,96 @@
                                                 </div> -->
     </div>
 
-    <div class="card">
-        <div class="card-header"><strong>Recent Shipments</strong></div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th scope="col">{!! sortLink('resi_no', 'Resi') !!}</th>
-                            <th scope="col">{!! sortLink('origin_city', 'Asal') !!}</th>
-                            <th scope="col">{!! sortLink('destination_city', 'Tujuan') !!}</th>
-                            <th scope="col">{!! sortLink('shipment_status', 'Status') !!}</th>
-                            <th scope="col">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($stats['recent_shipments'] as $s)
-                            @php
-                                $statusClasses = ['Created' => 'secondary', 'In Transit' => 'info', 'Arrived at Transit' => 'warning', 'Arrived at Destination' => 'primary', 'Out for Delivery' => 'warning', 'Delivered' => 'success', 'On Hold' => 'warning', 'Cancelled' => 'danger'];
-                            @endphp
-                            <tr>
-                                <td><a href="/shipments/{{ $s->id }}">{{ $s->resi_no }}</a></td>
-                                <td>{{ $s->originBranch?->city ?? '-' }}</td>
-                                <td>{{ $s->destinationBranch?->city ?? '-' }}</td>
-                                <td><span
-                                        class="badge text-bg-{{ $statusClasses[$s->shipment_status] ?? 'secondary' }}">{{ $s->shipment_status }}</span>
-                                </td>
-                                <td><a href="/print/shipments/{{ $s->id }}/label" target="_blank"
-                                        class="text-decoration-none"><i class="bi bi-printer"></i></a></td>
-                            </tr>
-                        @endforeach
-                        @if($stats['recent_shipments']->isEmpty())
-                            <tr>
-                                <td colspan="5" class="text-center text-body-secondary py-3">No shipments in selected date range
-                                </td>
-                            </tr>
-                        @endif
-                    </tbody>
-                </table>
+    <div class="row g-3">
+        <!-- Invoice Pending -->
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-header"><strong>Invoice Pending</strong></div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Customer</th>
+                                    <th style="width:42%">Progress Pembayaran</th>
+                                    <th class="text-end">Sisa Tunggakan</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($stats['pending_invoices'] as $inv)
+                                <tr>
+                                    <td>
+                                        <a href="/invoices/{{ $inv->id }}" class="text-decoration-none fw-medium">{{ $inv->customer_name ?? '-' }}</a>
+                                        <br><small class="text-body-secondary">{{ $inv->invoice_no }}</small>
+                                    </td>
+                                    <td>
+                                        @php
+                                            $barClass = $inv->progress_pct >= 70 ? 'bg-success' : ($inv->progress_pct >= 30 ? 'bg-warning' : 'bg-danger');
+                                        @endphp
+                                        <div class="progress" style="height:18px;">
+                                            <div class="progress-bar {{ $barClass }}" role="progressbar"
+                                                style="width: {{ $inv->progress_pct }}%;"
+                                                aria-valuenow="{{ $inv->progress_pct }}" aria-valuemin="0" aria-valuemax="100">
+                                                {{ $inv->progress_pct }}%
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-end">Rp {{ number_format($inv->sisa_tunggakan, 0, ',', '.') }}</td>
+                                </tr>
+                                @empty
+                                <tr><td colspan="3" class="text-center text-body-secondary py-3">Tidak ada invoice pending</td></tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer"><a href="/invoices" class="btn btn-sm btn-outline-primary">Lihat Semua</a></div>
+            </div>
+        </div>
+
+        <!-- PO Pending -->
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-header"><strong>PO Pending</strong></div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Customer</th>
+                                    <th style="width:42%">Progress Pembayaran</th>
+                                    <th class="text-end">Sisa Tunggakan</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($stats['pending_pos'] as $po)
+                                <tr>
+                                    <td>
+                                        <a href="/purchase-orders/{{ $po->id }}" class="text-decoration-none fw-medium">{{ $po->customer?->company_name ?? $po->customer?->name ?? '-' }}</a>
+                                        <br><small class="text-body-secondary">{{ $po->po_number }}</small>
+                                    </td>
+                                    <td>
+                                        @php
+                                            $barClass = $po->progress_pct >= 70 ? 'bg-success' : ($po->progress_pct >= 30 ? 'bg-warning' : 'bg-danger');
+                                        @endphp
+                                        <div class="progress" style="height:18px;">
+                                            <div class="progress-bar {{ $barClass }}" role="progressbar"
+                                                style="width: {{ $po->progress_pct }}%;"
+                                                aria-valuenow="{{ $po->progress_pct }}" aria-valuemin="0" aria-valuemax="100">
+                                                {{ $po->progress_pct }}%
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-end">Rp {{ number_format($po->sisa_tunggakan, 0, ',', '.') }}</td>
+                                </tr>
+                                @empty
+                                <tr><td colspan="3" class="text-center text-body-secondary py-3">Tidak ada PO pending</td></tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer"><a href="/purchase-orders" class="btn btn-sm btn-outline-primary">Lihat Semua</a></div>
             </div>
         </div>
     </div>

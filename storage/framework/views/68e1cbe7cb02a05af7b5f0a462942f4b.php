@@ -98,44 +98,96 @@
                                                 </div> -->
     </div>
 
-    <div class="card">
-        <div class="card-header"><strong>Recent Shipments</strong></div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th scope="col"><?php echo sortLink('resi_no', 'Resi'); ?></th>
-                            <th scope="col"><?php echo sortLink('origin_city', 'Asal'); ?></th>
-                            <th scope="col"><?php echo sortLink('destination_city', 'Tujuan'); ?></th>
-                            <th scope="col"><?php echo sortLink('shipment_status', 'Status'); ?></th>
-                            <th scope="col">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php $__currentLoopData = $stats['recent_shipments']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $s): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <?php
-                                $statusClasses = ['Created' => 'secondary', 'In Transit' => 'info', 'Arrived at Transit' => 'warning', 'Arrived at Destination' => 'primary', 'Out for Delivery' => 'warning', 'Delivered' => 'success', 'On Hold' => 'warning', 'Cancelled' => 'danger'];
-                            ?>
-                            <tr>
-                                <td><a href="/shipments/<?php echo e($s->id); ?>"><?php echo e($s->resi_no); ?></a></td>
-                                <td><?php echo e($s->originBranch?->city ?? '-'); ?></td>
-                                <td><?php echo e($s->destinationBranch?->city ?? '-'); ?></td>
-                                <td><span
-                                        class="badge text-bg-<?php echo e($statusClasses[$s->shipment_status] ?? 'secondary'); ?>"><?php echo e($s->shipment_status); ?></span>
-                                </td>
-                                <td><a href="/print/shipments/<?php echo e($s->id); ?>/label" target="_blank"
-                                        class="text-decoration-none"><i class="bi bi-printer"></i></a></td>
-                            </tr>
-                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                        <?php if($stats['recent_shipments']->isEmpty()): ?>
-                            <tr>
-                                <td colspan="5" class="text-center text-body-secondary py-3">No shipments in selected date range
-                                </td>
-                            </tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
+    <div class="row g-3">
+        <!-- Invoice Pending -->
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-header"><strong>Invoice Pending</strong></div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Customer</th>
+                                    <th style="width:42%">Progress Pembayaran</th>
+                                    <th class="text-end">Sisa Tunggakan</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php $__empty_1 = true; $__currentLoopData = $stats['pending_invoices']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $inv): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                                <tr>
+                                    <td>
+                                        <a href="/invoices/<?php echo e($inv->id); ?>" class="text-decoration-none fw-medium"><?php echo e($inv->customer_name ?? '-'); ?></a>
+                                        <br><small class="text-body-secondary"><?php echo e($inv->invoice_no); ?></small>
+                                    </td>
+                                    <td>
+                                        <?php
+                                            $barClass = $inv->progress_pct >= 70 ? 'bg-success' : ($inv->progress_pct >= 30 ? 'bg-warning' : 'bg-danger');
+                                        ?>
+                                        <div class="progress" style="height:18px;">
+                                            <div class="progress-bar <?php echo e($barClass); ?>" role="progressbar"
+                                                style="width: <?php echo e($inv->progress_pct); ?>%;"
+                                                aria-valuenow="<?php echo e($inv->progress_pct); ?>" aria-valuemin="0" aria-valuemax="100">
+                                                <?php echo e($inv->progress_pct); ?>%
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-end">Rp <?php echo e(number_format($inv->sisa_tunggakan, 0, ',', '.')); ?></td>
+                                </tr>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                                <tr><td colspan="3" class="text-center text-body-secondary py-3">Tidak ada invoice pending</td></tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer"><a href="/invoices" class="btn btn-sm btn-outline-primary">Lihat Semua</a></div>
+            </div>
+        </div>
+
+        <!-- PO Pending -->
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-header"><strong>PO Pending</strong></div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Customer</th>
+                                    <th style="width:42%">Progress Pembayaran</th>
+                                    <th class="text-end">Sisa Tunggakan</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php $__empty_1 = true; $__currentLoopData = $stats['pending_pos']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $po): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                                <tr>
+                                    <td>
+                                        <a href="/purchase-orders/<?php echo e($po->id); ?>" class="text-decoration-none fw-medium"><?php echo e($po->customer?->company_name ?? $po->customer?->name ?? '-'); ?></a>
+                                        <br><small class="text-body-secondary"><?php echo e($po->po_number); ?></small>
+                                    </td>
+                                    <td>
+                                        <?php
+                                            $barClass = $po->progress_pct >= 70 ? 'bg-success' : ($po->progress_pct >= 30 ? 'bg-warning' : 'bg-danger');
+                                        ?>
+                                        <div class="progress" style="height:18px;">
+                                            <div class="progress-bar <?php echo e($barClass); ?>" role="progressbar"
+                                                style="width: <?php echo e($po->progress_pct); ?>%;"
+                                                aria-valuenow="<?php echo e($po->progress_pct); ?>" aria-valuemin="0" aria-valuemax="100">
+                                                <?php echo e($po->progress_pct); ?>%
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-end">Rp <?php echo e(number_format($po->sisa_tunggakan, 0, ',', '.')); ?></td>
+                                </tr>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                                <tr><td colspan="3" class="text-center text-body-secondary py-3">Tidak ada PO pending</td></tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer"><a href="/purchase-orders" class="btn btn-sm btn-outline-primary">Lihat Semua</a></div>
             </div>
         </div>
     </div>

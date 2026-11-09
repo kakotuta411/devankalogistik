@@ -7,6 +7,7 @@ use App\Models\Invoice;
 use App\Models\Manifest;
 use App\Models\Shipment;
 use App\Models\Branch;
+use App\Models\PurchaseOrder;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -68,6 +69,36 @@ class DashboardController extends Controller
             'invoices_pending_amount' => Invoice::whereIn('invoice_status', ['Draft', 'Partial', 'Active'])->sum('total_amount'),
             'recent_audits' => AuditLog::latest()->limit(10)->get(),
             'date_range' => ['start' => $startStr, 'end' => $endStr, 'start_date' => $start->toDateString(), 'end_date' => $end->toDateString()],
+
+            // Tabel Invoice Pending: top 10 sisa tunggakan terbesar
+            'pending_invoices' => Invoice::withoutGlobalScopes()
+                ->whereNotIn('invoice_status', ['Paid', 'Cancelled'])
+                ->with('customer')
+                ->get()
+                ->map(function ($inv) {
+                    $total = (float) $inv->displayTotal();
+                    $paid = (float) ($inv->amount_paid ?? 0);
+                    $inv->progress_pct = $total > 0 ? min(100, round($paid / $total * 100)) : 0;
+                    $inv->sisa_tunggakan = max(0, $total - $paid);
+                    return $inv;
+                })
+                ->sortByDesc('sisa_tunggakan')
+                ->take(10),
+
+            // Tabel PO Pending: top 10 sisa tunggakan terbesar
+            'pending_pos' => PurchaseOrder::withoutGlobalScopes()
+                ->whereNotIn('status', ['paid', 'cancelled'])
+                ->with('customer')
+                ->get()
+                ->map(function ($po) {
+                    $total = (float) $po->total_amount;
+                    $paid = (float) $po->paid_amount;
+                    $po->progress_pct = $total > 0 ? min(100, round($paid / $total * 100)) : 0;
+                    $po->sisa_tunggakan = max(0, $po->getRemainingAmount());
+                    return $po;
+                })
+                ->sortByDesc('sisa_tunggakan')
+                ->take(10),
         ];
         return view('dashboard', compact('stats'));
     }

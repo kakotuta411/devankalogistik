@@ -1,0 +1,36 @@
+name: Debug Slow
+on:
+  workflow_dispatch:
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check server resources
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          script: |
+            echo "=== LOAD ==="
+            uptime
+            echo "=== MEMORY ==="
+            free -m
+            echo "=== DISK ==="
+            df -h / | tail -1
+            echo "=== PHP-FPM ==="
+            sudo systemctl status php8.3-fpm --no-pager | head -8
+            echo "=== FPM PROCESSES ==="
+            ps aux | grep -c php-fpm
+            echo "=== REDIS ==="
+            redis-cli ping
+            redis-cli info memory | grep used_memory_human
+            echo "=== NGINX ERROR LOG (last 10) ==="
+            sudo tail -10 /var/log/nginx/error.log
+            echo "=== LARAVEL LOG (last 15) ==="
+            sudo tail -15 /var/www/devanka-logistik/storage/logs/laravel.log
+            echo "=== REGIONS TABLE SIZE ==="
+            sudo mysql -u root -e "SELECT COUNT(*) AS rows_count FROM devanka_logistik.regions;" 2>/dev/null || echo "mysql root failed"

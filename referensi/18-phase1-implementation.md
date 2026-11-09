@@ -42,12 +42,60 @@
 
 ### E. Manual (VPS)
 - [x] DB user least privilege (GRANT SELECT/INSERT/UPDATE/DELETE) — ✅
-- [x] Region sync (emsifa v2, 38 provinces) — ✅
+- [x] Region sync (emsifa v2, 38 provinsi, 83.762 desa) — ✅
 - [x] CORS restricted to devankalogistik.com — ✅
 - [x] deploy.yml updated (sudo -u www-data) — ✅
 - [x] sudoers setup (ubuntu → www-data NOPASSWD) — ✅
 - [x] php8.3-redis installed (fix 500) — ✅
 - [x] Deploy restart FPM otomatis — ✅
+
+---
+
+## Region Migration v1 → v2 (2026-11-09)
+
+### Cara kerja
+```bash
+cd /var/www/devanka-logistik
+php artisan regions:migrate-v2              # update data + truncate + sync ulang
+php artisan regions:migrate-v2 --update-only  # hanya update kode data existing
+php artisan regions:sync [--force]         # sync incremental
+```
+
+### Kenapa pindah v2
+| Sumber | Provinsi | Kabupaten | Kecamatan | Desa |
+|---|---|---|---|---|
+| emsifa v1 (lama) | 34 | 479 | 6.604 | 75.412 |
+| emsifa v2 | 38 | 514 | 7.285 | 83.762 |
+| wilayah.id | 38 | 514 | 7.285 | 83.762 |
+
+v2 & wilayah.id identik (dua-duanya rujuk Kepmendagri 2025). v1 kehilangan 4 provinsi Papua.
+
+### Format kode
+- v1 (flat): `1301011001`
+- v2 (titik): `13.09.10.2002`
+- Provinsi tidak berubah (`13` → `13`)
+
+### Mapping data existing (v1 → v2)
+| Nama | v1 | v2 |
+|---|---|---|
+| Kepulauan Mentawai / Pagai Selatan / Bulasat | 1301/1301011/1301011001 | 13.09/13.09.10/13.09.10.2002 |
+| Simeulue / Teupah Selatan / Latiung | 1101/1101010/1101010001 | 11.09/11.09.07/11.09.07.2008 |
+| Tabanan / Pupuan / Karyasari | 5102/5102080/5102080013 | 51.02/51.02.10/51.02.10.2013 |
+| Cilacap / Jeruklegi / Prapagan | 3301/3301130/3301130012 | 33.01/33.01.08/33.01.08.2010 |
+| Pekanbaru / Rumbai Barat / Rantaupanjang | 1471/1471080/1471080012 | 14.71/14.71.06/14.71.06.1011 |
+| Way Kanan / Way Tuba / Ramsai | 1807/1807041/1807041006 | 18.08/18.08.08/18.08.08.2006 |
+| Denpasar / Denpasar Selatan / Sanur Kaja | 5171/5171010/5171010010 | 51.71/51.71.01/51.71.01.2009 |
+| Manggarai Timur / Borong / Waling | 5319/5319010/5319010030 | 53.19/53.19.01/53.19.01.2031 |
+
+### Optimasi sync
+- Concurrency 30 request/batch (`Http::pool`)
+- Bulk `upsert` (500 row/batch) — dari ~85 menit jadi ~8 menit
+- Skip district yang sudah punya village (incremental)
+- try/catch + `\Throwable` untuk network error
+
+### Catatan
+- DB user production hanya punya SELECT/INSERT/UPDATE/DELETE → pakai `delete()` bukan `truncate()`
+- PHP array key numerik otomatis jadi int → harus di-cast `(string)` di where clause
 
 ---
 
@@ -391,6 +439,7 @@ php artisan regions:sync
 | `deploy.yml` | Auto-deploy ke VPS + restart FPM |
 | `check-phase1.yml` | Verifikasi 17 item Phase 1 |
 | `region-sync-force.yml` | Re-sync region data (emsifa v2) |
+| `region-migrate-v2.yml` | Migrasi kode region v1 → v2 |
 | `restart-fpm.yml` | Restart PHP-FPM manual trigger |
 | `setup-redis-opcache.yml` | Setup Redis + OPcache (idempotent) |
 

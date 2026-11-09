@@ -20,4 +20,4 @@ jobs:
             cd ${{ secrets.DEPLOY_PATH }}
             git stash 2>/dev/null || true
             git pull origin master 2>&1
-            sudo -u www-data /usr/bin/php8.3 artisan regions:migrate-v2
+            sudo -u www-data /usr/bin/php8.3 artisan regions:migrate-v2 --update-only

@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 
 class MigrateRegionsV2Command extends Command
 {
-    protected $signature = 'regions:migrate-v2';
+    protected $signature = 'regions:migrate-v2 {--update-only : hanya update kode data existing, tanpa sync ulang}';
     protected $description = 'Migrasi data region dari kode emsifa v1 (flat) ke v2 (titik), lalu sync ulang';
 
     /**
@@ -22,18 +22,30 @@ class MigrateRegionsV2Command extends Command
             '1101' => '11.09',   // Simeulue
             '5102' => '51.02',   // Tabanan
             '3301' => '33.01',   // Cilacap
+            '1471' => '14.71',   // Kota Pekanbaru
+            '1807' => '18.08',   // Way Kanan
+            '5171' => '51.71',   // Kota Denpasar
+            '5319' => '53.19',   // Manggarai Timur
         ],
         'district' => [
             '1301011' => '13.09.10',   // Pagai Selatan
             '1101010' => '11.09.07',   // Teupah Selatan
             '5102080' => '51.02.10',   // Pupuan
             '3301130' => '33.01.08',   // Jeruklegi
+            '1471080' => '14.71.06',   // Rumbai Barat
+            '1807041' => '18.08.08',   // Way Tuba
+            '5171010' => '51.71.01',   // Denpasar Selatan
+            '5319010' => '53.19.01',   // Borong
         ],
         'village' => [
             '1301011001' => '13.09.10.2002',   // Bulasat
             '1101010001' => '11.09.07.2008',   // Latiung
             '5102080013' => '51.02.10.2013',   // Karyasari
             '3301130012' => '33.01.08.2010',   // Prapagan
+            '1471080012' => '14.71.06.1011',   // Rantaupanjang
+            '1807041006' => '18.08.08.2006',   // Ramsai
+            '5171010010' => '51.71.01.2009',   // Sanur Kaja
+            '5319010030' => '53.19.01.2031',   // Waling
         ],
     ];
 
@@ -41,6 +53,11 @@ class MigrateRegionsV2Command extends Command
     {
         $this->info('1. Update kode region di data existing...');
         $this->migrateExistingRecords();
+
+        if ($this->option('update-only')) {
+            $this->info('Selesai (update-only).');
+            return 0;
+        }
 
         $this->info('2. Hapus tabel regions lama...');
         // pakai delete() karena user DB production hanya punya privilege DELETE (tanpa DROP)

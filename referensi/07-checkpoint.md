@@ -205,10 +205,34 @@
 - Menu Dashboard disembunyikan untuk role Staff_Invoice & Staff_Shipment
 - Workflow `region-migrate-v2.yml` untuk migrasi production
 
-## Pending
-- Template: user will verify new resi layout matches original PDF
-- Cleanup: existing demo data
-- GitHub Secrets verification for auto-deploy
+## Pending (per 2026-11-10)
+
+### Manual (perlu user/VPS console)
+- [ ] **Template resi**: user verifikasi layout resi baru cocok dengan PDF asli
+- [ ] **UptimeRobot**: setup monitor `https://devankalogistik.web.id/api/health` (5 min)
+- [ ] **rclone config**: `sudo rclone config` → Cloudflare R2 (off-site backup belum aktif)
+- [ ] **monitor.sh**: alert otomatis (cron 5 min) — belum dipasang
+
+### Data
+- [ ] **Cleanup demo data**: data dummy (Anang, DLI-00001..00006, invoice dummy) mau dihapus?
+- [ ] **Region sync berkala**: jadwalkan sync ulang otomatis (mis. tiap bulan) atau manual via `regions:sync`
+
+### Ops (opsional, ditunda user)
+- [ ] **Cloudflare DNS**: skip dulu — nanti kalau banyak domain/app
+- [ ] **SSH hardening**: skip (user request)
+- [ ] **IdP/SSO login**: skeleton login pakai IdP kalau sudah ada (sekarang X-LDAP-Operator-DN header)
+
+### Selesai sesi ini
+- [x] RBAC (Audit Log utk Admin + Management_View)
+- [x] CORS restrict ke devankalogistik.com
+- [x] Phase 1 VPS (17/17 ✅) + Phase 2 Laravel security
+- [x] Redis + OPcache production mode
+- [x] Invoice/PO: card lunas fix, card clickable + modal, export PDF/Excel PO
+- [x] Child invoice display fix (displayTotal)
+- [x] Dashboard: tabel Invoice Pending + PO Pending (progress bar)
+- [x] Region v2 migration (38/514/7.285/83.762)
+- [x] Menu Dashboard hidden utk Staff_Invoice & Staff_Shipment
+- [x] Workflow one-off dibersihkan (6 workflow inti tersisa)
 
 ## Documentation Index
 - 01-overview.md — Project info, roles, prefixes, formulas

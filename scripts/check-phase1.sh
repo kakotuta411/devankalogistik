@@ -73,8 +73,8 @@ echo ""
 
 # 6. MariaDB Tuning
 echo "6. MariaDB Tuning:"
-BP=$(grep "innodb_buffer_pool_size" /etc/mysql/mariadb.conf.d/99-tuning.cnf 2>/dev/null | grep -v "^[[:space:]]*#" | awk -F= '{print $2}' | tr -d ' ')
-if [ -n "$BP" ]; then
+if grep -q "innodb_buffer_pool_size" /etc/mysql/mariadb.conf.d/99-tuning.cnf 2>/dev/null; then
+    BP=$(grep "innodb_buffer_pool_size" /etc/mysql/mariadb.conf.d/99-tuning.cnf | grep -v "^[[:space:]]*#" | awk -F= '{print $2}' | tr -d ' ')
     check_item "   MariaDB" "✅ buffer_pool=$BP (from 99-tuning.cnf)"
 else
     check_item "   MariaDB" "❌ Not configured"

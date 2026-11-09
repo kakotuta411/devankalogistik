@@ -73,7 +73,7 @@ echo ""
 
 # 6. MariaDB Tuning
 echo "6. MariaDB Tuning:"
-BP=$(grep -ri "innodb_buffer_pool_size" /etc/mysql/mariadb.conf.d/ 2>/dev/null | grep -v "^#" | head -1 | awk -F= '{print $2}' | tr -d ' ')
+BP=$(grep -rh "innodb_buffer_pool_size" /etc/mysql/mariadb.conf.d/ 2>/dev/null | grep -v "^[[:space:]]*#" | grep -v "^[a-z]" | head -1 | awk -F= '{print $2}' | tr -d ' ')
 if [ -n "$BP" ]; then
     check_item "   MariaDB" "✅ buffer_pool=$BP"
 else

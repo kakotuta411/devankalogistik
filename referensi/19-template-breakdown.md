@@ -128,3 +128,15 @@ $logoUrl                         // base64/URL logo siap pakai
 - **Logo**: upload via UI, tersimpan di `storage/app/public/logos/`
 - **Route death**: `/admin/template-management/upload` (method `uploadTemplate`) TIDAK ADA di controller — jangan dipakai
 - **Custom template**: bisa taruh file di `print/custom/` lalu load via `Pdf::loadView('print.custom.nama')` (perlu koding)
+
+---
+
+## 5. Catatan Perhitungan Invoice
+
+- `total_layanan` = (shipping_cost × total_weight) + packaging_cost + equipment_charge + other_costs
+- `discount` = total_layanan × (discount_value / 100)
+- `ppn` = total_layanan × (ppn / 100)
+- `pph` = total_layanan × (pph / 100)
+- `grandTotal()` = total_layanan − discount + ppftz03 + ppn + pph
+- `displayTotal()` = `total_amount` kalau child invoice (ada `parent_invoice_id`), else `grandTotal()`
+- Child invoice: kolom biaya disalin dari parent, tapi `total_amount` = sisa → tampilan pakai `displayTotal()`

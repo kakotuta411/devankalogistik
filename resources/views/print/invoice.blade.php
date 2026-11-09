@@ -80,12 +80,24 @@
         </tbody>
     </table>
 
-    <table style="width: 50%; margin-left: auto;">
-        <tr><td>Subtotal</td><td class="text-right">Rp {{ number_format($invoice->subtotal, 0, ',', '.') }}</td></tr>
-        <tr><td>Biaya Kirim</td><td class="text-right">Rp {{ number_format($invoice->shipping_cost, 0, ',', '.') }}</td></tr>
-        <tr><td>Discount</td><td class="text-right">-Rp {{ number_format($invoice->discount, 0, ',', '.') }}</td></tr>
-        <tr class="total grand"><td><strong>TOTAL</strong></td><td class="text-right"><strong>Rp {{ number_format($invoice->grandTotal(), 0, ',', '.') }}</strong></td></tr>
-    </table>
+    @if($invoice->isChild())
+        <table style="width: 50%; margin-left: auto;">
+            <tr><td>Sisa dari invoice {{ $invoice->parentInvoice?->invoice_no }}</td><td class="text-right"></td></tr>
+            <tr class="total grand"><td><strong>TOTAL</strong></td><td class="text-right"><strong>Rp {{ number_format($invoice->displayTotal(), 0, ',', '.') }}</strong></td></tr>
+        </table>
+    @else
+        <table style="width: 50%; margin-left: auto;">
+            <tr><td>Biaya Pengiriman ({{ number_format($invoice->shipping_cost, 0, ',', '.') }}/kg x {{ number_format($invoice->total_weight, 2, ',', '.') }} kg)</td><td class="text-right">Rp {{ number_format($invoice->shipping_cost * $invoice->total_weight, 0, ',', '.') }}</td></tr>
+            <tr><td>Biaya Packaging</td><td class="text-right">Rp {{ number_format($invoice->packaging_cost, 0, ',', '.') }}</td></tr>
+            <tr><td>Charge Alat</td><td class="text-right">Rp {{ number_format($invoice->equipment_charge, 0, ',', '.') }}</td></tr>
+            <tr><td>Biaya Lain-lain</td><td class="text-right">Rp {{ number_format($invoice->other_costs, 0, ',', '.') }}</td></tr>
+            <tr><td>Diskon ({{ number_format($invoice->discount_value, 2, ',', '.') }}%)</td><td class="text-right">-Rp {{ number_format($invoice->discount, 0, ',', '.') }}</td></tr>
+            <tr><td>PPFTZ 03</td><td class="text-right">Rp {{ number_format($invoice->ppftz03, 0, ',', '.') }}</td></tr>
+            <tr><td>PPN ({{ number_format($invoice->ppn, 2, ',', '.') }}%)</td><td class="text-right">Rp {{ number_format($invoice->ppnAmount(), 0, ',', '.') }}</td></tr>
+            <tr><td>PPH ({{ number_format($invoice->pph, 2, ',', '.') }}%)</td><td class="text-right">Rp {{ number_format($invoice->pphAmount(), 0, ',', '.') }}</td></tr>
+            <tr class="total grand"><td><strong>TOTAL</strong></td><td class="text-right"><strong>Rp {{ number_format($invoice->displayTotal(), 0, ',', '.') }}</strong></td></tr>
+        </table>
+    @endif
 
     @if($invoice->notes)
         <div style="margin-top: 8px;"><strong>Catatan:</strong> {{ $invoice->notes }}</div>

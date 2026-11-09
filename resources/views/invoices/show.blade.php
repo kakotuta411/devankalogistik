@@ -43,6 +43,12 @@
             <div class="card-header"><strong>Ringkasan Finansial</strong></div>
             <div class="card-body">
                 <table class="table table-borderless mb-0">
+                    @if($inv->isChild())
+                    {{-- Child invoice: kolom biaya disalin dari parent, jadi breakdown tidak bermakna.
+                         Tampilkan sisa dari invoice induk saja. --}}
+                    <tr><td>Sisa dari invoice <a href="/invoices/{{ $inv->parentInvoice->id }}" class="text-decoration-none">{{ $inv->parentInvoice->invoice_no }}</a></td><td class="text-end"></td></tr>
+                    <tr class="table-active"><td><strong>TOTAL</strong></td><td class="text-end"><strong>Rp {{ number_format($inv->displayTotal(), 0, ',', '.') }}</strong></td></tr>
+                    @else
                     <tr><td>Biaya Pengiriman ({{ number_format($inv->shipping_cost, 0, ',', '.') }}/kg x {{ number_format($inv->total_weight, 2, ',', '.') }} kg)</td><td class="text-end">Rp {{ number_format($inv->shipping_cost * $inv->total_weight, 0, ',', '.') }}</td></tr>
                     <tr><td>Biaya Packaging</td><td class="text-end">Rp {{ number_format($inv->packaging_cost, 0, ',', '.') }}</td></tr>
                     <tr><td>Charge Alat</td><td class="text-end">Rp {{ number_format($inv->equipment_charge, 0, ',', '.') }}</td></tr>
@@ -51,9 +57,10 @@
                     <tr><td>PPFTZ 03</td><td class="text-end">Rp {{ number_format($inv->ppftz03, 0, ',', '.') }}</td></tr>
                     <tr><td>PPN ({{ number_format($inv->ppn, 2, ',', '.') }}%)</td><td class="text-end">Rp {{ number_format($inv->ppnAmount(), 0, ',', '.') }}</td></tr>
                     <tr><td>PPH ({{ number_format($inv->pph, 2, ',', '.') }}%)</td><td class="text-end">Rp {{ number_format($inv->pphAmount(), 0, ',', '.') }}</td></tr>
-                    <tr class="table-active"><td><strong>TOTAL</strong></td><td class="text-end"><strong>Rp {{ number_format($inv->grandTotal(), 0, ',', '.') }}</strong></td></tr>
+                    <tr class="table-active"><td><strong>TOTAL</strong></td><td class="text-end"><strong>Rp {{ number_format($inv->displayTotal(), 0, ',', '.') }}</strong></td></tr>
+                    @endif
                     <tr><td>Dibayar</td><td class="text-end">Rp {{ number_format($inv->amount_paid ?? 0, 0, ',', '.') }}</td></tr>
-                    <tr class="table-warning"><td><strong>Tunggakan</strong></td><td class="text-end"><strong>Rp {{ number_format($inv->grandTotal() - ($inv->amount_paid ?? 0), 0, ',', '.') }}</strong></td></tr>
+                    <tr class="table-warning"><td><strong>Tunggakan</strong></td><td class="text-end"><strong>Rp {{ number_format($inv->displayTotal() - ($inv->amount_paid ?? 0), 0, ',', '.') }}</strong></td></tr>
                 </table>
             </div>
         </div>
@@ -81,7 +88,7 @@
             <tfoot>
                 <tr class="table-active">
                     <td colspan="6" class="text-end"><strong>Total Invoice</strong></td>
-                    <td><strong>Rp {{ number_format($inv->grandTotal(), 0, ',', '.') }}</strong></td>
+                    <td><strong>Rp {{ number_format($inv->displayTotal(), 0, ',', '.') }}</strong></td>
                 </tr>
             </tfoot>
         </table>

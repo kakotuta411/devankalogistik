@@ -104,6 +104,25 @@ class Invoice extends Model
         return $totalLayanan - $diskonAmt + (float)$this->ppftz03 + $ppnAmt + $pphAmt;
     }
 
+    /**
+     * Total yang tampil di dokumen.
+     * Child invoice (pecahan pembayaran) punya kolom biaya yang disalin dari parent,
+     * tapi total_amount-nya = sisa. Jadi untuk child pakai total_amount.
+     */
+    public function displayTotal(): float
+    {
+        if ($this->parent_invoice_id) {
+            return (float) $this->total_amount;
+        }
+        return $this->grandTotal();
+    }
+
+    /** Apakah invoice ini hasil pecahan pembayaran (punya parent). */
+    public function isChild(): bool
+    {
+        return !empty($this->parent_invoice_id);
+    }
+
     public function totalLayanan(): float
     {
         $totalWeight = (float) ($this->total_weight ?? 0);

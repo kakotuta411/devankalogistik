@@ -42,6 +42,11 @@
             <div class="card-header"><strong>Ringkasan Finansial</strong></div>
             <div class="card-body">
                 <table class="table table-borderless mb-0">
+                    <?php if($inv->isChild()): ?>
+                    
+                    <tr><td>Sisa dari invoice <a href="/invoices/<?php echo e($inv->parentInvoice->id); ?>" class="text-decoration-none"><?php echo e($inv->parentInvoice->invoice_no); ?></a></td><td class="text-end"></td></tr>
+                    <tr class="table-active"><td><strong>TOTAL</strong></td><td class="text-end"><strong>Rp <?php echo e(number_format($inv->displayTotal(), 0, ',', '.')); ?></strong></td></tr>
+                    <?php else: ?>
                     <tr><td>Biaya Pengiriman (<?php echo e(number_format($inv->shipping_cost, 0, ',', '.')); ?>/kg x <?php echo e(number_format($inv->total_weight, 2, ',', '.')); ?> kg)</td><td class="text-end">Rp <?php echo e(number_format($inv->shipping_cost * $inv->total_weight, 0, ',', '.')); ?></td></tr>
                     <tr><td>Biaya Packaging</td><td class="text-end">Rp <?php echo e(number_format($inv->packaging_cost, 0, ',', '.')); ?></td></tr>
                     <tr><td>Charge Alat</td><td class="text-end">Rp <?php echo e(number_format($inv->equipment_charge, 0, ',', '.')); ?></td></tr>
@@ -50,9 +55,10 @@
                     <tr><td>PPFTZ 03</td><td class="text-end">Rp <?php echo e(number_format($inv->ppftz03, 0, ',', '.')); ?></td></tr>
                     <tr><td>PPN (<?php echo e(number_format($inv->ppn, 2, ',', '.')); ?>%)</td><td class="text-end">Rp <?php echo e(number_format($inv->ppnAmount(), 0, ',', '.')); ?></td></tr>
                     <tr><td>PPH (<?php echo e(number_format($inv->pph, 2, ',', '.')); ?>%)</td><td class="text-end">Rp <?php echo e(number_format($inv->pphAmount(), 0, ',', '.')); ?></td></tr>
-                    <tr class="table-active"><td><strong>TOTAL</strong></td><td class="text-end"><strong>Rp <?php echo e(number_format($inv->grandTotal(), 0, ',', '.')); ?></strong></td></tr>
+                    <tr class="table-active"><td><strong>TOTAL</strong></td><td class="text-end"><strong>Rp <?php echo e(number_format($inv->displayTotal(), 0, ',', '.')); ?></strong></td></tr>
+                    <?php endif; ?>
                     <tr><td>Dibayar</td><td class="text-end">Rp <?php echo e(number_format($inv->amount_paid ?? 0, 0, ',', '.')); ?></td></tr>
-                    <tr class="table-warning"><td><strong>Tunggakan</strong></td><td class="text-end"><strong>Rp <?php echo e(number_format($inv->grandTotal() - ($inv->amount_paid ?? 0), 0, ',', '.')); ?></strong></td></tr>
+                    <tr class="table-warning"><td><strong>Tunggakan</strong></td><td class="text-end"><strong>Rp <?php echo e(number_format($inv->displayTotal() - ($inv->amount_paid ?? 0), 0, ',', '.')); ?></strong></td></tr>
                 </table>
             </div>
         </div>
@@ -80,7 +86,7 @@
             <tfoot>
                 <tr class="table-active">
                     <td colspan="6" class="text-end"><strong>Total Invoice</strong></td>
-                    <td><strong>Rp <?php echo e(number_format($inv->grandTotal(), 0, ',', '.')); ?></strong></td>
+                    <td><strong>Rp <?php echo e(number_format($inv->displayTotal(), 0, ',', '.')); ?></strong></td>
                 </tr>
             </tfoot>
         </table>

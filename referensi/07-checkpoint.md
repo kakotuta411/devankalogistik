@@ -181,6 +181,13 @@
 - Dokumen baru `referensi/19-template-breakdown.md`: daftar file template per dokumen + data yang bisa ditarik
 - Menemukan route mati: `/admin/template-management/upload` (method `uploadTemplate` tidak ada)
 
+## Recent Changes (2026-11-09 Child Invoice + Dashboard Fix)
+- Child invoice (pecahan pembayaran): tampilan TOTAL pakai `displayTotal()` (= sisa), bukan `grandTotal()` (yang salah hitung ulang dari kolom biaya copakan parent)
+- `Invoice::displayTotal()` & `Invoice::isChild()` baru di model
+- Ringkasan Finansial child invoice: tampil "Sisa dari invoice induk" (breakdown biaya tidak ditampilkan)
+- PDF invoice parent: breakdown LENGKAP (Biaya Pengiriman rate×kg, Packaging, Charge Alat, Biaya Lain-lain, Diskon, PPFTZ 03, PPN, PPH)
+- Dashboard card "Invoice Lunas": total = `sum(amount_paid)` (konsisten dgn menu Invoice)
+
 ## Pending
 - Template: user will verify new resi layout matches original PDF
 - Cleanup: existing demo data

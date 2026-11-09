@@ -93,10 +93,124 @@ touch storage/logs/laravel.log
 sudo chown www-data:www-data storage/logs/laravel.log
 ```
 
-### A5. Disable Unnecessary Services
+### A6. Disable Unnecessary Services
 ```bash
-sudo systemctl disable --now acpid ModemManager multipathd udisks2 upower getty@tty1 serial-getty@ttyS0 apport thermald gpu-manager pollinate sysstat inetutils-inetd
+sudo systemctl disable --now acpid ModemManager multipathd udisks2 upower apport pollinate
 # JANGAN disable: tat_agent, chrony, ssh, nginx, php8.3-fpm, mariadb, cron, ufw, rsyslog, systemd-*
+```
+
+### B2. MariaDB Tuning
+```bash
+sudo tee /etc/mysql/mariadb.conf.d/99-tuning.cnf > /dev/null << 'EOF'
+[mysqld]
+innodb_buffer_pool_size = 128M
+innodb_log_file_size = 32M
+max_connections = 50
+slow_query_log = 1
+slow_query_log_file = /var/log/mysql/slow.log
+long_query_time = 2
+query_cache_type = 1
+query_cache_size = 16M
+tmp_table_size = 16M
+max_heap_table_size = 16M
+innodb_flush_log_at_trx_commit = 2
+innodb_flush_method = O_DIRECT
+EOF
+sudo mkdir -p /var/log/mysql
+sudo chown mysql:mysql /var/log/mysql
+sudo systemctl restart mariadb
+```
+
+### C1. DB Backup (setiap 6 jam)
+```bash
+# Buat script
+sudo tee /backup/db-backup.sh > /dev/null << 'EOF'
+#!/bin/bash
+BACKUP_DIR="/backup"
+DB_NAME="devanka_logistik"  # dari .env DB_DATABASE
+DB_USER="devanka"           # dari .env DB_USERNAME
+DB_PASS="password"          # dari .env DB_PASSWORD
+TIMESTAMP=$(date +%Y%m%d_%H%M)
+BACKUP_FILE="${BACKUP_DIR}/db_${TIMESTAMP}.sql.gz"
+
+mysqldump -u "${DB_USER}" -p"${DB_PASS}" "${DB_NAME}" | gzip > "${BACKUP_FILE}"
+
+if [ -s "${BACKUP_FILE}" ]; then
+    echo "$(date): Backup successful - ${BACKUP_FILE}"
+else
+    echo "$(date): Backup FAILED" >> /var/log/db-backup-error.log
+    rm -f "${BACKUP_FILE}"
+    exit 1
+fi
+
+# Cleanup old backups (>3 days)
+find "${BACKUP_DIR}" -name "db_*.sql.gz" -mtime +3 -delete
+EOF
+sudo chmod +x /backup/db-backup.sh
+
+# Cron: every 6 hours
+sudo tee /etc/cron.d/db-backup > /dev/null << 'EOF'
+0 */6 * * * root /backup/db-backup.sh >> /var/log/db-backup.log 2>&1
+EOF
+```
+
+### C2. File Backup (daily)
+```bash
+sudo tee /backup/file-backup.sh > /dev/null << 'EOF'
+#!/bin/bash
+BACKUP_DIR="/backup"
+TIMESTAMP=$(date +%Y%m%d_%H)
+BACKUP_FILE="${BACKUP_DIR}/files_${TIMESTAMP}.tar.gz"
+
+tar -czf "${BACKUP_FILE}" -C /var/www/devanka-logistik storage/app/public
+
+if [ -s "${BACKUP_FILE}" ]; then
+    echo "$(date): File backup successful - ${BACKUP_FILE}"
+else
+    echo "$(date): File backup FAILED" >> /var/log/file-backup-error.log
+    rm -f "${BACKUP_FILE}"
+    exit 1
+fi
+
+find "${BACKUP_DIR}" -name "files_*.tar.gz" -mtime +7 -delete
+EOF
+sudo chmod +x /backup/file-backup.sh
+
+# Cron: daily at 3 AM
+sudo tee /etc/cron.d/file-backup > /dev/null << 'EOF'
+0 3 * * * root /backup/file-backup.sh >> /var/log/file-backup.log 2>&1
+EOF
+```
+
+### C3. Off-site Backup (rclone)
+```bash
+# Install rclone
+curl https://rclone.org/install.sh | sudo bash
+
+# Configure (manual - interactive)
+sudo rclone config
+# Setup Cloudflare R2 atau S3-compatible storage
+
+# Cron: daily at 5 AM
+sudo tee /etc/cron.d/offsite-backup > /dev/null << 'EOF'
+0 5 * * * root rclone sync /backup remote:devanka-backup --quiet 2>&1 | tee -a /var/log/rclone-backup.log
+EOF
+```
+
+### C4. Log Cleanup
+```bash
+sudo tee /etc/cron.d/log-cleanup > /dev/null << 'EOF'
+0 5 * * * root find /var/www/devanka-logistik/storage/logs -name "*.log" -mtime +7 -delete
+0 5 * * * root find /var/log -name "*.log" -mtime +14 -delete 2>/dev/null
+EOF
+```
+
+### E2. Region Sync (re-run)
+```bash
+cd /var/www/devanka-logistik
+sudo -u www-data php artisan regions:sync
+# ~10-15 menit, butuh internet stabil
+# Target: 35 provinces, 514 regencies, 7,215 districts, 80,532 villages
 ```
 
 ### B1. PHP-FPM Tuning

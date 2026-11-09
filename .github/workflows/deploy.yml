@@ -38,4 +38,5 @@ jobs:
             sudo -u www-data php artisan route:cache
             sudo -u www-data php artisan view:cache
             sudo -u www-data php artisan optimize
+            sudo systemctl restart php8.3-fpm
             echo "Deploy completed at $(date)"

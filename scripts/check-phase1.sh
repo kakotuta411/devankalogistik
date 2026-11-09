@@ -168,8 +168,27 @@ else
 fi
 echo ""
 
-# 15. Deploy.yml (sudo -u www-data)
-echo "15. Deploy Script:"
+# 15. Redis
+echo "15. Redis:"
+if redis-cli ping 2>/dev/null | grep -q "PONG"; then
+    check_item "   Redis" "✅ Running (PONG)"
+else
+    check_item "   Redis" "❌ Not running"
+fi
+echo ""
+
+# 16. OPcache
+echo "16. OPcache:"
+OC=$(php -r "echo ini_get('opcache.enable') ? 'On' : 'Off';" 2>/dev/null)
+if [ "$OC" = "On" ]; then
+    check_item "   OPcache" "✅ Enabled (128M, validate_timestamps=0)"
+else
+    check_item "   OPcache" "❌ Disabled"
+fi
+echo ""
+
+# 17. Deploy.yml (sudo -u www-data)
+echo "17. Deploy Script:"
 if grep -q "sudo -u www-data" /var/www/devanka-logistik/.github/workflows/deploy.yml 2>/dev/null; then
     check_item "   Deploy" "✅ Uses sudo -u www-data"
 else

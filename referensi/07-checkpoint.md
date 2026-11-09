@@ -196,6 +196,15 @@
 - Warna bar: <30% merah, 30-69% kuning, ≥70% hijau
 - 5 kartu & modal Shipments/Manifests/Invoices tetap ada
 
+## Recent Changes (2026-11-09 Region v2 + Navbar)
+- Region sync diupgrade ke emsifa v2: 38 provinsi, 514 kabupaten, 7.285 kecamatan, 83.762 desa (dari 33/479/6.604/75.412)
+- Format kode berubah: v1 flat (`1301011001`) → v2 titik (`13.09.10.2002`)
+- Data existing (1 customer, 7 invoice, 3 shipment) dimigrasi ke kode v2 via `regions:migrate-v2`
+- Sync dioptimasi: concurrency 30 request/batch + bulk upsert (dari ~85 menit jadi ~8 menit)
+- `RegionSyncService`: parse `data` wrapper, try/catch resilient, skip district yang sudah synced
+- Menu Dashboard disembunyikan untuk role Staff_Invoice & Staff_Shipment
+- Workflow `region-migrate-v2.yml` untuk migrasi production
+
 ## Pending
 - Template: user will verify new resi layout matches original PDF
 - Cleanup: existing demo data

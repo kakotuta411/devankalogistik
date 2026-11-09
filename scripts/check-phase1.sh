@@ -151,7 +151,7 @@ echo ""
 # 14. Region Sync
 echo "14. Region Sync:"
 cd /var/www/devanka-logistik
-REGIONS=$(php artisan tinker --execute="
+REGIONS=$(sudo -u www-data HOME=/tmp php artisan tinker --execute="
 echo \App\Models\Region::where('level','province')->count().','. 
 \App\Models\Region::where('level','regency')->count().','.
 \App\Models\Region::where('level','district')->count().','.

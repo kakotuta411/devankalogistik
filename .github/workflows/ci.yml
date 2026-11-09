@@ -45,6 +45,11 @@ jobs:
       - name: Generate app key
         run: php artisan key:generate
 
+      - name: Prepare storage directories
+        run: |
+          mkdir -p storage/framework/views storage/framework/sessions storage/framework/cache/data storage/logs bootstrap/cache
+          chmod -R 775 storage bootstrap/cache
+
       - name: Configure .env for CI
         run: |
           sed -i 's/DB_CONNECTION=.*/DB_CONNECTION=mysql/' .env

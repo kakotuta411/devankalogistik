@@ -33,6 +33,8 @@ jobs:
             git stash 2>/dev/null || true
             git pull origin master
             composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+            mkdir -p storage/framework/views storage/framework/sessions storage/framework/cache/data storage/logs bootstrap/cache
+            sudo chown -R www-data:www-data storage bootstrap/cache
             sudo -u www-data /usr/bin/php8.3 artisan migrate --force
             sudo -u www-data /usr/bin/php8.3 artisan config:cache
             sudo -u www-data /usr/bin/php8.3 artisan route:cache

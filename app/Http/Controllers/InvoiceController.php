@@ -19,7 +19,7 @@ class InvoiceController extends Controller
         $sortCol = in_array($request->sort, $allowedSorts) ? $request->sort : 'created_at';
         $sortDir = $request->has('sort') ? ($request->dir === 'desc' ? 'desc' : 'asc') : 'desc';
 
-        $invoices = Invoice::with('branch', 'childInvoices')
+        $invoices = Invoice::with(['branch', 'childInvoices', 'payments', 'po'])
             ->when($request->status, fn($q, $s) => $q->where('invoice_status', $s))
             ->when($request->search, fn($q, $s) => $q->where(function($q2) use ($s) {
                 $q2->where('invoice_no', 'like', "%$s%")
@@ -39,11 +39,24 @@ class InvoiceController extends Controller
             ->orderBy($sortCol, $sortDir)
             ->paginate(10);
         $branches = \App\Models\Branch::all();
+
+        // Card "Invoice Lunas": total = jumlah terbayar (amount_paid), bukan total_amount.
+        // Parent + child invoice yang terbayar dijumlahkan, hasilnya = total PO.
         $paidCount = Invoice::where('invoice_status', 'Paid')->count();
-        $paidAmount = Invoice::where('invoice_status', 'Paid')->sum('total_amount');
+        $paidAmount = Invoice::where('invoice_status', 'Paid')->sum('amount_paid');
         $pendingCount = Invoice::whereIn('invoice_status', ['Draft', 'Partial', 'Active'])->count();
         $pendingAmount = Invoice::whereIn('invoice_status', ['Draft', 'Partial', 'Active'])->sum('total_amount');
-        return view('invoices.index', compact('invoices', 'branches', 'paidCount', 'pendingCount', 'paidAmount', 'pendingAmount'));
+
+        // Koleksi untuk modal klik kartu
+        $paidInvoices = Invoice::where('invoice_status', 'Paid')
+            ->with(['po', 'payments'])->latest()->get();
+        $pendingInvoices = Invoice::whereIn('invoice_status', ['Draft', 'Partial', 'Active'])
+            ->with(['po', 'payments'])->latest()->get();
+
+        return view('invoices.index', compact(
+            'invoices', 'branches', 'paidCount', 'pendingCount', 'paidAmount', 'pendingAmount',
+            'paidInvoices', 'pendingInvoices'
+        ));
     }
 
 

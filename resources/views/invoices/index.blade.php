@@ -26,7 +26,7 @@
 
 <div class="row g-3 mb-3">
     <div class="col">
-        <div class="card text-bg-success">
+        <div class="card text-bg-success" role="button" style="cursor:pointer" data-bs-toggle="modal" data-bs-target="#invoicePaidModal">
             <div class="card-header text-center">Invoice Lunas</div>
             <div class="card-body text-center">
                 <h5>{{ $paidCount ?? 0 }}</h5>
@@ -35,7 +35,7 @@
         </div>
     </div>
     <div class="col">
-        <div class="card text-bg-warning">
+        <div class="card text-bg-warning" role="button" style="cursor:pointer" data-bs-toggle="modal" data-bs-target="#invoicePendingModal">
             <div class="card-header text-center">Invoice Pending</div>
             <div class="card-body text-center">
                 <h5>{{ $pendingCount ?? 0 }}</h5>
@@ -89,28 +89,33 @@
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th>{!! sortLink('invoice_no', 'No Invoice') !!}</th>
                         <th>{!! sortLink('customer_name', 'Customer') !!}</th>
-                        <th>{!! sortLink('branch_id', 'Cabang') !!}</th>
+                        <th>PO</th>
+                        <th>{!! sortLink('invoice_no', 'No Invoice') !!}</th>
                         <th>{!! sortLink('invoice_status', 'Status') !!}</th>
                         <th class="text-end">{!! sortLink('subtotal', 'Total') !!}</th>
+                        <th class="text-end">Terbayar</th>
+                        <th>Tanggal Pembayaran</th>
                         <th>{!! sortLink('created_at', 'Dibuat') !!}</th>
                         <th class="text-end">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($invoices as $inv)
+                    @php
+                        $lastPayment = $inv->payments?->sortByDesc('payment_date')->first();
+                        $statusClasses = ['Draft'=>'primary','Sent'=>'info','Paid'=>'success','Overdue'=>'danger','Cancelled'=>'danger','Partial'=>'warning'];
+                    @endphp
                     <tr>
-                        <td><a href="/invoices/{{ $inv->id }}" class="fw-medium text-decoration-none">{{ $inv->invoice_no }}</a></td>
                         <td>{{ $inv->customer_name ?? '-' }}</td>
-                        <td>{{ $inv->branch?->name ?? '-' }}</td>
+                        <td>{{ $inv->po?->po_number ?? '-' }}</td>
+                        <td><a href="/invoices/{{ $inv->id }}" class="fw-medium text-decoration-none">{{ $inv->invoice_no }}</a></td>
                         <td>
-                            @php
-                                $statusClasses = ['Draft'=>'primary','Sent'=>'info','Paid'=>'success','Overdue'=>'danger','Cancelled'=>'danger','Partial'=>'warning'];
-                            @endphp
                             <span class="badge text-bg-{{ $statusClasses[$inv->invoice_status] ?? 'secondary' }}">{{ $inv->invoice_status }}</span>
                         </td>
-                        <td class="text-end">Rp {{ number_format($inv->childInvoices->isNotEmpty() ? ($inv->amount_paid ?? 0) : ($inv->total_amount ?? 0), 0, ',', '.') }}</td>
+                        <td class="text-end">Rp {{ number_format($inv->total_amount ?? 0, 0, ',', '.') }}</td>
+                        <td class="text-end">Rp {{ number_format($inv->amount_paid ?? 0, 0, ',', '.') }}</td>
+                        <td><small class="text-body-secondary">{{ $lastPayment?->payment_date ? \Carbon\Carbon::parse($lastPayment->payment_date)->format('d/m/Y') : '-' }}</small></td>
                         <td><small class="text-body-secondary" data-uts="{{ $inv->created_at?->getTimestamp() }}">{{ $inv->created_at?->format('d/m/Y H:i') }}</small></td>
                         <td class="text-end">
                             <div class="btn-group btn-group-sm" role="group">
@@ -120,7 +125,7 @@
                         </td>
                     </tr>
                     @empty
-                    <tr><td colspan="7" class="text-center text-body-secondary">Tidak ada data</td></tr>
+                    <tr><td colspan="9" class="text-center text-body-secondary">Tidak ada data</td></tr>
                     @endforelse
                 </tbody>
             </table>
@@ -144,6 +149,104 @@
             <div class="modal-footer">
                 <a id="pdfDownloadBtn" href="#" class="btn btn-danger" target="_blank"><i class="bi bi-download"></i> Download PDF</a>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Invoice Lunas Modal -->
+<div class="modal fade" id="invoicePaidModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Invoice Lunas</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Customer</th>
+                                <th>PO</th>
+                                <th>No Invoice</th>
+                                <th>Status</th>
+                                <th class="text-end">Total</th>
+                                <th class="text-end">Terbayar</th>
+                                <th>Tanggal Pembayaran</th>
+                                <th class="text-end">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($paidInvoices as $inv)
+                            @php
+                                $lastPayment = $inv->payments?->sortByDesc('payment_date')->first();
+                            @endphp
+                            <tr>
+                                <td>{{ $inv->customer_name ?? '-' }}</td>
+                                <td>{{ $inv->po?->po_number ?? '-' }}</td>
+                                <td><a href="/invoices/{{ $inv->id }}" class="fw-medium text-decoration-none">{{ $inv->invoice_no }}</a></td>
+                                <td><span class="badge text-bg-success">{{ $inv->invoice_status }}</span></td>
+                                <td class="text-end">Rp {{ number_format($inv->total_amount ?? 0, 0, ',', '.') }}</td>
+                                <td class="text-end">Rp {{ number_format($inv->amount_paid ?? 0, 0, ',', '.') }}</td>
+                                <td><small class="text-body-secondary">{{ $lastPayment?->payment_date ? \Carbon\Carbon::parse($lastPayment->payment_date)->format('d/m/Y') : '-' }}</small></td>
+                                <td class="text-end"><a href="/invoices/{{ $inv->id }}" class="btn btn-sm btn-outline-secondary">Detail</a></td>
+                            </tr>
+                            @empty
+                            <tr><td colspan="8" class="text-center text-body-secondary">Tidak ada invoice lunas</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Invoice Pending Modal -->
+<div class="modal fade" id="invoicePendingModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Invoice Pending</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Customer</th>
+                                <th>PO</th>
+                                <th>No Invoice</th>
+                                <th>Status</th>
+                                <th class="text-end">Total</th>
+                                <th class="text-end">Terbayar</th>
+                                <th>Tanggal Pembayaran</th>
+                                <th class="text-end">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($pendingInvoices as $inv)
+                            @php
+                                $lastPayment = $inv->payments?->sortByDesc('payment_date')->first();
+                            @endphp
+                            <tr>
+                                <td>{{ $inv->customer_name ?? '-' }}</td>
+                                <td>{{ $inv->po?->po_number ?? '-' }}</td>
+                                <td><a href="/invoices/{{ $inv->id }}" class="fw-medium text-decoration-none">{{ $inv->invoice_no }}</a></td>
+                                <td><span class="badge text-bg-warning">{{ $inv->invoice_status }}</span></td>
+                                <td class="text-end">Rp {{ number_format($inv->total_amount ?? 0, 0, ',', '.') }}</td>
+                                <td class="text-end">Rp {{ number_format($inv->amount_paid ?? 0, 0, ',', '.') }}</td>
+                                <td><small class="text-body-secondary">{{ $lastPayment?->payment_date ? \Carbon\Carbon::parse($lastPayment->payment_date)->format('d/m/Y') : '-' }}</small></td>
+                                <td class="text-end"><a href="/invoices/{{ $inv->id }}" class="btn btn-sm btn-outline-secondary">Detail</a></td>
+                            </tr>
+                            @empty
+                            <tr><td colspan="8" class="text-center text-body-secondary">Tidak ada invoice pending</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

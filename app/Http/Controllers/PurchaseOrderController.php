@@ -43,7 +43,17 @@ class PurchaseOrderController extends Controller
         }
 
         $pos = $query->latest()->paginate(10);
-        return view('purchase-orders.index', compact('pos'));
+
+        // Koleksi untuk kartu + modal (semua PO, bukan hanya halaman aktif)
+        $allPos = PurchaseOrder::with('customer')->latest()->get();
+        $activePos = $allPos->where('status', '!=', 'paid');
+        $draftPos = $allPos->where('status', 'draft');
+        $paidPos = $allPos->where('status', 'paid');
+        $overduePos = $allPos->filter(fn($p) => $p->getRemainingAmount() > 0);
+
+        return view('purchase-orders.index', compact(
+            'pos', 'allPos', 'activePos', 'draftPos', 'paidPos', 'overduePos'
+        ));
     }
 
     public function create()

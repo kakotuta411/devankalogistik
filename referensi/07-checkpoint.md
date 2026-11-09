@@ -158,6 +158,13 @@
 - config/session.php: secure default true
 - Tests: 2/2 pass
 
+## Recent Changes (2026-11-09 Invoice/PO UI)
+- Card "Invoice Lunas": total dihitung dari `sum(amount_paid)` (bukan `sum(total_amount)`), jadi parent + child invoice yang terbayar menjumlah = total PO
+- Card invoice (Lunas/Pending) & PO (Aktif/Draft/Total/Lunas/Tertunggak) sekarang bisa diklik → modal berisi list data
+- Tabel invoice: urutan kolom Customer, PO, No Invoice, Status, Total, Terbayar, Tanggal Pembayaran, Tanggal Dibuat, Aksi
+- PO controller: koleksi kartu/modal diambil dari semua PO (bukan hanya halaman aktif)
+- Invoice controller: eager load `payments` + `po` untuk kolom tanggal pembayaran & PO
+
 ## Pending
 - Template: user will verify new resi layout matches original PDF
 - Cleanup: existing demo data

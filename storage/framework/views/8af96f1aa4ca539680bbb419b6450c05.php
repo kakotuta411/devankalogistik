@@ -144,8 +144,22 @@
                                     href="/purchase-orders"><i class="bi bi-receipt me-1"></i>Purchase Orders</a>
                             </li>
                         <?php endif; ?>
-                        
-                        
+                        <?php if(auth()->user()->role === 'Admin'): ?>
+                            <li class="nav-item">
+                                <a class="nav-link <?php echo e(request()->is('branches*') ? 'active' : ''); ?>"
+                                    href="/branches"><i class="bi bi-building me-1"></i>Branches</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link <?php echo e(request()->is('users*') ? 'active' : ''); ?>"
+                                    href="/users"><i class="bi bi-people me-1"></i>Users</a>
+                            </li>
+                        <?php endif; ?>
+                        <?php if(in_array(auth()->user()->role, ['Admin', 'Management_View'])): ?>
+                            <li class="nav-item">
+                                <a class="nav-link <?php echo e(request()->is('audit-logs*') ? 'active' : ''); ?>"
+                                    href="/audit-logs"><i class="bi bi-journal-text me-1"></i>Audit Log</a>
+                            </li>
+                        <?php endif; ?>
                     <?php endif; ?>
                 </ul>
             </nav>

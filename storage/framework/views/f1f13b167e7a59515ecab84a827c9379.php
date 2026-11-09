@@ -25,7 +25,7 @@
 
 <div class="row g-3 mb-3">
     <div class="col">
-        <div class="card text-bg-success">
+        <div class="card text-bg-success" role="button" style="cursor:pointer" data-bs-toggle="modal" data-bs-target="#invoicePaidModal">
             <div class="card-header text-center">Invoice Lunas</div>
             <div class="card-body text-center">
                 <h5><?php echo e($paidCount ?? 0); ?></h5>
@@ -34,7 +34,7 @@
         </div>
     </div>
     <div class="col">
-        <div class="card text-bg-warning">
+        <div class="card text-bg-warning" role="button" style="cursor:pointer" data-bs-toggle="modal" data-bs-target="#invoicePendingModal">
             <div class="card-header text-center">Invoice Pending</div>
             <div class="card-body text-center">
                 <h5><?php echo e($pendingCount ?? 0); ?></h5>
@@ -88,28 +88,33 @@
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th><?php echo sortLink('invoice_no', 'No Invoice'); ?></th>
                         <th><?php echo sortLink('customer_name', 'Customer'); ?></th>
-                        <th><?php echo sortLink('branch_id', 'Cabang'); ?></th>
+                        <th>PO</th>
+                        <th><?php echo sortLink('invoice_no', 'No Invoice'); ?></th>
                         <th><?php echo sortLink('invoice_status', 'Status'); ?></th>
                         <th class="text-end"><?php echo sortLink('subtotal', 'Total'); ?></th>
+                        <th class="text-end">Terbayar</th>
+                        <th>Tanggal Pembayaran</th>
                         <th><?php echo sortLink('created_at', 'Dibuat'); ?></th>
                         <th class="text-end">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php $__empty_1 = true; $__currentLoopData = $invoices; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $inv): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                    <?php
+                        $lastPayment = $inv->payments?->sortByDesc('payment_date')->first();
+                        $statusClasses = ['Draft'=>'primary','Sent'=>'info','Paid'=>'success','Overdue'=>'danger','Cancelled'=>'danger','Partial'=>'warning'];
+                    ?>
                     <tr>
-                        <td><a href="/invoices/<?php echo e($inv->id); ?>" class="fw-medium text-decoration-none"><?php echo e($inv->invoice_no); ?></a></td>
                         <td><?php echo e($inv->customer_name ?? '-'); ?></td>
-                        <td><?php echo e($inv->branch?->name ?? '-'); ?></td>
+                        <td><?php echo e($inv->po?->po_number ?? '-'); ?></td>
+                        <td><a href="/invoices/<?php echo e($inv->id); ?>" class="fw-medium text-decoration-none"><?php echo e($inv->invoice_no); ?></a></td>
                         <td>
-                            <?php
-                                $statusClasses = ['Draft'=>'primary','Sent'=>'info','Paid'=>'success','Overdue'=>'danger','Cancelled'=>'danger','Partial'=>'warning'];
-                            ?>
                             <span class="badge text-bg-<?php echo e($statusClasses[$inv->invoice_status] ?? 'secondary'); ?>"><?php echo e($inv->invoice_status); ?></span>
                         </td>
-                        <td class="text-end">Rp <?php echo e(number_format($inv->childInvoices->isNotEmpty() ? ($inv->amount_paid ?? 0) : ($inv->total_amount ?? 0), 0, ',', '.')); ?></td>
+                        <td class="text-end">Rp <?php echo e(number_format($inv->total_amount ?? 0, 0, ',', '.')); ?></td>
+                        <td class="text-end">Rp <?php echo e(number_format($inv->amount_paid ?? 0, 0, ',', '.')); ?></td>
+                        <td><small class="text-body-secondary"><?php echo e($lastPayment?->payment_date ? \Carbon\Carbon::parse($lastPayment->payment_date)->format('d/m/Y') : '-'); ?></small></td>
                         <td><small class="text-body-secondary" data-uts="<?php echo e($inv->created_at?->getTimestamp()); ?>"><?php echo e($inv->created_at?->format('d/m/Y H:i')); ?></small></td>
                         <td class="text-end">
                             <div class="btn-group btn-group-sm" role="group">
@@ -119,7 +124,7 @@
                         </td>
                     </tr>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-                    <tr><td colspan="7" class="text-center text-body-secondary">Tidak ada data</td></tr>
+                    <tr><td colspan="9" class="text-center text-body-secondary">Tidak ada data</td></tr>
                     <?php endif; ?>
                 </tbody>
             </table>
@@ -143,6 +148,104 @@
             <div class="modal-footer">
                 <a id="pdfDownloadBtn" href="#" class="btn btn-danger" target="_blank"><i class="bi bi-download"></i> Download PDF</a>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Invoice Lunas Modal -->
+<div class="modal fade" id="invoicePaidModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Invoice Lunas</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Customer</th>
+                                <th>PO</th>
+                                <th>No Invoice</th>
+                                <th>Status</th>
+                                <th class="text-end">Total</th>
+                                <th class="text-end">Terbayar</th>
+                                <th>Tanggal Pembayaran</th>
+                                <th class="text-end">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php $__empty_1 = true; $__currentLoopData = $paidInvoices; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $inv): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                            <?php
+                                $lastPayment = $inv->payments?->sortByDesc('payment_date')->first();
+                            ?>
+                            <tr>
+                                <td><?php echo e($inv->customer_name ?? '-'); ?></td>
+                                <td><?php echo e($inv->po?->po_number ?? '-'); ?></td>
+                                <td><a href="/invoices/<?php echo e($inv->id); ?>" class="fw-medium text-decoration-none"><?php echo e($inv->invoice_no); ?></a></td>
+                                <td><span class="badge text-bg-success"><?php echo e($inv->invoice_status); ?></span></td>
+                                <td class="text-end">Rp <?php echo e(number_format($inv->total_amount ?? 0, 0, ',', '.')); ?></td>
+                                <td class="text-end">Rp <?php echo e(number_format($inv->amount_paid ?? 0, 0, ',', '.')); ?></td>
+                                <td><small class="text-body-secondary"><?php echo e($lastPayment?->payment_date ? \Carbon\Carbon::parse($lastPayment->payment_date)->format('d/m/Y') : '-'); ?></small></td>
+                                <td class="text-end"><a href="/invoices/<?php echo e($inv->id); ?>" class="btn btn-sm btn-outline-secondary">Detail</a></td>
+                            </tr>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                            <tr><td colspan="8" class="text-center text-body-secondary">Tidak ada invoice lunas</td></tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Invoice Pending Modal -->
+<div class="modal fade" id="invoicePendingModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Invoice Pending</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Customer</th>
+                                <th>PO</th>
+                                <th>No Invoice</th>
+                                <th>Status</th>
+                                <th class="text-end">Total</th>
+                                <th class="text-end">Terbayar</th>
+                                <th>Tanggal Pembayaran</th>
+                                <th class="text-end">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php $__empty_1 = true; $__currentLoopData = $pendingInvoices; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $inv): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                            <?php
+                                $lastPayment = $inv->payments?->sortByDesc('payment_date')->first();
+                            ?>
+                            <tr>
+                                <td><?php echo e($inv->customer_name ?? '-'); ?></td>
+                                <td><?php echo e($inv->po?->po_number ?? '-'); ?></td>
+                                <td><a href="/invoices/<?php echo e($inv->id); ?>" class="fw-medium text-decoration-none"><?php echo e($inv->invoice_no); ?></a></td>
+                                <td><span class="badge text-bg-warning"><?php echo e($inv->invoice_status); ?></span></td>
+                                <td class="text-end">Rp <?php echo e(number_format($inv->total_amount ?? 0, 0, ',', '.')); ?></td>
+                                <td class="text-end">Rp <?php echo e(number_format($inv->amount_paid ?? 0, 0, ',', '.')); ?></td>
+                                <td><small class="text-body-secondary"><?php echo e($lastPayment?->payment_date ? \Carbon\Carbon::parse($lastPayment->payment_date)->format('d/m/Y') : '-'); ?></small></td>
+                                <td class="text-end"><a href="/invoices/<?php echo e($inv->id); ?>" class="btn btn-sm btn-outline-secondary">Detail</a></td>
+                            </tr>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                            <tr><td colspan="8" class="text-center text-body-secondary">Tidak ada invoice pending</td></tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

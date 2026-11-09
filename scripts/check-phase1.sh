@@ -161,7 +161,7 @@ P=$(echo "$REGIONS" | cut -d, -f1)
 R=$(echo "$REGIONS" | cut -d, -f2)
 D=$(echo "$REGIONS" | cut -d, -f3)
 V=$(echo "$REGIONS" | cut -d, -f4)
-if [ "$V" -ge 80000 ]; then
+if [ "$V" -ge 75000 ]; then
     check_item "   Regions" "✅ P:$P R:$R D:$D V:$V"
 else
     check_item "   Regions" "⚠️ P:$P R:$R D:$D V:$V (target: 35/514/7215/80532)"

@@ -73,13 +73,11 @@ echo ""
 
 # 6. MariaDB Tuning
 echo "6. MariaDB Tuning:"
-echo "   DEBUG: file exists? $(test -f /etc/mysql/mariadb.conf.d/99-tuning.cnf && echo YES || echo NO)"
-echo "   DEBUG: grep result: $(grep 'innodb_buffer_pool_size' /etc/mysql/mariadb.conf.d/99-tuning.cnf 2>&1)"
-if [ -f /etc/mysql/mariadb.conf.d/99-tuning.cnf ] && grep -q "innodb_buffer_pool_size" /etc/mysql/mariadb.conf.d/99-tuning.cnf 2>/dev/null; then
-    BP=$(grep "innodb_buffer_pool_size" /etc/mysql/mariadb.conf.d/99-tuning.cnf | grep -v "^[[:space:]]*#" | awk -F= '{print $2}' | tr -d ' ')
+if [ -s /etc/mysql/mariadb.conf.d/99-tuning.cnf ]; then
+    BP=$(grep "innodb_buffer_pool_size" /etc/mysql/mariadb.conf.d/99-tuning.cnf 2>/dev/null | awk -F= '{print $2}' | tr -d ' ')
     check_item "   MariaDB" "✅ buffer_pool=$BP (from 99-tuning.cnf)"
 else
-    check_item "   MariaDB" "❌ Not configured (file not found or no tuning)"
+    check_item "   MariaDB" "❌ Not configured"
 fi
 echo ""
 

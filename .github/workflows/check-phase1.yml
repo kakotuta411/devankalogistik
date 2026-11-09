@@ -17,5 +17,6 @@ jobs:
           port: ${{ secrets.DEPLOY_PORT || 22 }}
           script: |
             cd ${{ secrets.DEPLOY_PATH }}
-            git pull origin master
+            git stash 2>/dev/null || true
+            git pull origin master 2>&1
             bash scripts/check-phase1.sh

@@ -1,0 +1,32 @@
+name: Region Sync (Scheduled)
+on:
+  schedule:
+    - cron: '0 3 1 * *'   # tiap tanggal 1 pukul 03:00 UTC
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - name: Sync regions (incremental)
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          command_timeout: 3h
+          script: |
+            cd ${{ secrets.DEPLOY_PATH }}
+            git stash 2>/dev/null || true
+            git pull origin master 2>&1
+            sudo -u www-data /usr/bin/php8.3 artisan regions:sync
+            echo "--- Counts ---"
+            sudo -u www-data /usr/bin/php8.3 artisan tinker --execute="
+            echo 'Provinces: '.\App\Models\Region::where('level','province')->count().PHP_EOL;
+            echo 'Regencies: '.\App\Models\Region::where('level','regency')->count().PHP_EOL;
+            echo 'Districts: '.\App\Models\Region::where('level','district')->count().PHP_EOL;
+            echo 'Villages: '.\App\Models\Region::where('level','village')->count().PHP_EOL;
+            "

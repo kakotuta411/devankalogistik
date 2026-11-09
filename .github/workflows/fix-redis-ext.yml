@@ -1,0 +1,37 @@
+name: Fix Redis Extension
+on:
+  workflow_dispatch:
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install php8.3-redis
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          script: |
+            echo "=== Check available php8.3-redis ==="
+            apt-cache search php8.3-redis 2>&1
+            echo ""
+            echo "=== Install php8.3-redis ==="
+            sudo apt install -y php8.3-redis 2>&1
+            echo ""
+            echo "=== Verify extension ==="
+            sudo -u www-data /usr/bin/php8.3 -r "echo 'Redis ext: ' . (extension_loaded('redis') ? 'YES' : 'NO') . PHP_EOL;"
+            echo ""
+            echo "=== Restart PHP-FPM ==="
+            sudo systemctl restart php8.3-fpm
+            echo ""
+            echo "=== Test health ==="
+            curl -s https://devankalogistik.web.id/api/health
+            echo ""
+            echo "=== Test web page ==="
+            curl -s -o /dev/null -w "%{http_code}" https://devankalogistik.web.id/
+            echo ""
+            echo "=== Test login page ==="
+            curl -s -o /dev/null -w "%{http_code}" https://devankalogistik.web.id/login

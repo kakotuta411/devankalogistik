@@ -33,10 +33,10 @@ jobs:
             git stash 2>/dev/null || true
             git pull origin master
             composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
-            sudo -u www-data php artisan migrate --force
-            sudo -u www-data php artisan config:cache
-            sudo -u www-data php artisan route:cache
-            sudo -u www-data php artisan view:cache
-            sudo -u www-data php artisan optimize
+            sudo -u www-data /usr/bin/php8.3 artisan migrate --force
+            sudo -u www-data /usr/bin/php8.3 artisan config:cache
+            sudo -u www-data /usr/bin/php8.3 artisan route:cache
+            sudo -u www-data /usr/bin/php8.3 artisan view:cache
+            sudo -u www-data /usr/bin/php8.3 artisan optimize
             sudo systemctl restart php8.3-fpm
             echo "Deploy completed at $(date)"

@@ -188,6 +188,14 @@
 - PDF invoice parent: breakdown LENGKAP (Biaya Pengiriman rate×kg, Packaging, Charge Alat, Biaya Lain-lain, Diskon, PPFTZ 03, PPN, PPH)
 - Dashboard card "Invoice Lunas": total = `sum(amount_paid)` (konsisten dgn menu Invoice)
 
+## Recent Changes (2026-11-09 Dashboard Revamp)
+- Tabel "Recent Shipments" dihapus, diganti 2 tabel: **Invoice Pending** & **PO Pending**
+- Kolom tabel: Customer | Progress Pembayaran (bar + %) | Sisa Tunggakan
+- Top 10 sisa tunggakan terbesar; baris bisa diklik ke detail invoice/PO
+- Progress: invoice = amount_paid/displayTotal; PO = paid_amount/total_amount
+- Warna bar: <30% merah, 30-69% kuning, ≥70% hijau
+- 5 kartu & modal Shipments/Manifests/Invoices tetap ada
+
 ## Pending
 - Template: user will verify new resi layout matches original PDF
 - Cleanup: existing demo data

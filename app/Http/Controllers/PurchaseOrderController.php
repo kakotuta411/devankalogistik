@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use App\Models\PurchaseOrder;
 use App\Models\Shipment;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
 class PurchaseOrderController extends Controller
@@ -54,6 +55,65 @@ class PurchaseOrderController extends Controller
         return view('purchase-orders.index', compact(
             'pos', 'allPos', 'activePos', 'draftPos', 'paidPos', 'overduePos'
         ));
+    }
+
+    public function exportCsv(Request $request)
+    {
+        $pos = $this->filteredPos($request);
+        $filename = 'purchase-orders_' . date('Y-m-d_His') . '.csv';
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+        $callback = function () use ($pos) {
+            $file = fopen('php://output', 'w');
+            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
+            fputcsv($file, ['No. PO', 'Pelanggan', 'Total', 'Dibayar', 'Sisa', 'Status', 'Dibuat']);
+            foreach ($pos as $po) {
+                fputcsv($file, [
+                    $po->po_number,
+                    $po->customer?->company_name ?? $po->customer?->name ?? '-',
+                    $po->total_amount,
+                    $po->paid_amount,
+                    $po->getRemainingAmount(),
+                    ucfirst($po->status),
+                    $po->created_at?->format('d/m/Y H:i'),
+                ]);
+            }
+            fclose($file);
+        };
+        return response()->stream($callback, 200, $headers);
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $pos = $this->filteredPos($request);
+        $generated_at = now();
+        $pdf = Pdf::loadView('print.purchase-order-list', compact('pos', 'generated_at'));
+        if ($request->get('preview')) {
+            return $pdf->stream('purchase-orders_' . date('Y-m-d_His') . '.pdf');
+        }
+        return $pdf->download('purchase-orders_' . date('Y-m-d_His') . '.pdf');
+    }
+
+    private function filteredPos(Request $request)
+    {
+        $query = PurchaseOrder::with('customer');
+
+        if ($request->filled('search')) {
+            $s = $request->search;
+            $query->where(function ($q) use ($s) {
+                $q->where('po_number', 'like', "%{$s}%")
+                  ->orWhereHas('customer', fn($c) => $c->where('name', 'like', "%{$s}%")
+                      ->orWhere('company_name', 'like', "%{$s}%"));
+            });
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        return $query->latest()->get();
     }
 
     public function create()

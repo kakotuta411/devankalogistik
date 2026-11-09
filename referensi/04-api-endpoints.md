@@ -82,6 +82,8 @@
 | GET | /purchase-orders/{id} | purchase-orders.show | Detail |
 | GET | /purchase-orders/{id}/edit | purchase-orders.edit | Edit form |
 | PUT | /purchase-orders/{id} | purchase-orders.update | Update |
+| GET | /purchase-orders/export/csv | purchase-orders.export.csv | Export CSV |
+| GET | /purchase-orders/export/pdf | purchase-orders.export.pdf | Export PDF (preview support) |
 
 ### Public Tracking (no auth, CORS enabled)
 | Method | Path | Description |

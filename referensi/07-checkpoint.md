@@ -171,6 +171,12 @@
 - Workflow disimpan: ci.yml, deploy.yml, check-phase1.yml, region-sync-force.yml, restart-fpm.yml, setup-redis-opcache.yml
 - referensi/18 diperbarui: status COMPLETE, panduan Redis + OPcache, daftar workflow
 
+## Recent Changes (2026-11-09 PO Export)
+- Menu PO: export PDF + Excel (CSV) — endpoint `/purchase-orders/export/pdf` & `/purchase-orders/export/csv`
+- PDF preview modal (sama seperti menu Invoice), kolom: No PO, Pelanggan, Total, Dibayar, Sisa, Status, Dibuat
+- View print: `print/purchase-order-list.blade.php`
+- Controller: `PurchaseOrderController::exportCsv/exportPdf/filteredPos`
+
 ## Pending
 - Template: user will verify new resi layout matches original PDF
 - Cleanup: existing demo data

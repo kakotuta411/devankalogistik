@@ -72,6 +72,12 @@
         <div class="col-md-2">
             <button type="submit" class="btn btn-sm btn-secondary">Filter</button>
         </div>
+        <div class="col-md-auto ms-auto">
+            <div class="btn-group btn-group-sm">
+                <button type="button" id="exportPdfBtn" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#pdfPreviewModal"><i class="bi bi-file-pdf"></i> Export PDF</button>
+                <a href="#" id="exportCsvBtn" class="btn btn-outline-success"><i class="bi bi-file-spreadsheet"></i> Export Excel</a>
+            </div>
+        </div>
     </form>
 
     <div class="table-responsive">
@@ -163,4 +169,48 @@
     </div>
 </div>
 @endforeach
+
+<!-- PDF Preview Modal -->
+<div class="modal fade" id="pdfPreviewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered" style="height:90vh;">
+        <div class="modal-content" style="height:100%;">
+            <div class="modal-header">
+                <h5 class="modal-title">Preview PDF</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0" style="flex:1;overflow:hidden;">
+                <iframe id="pdfPreviewFrame" src="" style="width:100%;height:100%;border:none;"></iframe>
+            </div>
+            <div class="modal-footer">
+                <a id="pdfDownloadBtn" href="#" class="btn btn-danger" target="_blank"><i class="bi bi-download"></i> Download PDF</a>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var exportCsvBtn = document.getElementById('exportCsvBtn');
+    if (exportCsvBtn) {
+        var qs = window.location.search;
+        if (qs && qs.charAt(0) === '?') qs = qs.substring(1);
+        exportCsvBtn.href = '/purchase-orders/export/csv' + (qs ? '?' + qs : '');
+    }
+    var pdfPreviewModal = document.getElementById('pdfPreviewModal');
+    if (pdfPreviewModal) {
+        pdfPreviewModal.addEventListener('show.bs.modal', function() {
+            var qs = window.location.search;
+            if (qs && qs.charAt(0) === '?') qs = qs.substring(1);
+            var previewUrl = '/purchase-orders/export/pdf?' + qs + (qs ? '&' : '') + 'preview=1';
+            var downloadUrl = '/purchase-orders/export/pdf?' + qs;
+            document.getElementById('pdfPreviewFrame').src = previewUrl;
+            document.getElementById('pdfDownloadBtn').href = downloadUrl;
+        });
+        pdfPreviewModal.addEventListener('hidden.bs.modal', function() {
+            document.getElementById('pdfPreviewFrame').src = '';
+        });
+    }
+});
+</script>
 @endsection

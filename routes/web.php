@@ -69,6 +69,8 @@ Route::middleware(['auth', 'readonly'])->group(function () {
 
     // Purchase Orders
     Route::resource('purchase-orders', PurchaseOrderController::class);
+    Route::get('/purchase-orders/export/csv', [PurchaseOrderController::class, 'exportCsv'])->name('purchase-orders.export.csv');
+    Route::get('/purchase-orders/export/pdf', [PurchaseOrderController::class, 'exportPdf'])->name('purchase-orders.export.pdf');
 
     // Customer API
     Route::get('/api/customers/search', [\App\Http\Controllers\CustomerController::class, 'search'])->name('api.customers.search');

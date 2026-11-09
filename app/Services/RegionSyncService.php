@@ -22,15 +22,28 @@ class RegionSyncService
         $this->syncVillages($force);
     }
 
+    private function row(string $code, string $name, string $level, ?string $parent): array
+    {
+        return [
+            'code' => $code,
+            'name' => $name,
+            'level' => $level,
+            'parent_code' => $parent,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+    }
+
     private function syncProvinces(): void
     {
         $response = Http::get(self::BASE_URL . '/provinces.json');
         $data = $response->json('data', []);
+        $rows = [];
         foreach ($data as $item) {
-            Region::updateOrCreate(
-                ['code' => $item['id']],
-                ['name' => $item['name'], 'level' => 'province', 'parent_code' => null]
-            );
+            $rows[] = $this->row($item['id'], $item['name'], 'province', null);
+        }
+        foreach (array_chunk($rows, 500) as $chunk) {
+            Region::upsert($chunk, ['code'], ['name', 'parent_code']);
         }
     }
 
@@ -38,14 +51,17 @@ class RegionSyncService
     {
         $provinces = Region::where('level', 'province')->get();
         foreach ($provinces as $province) {
-            $response = Http::get(self::BASE_URL . "/regencies/{$province->code}.json");
-            $data = $response->json();
-            if (!is_array($data)) continue;
-            foreach ($data as $item) {
-                Region::updateOrCreate(
-                    ['code' => $item['id']],
-                    ['name' => $item['name'], 'level' => 'regency', 'parent_code' => $province->code]
-                );
+            try {
+                $response = Http::timeout(30)->get(self::BASE_URL . "/regencies/{$province->code}.json");
+                $data = $response->json('data', []);
+                if (!is_array($data) || empty($data)) continue;
+                $rows = [];
+                foreach ($data as $item) {
+                    $rows[] = $this->row($item['id'], $item['name'], 'regency', $province->code);
+                }
+                Region::upsert($rows, ['code'], ['name', 'parent_code']);
+            } catch (\Exception $e) {
+                continue;
             }
         }
     }
@@ -54,14 +70,17 @@ class RegionSyncService
     {
         $regencies = Region::where('level', 'regency')->get();
         foreach ($regencies as $regency) {
-            $response = Http::get(self::BASE_URL . "/districts/{$regency->code}.json");
-            $data = $response->json();
-            if (!is_array($data)) continue;
-            foreach ($data as $item) {
-                Region::updateOrCreate(
-                    ['code' => $item['id']],
-                    ['name' => $item['name'], 'level' => 'district', 'parent_code' => $regency->code]
-                );
+            try {
+                $response = Http::timeout(30)->get(self::BASE_URL . "/districts/{$regency->code}.json");
+                $data = $response->json('data', []);
+                if (!is_array($data) || empty($data)) continue;
+                $rows = [];
+                foreach ($data as $item) {
+                    $rows[] = $this->row($item['id'], $item['name'], 'district', $regency->code);
+                }
+                Region::upsert($rows, ['code'], ['name', 'parent_code']);
+            } catch (\Exception $e) {
+                continue;
             }
         }
     }
@@ -69,25 +88,50 @@ class RegionSyncService
     private function syncVillages(bool $force = false): void
     {
         $districts = Region::where('level', 'district')->get();
-        foreach ($districts as $district) {
-            // Skip if already synced (has villages) unless force
-            if (!$force && Region::where('level', 'village')->where('parent_code', $district->code)->exists()) {
-                continue;
-            }
-            try {
-                $response = Http::timeout(30)->get(self::BASE_URL . "/villages/{$district->code}.json");
-                $data = $response->json();
-                if (!is_array($data)) continue;
-                foreach ($data as $item) {
-                    Region::updateOrCreate(
-                        ['code' => $item['id']],
-                        ['name' => $item['name'], 'level' => 'village', 'parent_code' => $district->code]
-                    );
-                }
-            } catch (\Exception $e) {
-                // Skip failed districts, continue with next
-                continue;
-            }
+
+        // Skip district yang sudah punya village (kecuali force)
+        if (!$force) {
+            $synced = Region::where('level', 'village')->distinct()->pluck('parent_code');
+            $districts = $districts->reject(fn($d) => $synced->contains($d->code));
         }
+
+        $total = $districts->count();
+        $processed = 0;
+
+        // Concurrency fetch: 30 request paralel per batch
+        $districts->chunk(30)->each(function ($chunk) use (&$processed, $total) {
+            $chunk = $chunk->values();
+            $responses = Http::pool(function ($pool) use ($chunk) {
+                foreach ($chunk as $district) {
+                    $pool->get(self::BASE_URL . "/villages/{$district->code}.json");
+                }
+            });
+
+            $rows = [];
+            foreach ($responses as $i => $response) {
+                try {
+                    if (!($response instanceof \Illuminate\Http\Client\Response) || !$response->successful()) {
+                        continue;
+                    }
+                    $data = $response->json('data', []);
+                    if (!is_array($data)) continue;
+                    $district = $chunk[$i];
+                    foreach ($data as $item) {
+                        $rows[] = $this->row($item['id'], $item['name'], 'village', $district->code);
+                    }
+                } catch (\Throwable $e) {
+                    continue;
+                }
+            }
+
+            foreach (array_chunk($rows, 500) as $batch) {
+                Region::upsert($batch, ['code'], ['name', 'parent_code']);
+            }
+
+            $processed += $chunk->count();
+            if ($processed % 1000 < 30) {
+                echo "   progress: {$processed}/{$total} districts" . PHP_EOL;
+            }
+        });
     }
 }

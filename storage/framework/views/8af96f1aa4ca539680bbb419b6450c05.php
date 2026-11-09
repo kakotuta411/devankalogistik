@@ -120,10 +120,14 @@
             <nav class="d-flex align-items-center" style="min-width:0; flex:1 1 auto; overflow:hidden;">
                 <ul class="nav nav-pills mb-0"
                     style="min-width:0; max-width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; flex-wrap:nowrap;">
-                    <li class="nav-item">
-                        <a class="nav-link <?php echo e(request()->is('dashboard') ? 'active' : ''); ?>" href="/dashboard"><i
-                                class="bi bi-house-fill me-1"></i>Dashboard</a>
-                    </li>
+                    <?php if(auth()->guard()->check()): ?>
+                        <?php if(!in_array(auth()->user()->role, ['Staff_Invoice', 'Staff_Shipment'])): ?>
+                            <li class="nav-item">
+                                <a class="nav-link <?php echo e(request()->is('dashboard') ? 'active' : ''); ?>" href="/dashboard"><i
+                                        class="bi bi-house-fill me-1"></i>Dashboard</a>
+                            </li>
+                        <?php endif; ?>
+                    <?php endif; ?>
                     <li class="nav-item">
                         <a class="nav-link <?php echo e(request()->is('shipments*') ? 'active' : ''); ?>" href="/shipments"><i
                                 class="bi bi-box me-1"></i>Shipments</a>

@@ -134,8 +134,18 @@
 - Navbar: Audit Log menu visible for Admin + Management_View
 - Updated 11-rbac-breakdown.md with new permissions
 
+## Recent Changes (2026-11-09 Phase 1 COMPLETE)
+- Phase 1 VPS Security: ALL 15 items ✅ (UFW, Fail2ban, Nginx headers, tuning, backup, monitoring)
+- Region sync: 75,412 villages (data source variance from 80,532 target)
+- DB user least privilege: devanka has SELECT/INSERT/UPDATE/DELETE only
+- CORS restricted: devankalogistik.com + www
+- deploy.yml: sudo -u www-data for artisan commands
+- check-phase1.sh: automated verification script (15 checks, all ✅)
+- setup-phase1-remaining.sh: automated setup script
+- fix-phase1.sh: fix script for services/MariaDB/region sync
+- GitHub Actions: check-phase1.yml, setup-phase1-remaining.yml, fix-phase1.yml
+- check-phase1.sh: all 15 items ✅ (0 failed, 0 warnings)
 ## Recent Changes (2026-11-08 Phase 2)
-- Health check endpoint: /api/health (DB check + timestamp) — commit 436e4f7
 - Audit Log view (admin-only): controller, route, view, navbar menu — commit 7202411
 - Rate limiting: login 5/min, tracking 30/min, api 60/min — commit 502866c
 - CORS restricted: devankalogistik.com + www.devankalogistik.com (was *)

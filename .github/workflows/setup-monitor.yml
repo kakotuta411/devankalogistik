@@ -1,0 +1,39 @@
+name: Setup Monitor
+on:
+  workflow_dispatch:
+    inputs:
+      slack_webhook:
+        description: 'Slack Incoming Webhook URL (kosongkan kalau belum ada)'
+        required: false
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy monitor.sh + cron
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          script: |
+            cd ${{ secrets.DEPLOY_PATH }}
+            git stash 2>/dev/null || true
+            git pull origin master 2>&1
+            chmod +x monitor.sh
+            # cron: jalankan tiap 5 menit, dengan Slack webhook (kalau ada)
+            WEBHOOK='${{ github.event.inputs.slack_webhook }}'
+            if [ -n "$WEBHOOK" ]; then
+              printf '*/5 * * * * root SLACK_WEBHOOK=%s /var/www/devanka-logistik/monitor.sh\n' "$WEBHOOK" | sudo tee /etc/cron.d/vps-monitor
+            else
+              echo '*/5 * * * * root /var/www/devanka-logistik/monitor.sh' | sudo tee /etc/cron.d/vps-monitor
+            fi
+            sudo chmod 644 /etc/cron.d/vps-monitor
+            echo "--- cron ---"
+            cat /etc/cron.d/vps-monitor
+            echo "--- test run ---"
+            sudo bash monitor.sh
+            echo "--- log ---"
+            sudo tail -5 /var/log/devanka-monitor.log 2>/dev/null || echo "(log belum ada)"

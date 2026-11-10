@@ -1,0 +1,31 @@
+name: Gen Manifest PDF
+on:
+  workflow_dispatch:
+
+jobs:
+  gen:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate manifest PDF + check monitor
+        uses: appleboy/ssh-action@v1
+        timeout-minutes: 5
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          command_timeout: 120s
+          script: |
+            cd /var/www/devanka-logistik
+            git stash 2>/dev/null || true
+            git pull origin master 2>&1 | tail -1
+            sudo -u www-data /usr/bin/php8.3 scripts/gen-manifest-pdf.php
+            sudo cp /tmp/prod-manifest.pdf public/
+            sudo chown www-data:www-data public/prod-manifest.pdf
+            ls -lh public/prod-manifest.pdf
+            echo "=== MONITOR CRON ==="
+            ls -l /etc/cron.d/ | grep -i monitor || echo "NO monitor cron"
+            echo "=== MONITOR LOG (last 8) ==="
+            sudo tail -8 /var/log/devanka-monitor.log 2>/dev/null || echo "NO monitor log"
+            echo "=== CRON FILE ==="
+            sudo cat /etc/cron.d/vps-monitor 2>/dev/null || echo "NO vps-monitor file"

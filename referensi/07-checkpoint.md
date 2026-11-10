@@ -209,13 +209,9 @@
 
 ### Manual (perlu user/VPS console)
 - [ ] **Template resi**: user verifikasi layout resi baru cocok dengan PDF asli
-- [ ] **UptimeRobot**: setup monitor `https://devankalogistik.web.id/api/health` (5 min)
-- [ ] **rclone config**: `sudo rclone config` → Cloudflare R2 (off-site backup belum aktif)
-- [ ] **monitor.sh**: alert otomatis (cron 5 min) — belum dipasang
 
 ### Data
 - [ ] **Cleanup demo data**: data dummy (Anang, DLI-00001..00006, invoice dummy) mau dihapus?
-- [ ] **Region sync berkala**: jadwalkan sync ulang otomatis (mis. tiap bulan) atau manual via `regions:sync`
 
 ### Ops (opsional, ditunda user)
 - [ ] **Cloudflare DNS**: skip dulu — nanti kalau banyak domain/app
@@ -233,6 +229,11 @@
 - [x] Region v2 migration (38/514/7.285/83.762)
 - [x] Menu Dashboard hidden utk Staff_Invoice & Staff_Shipment
 - [x] Workflow one-off dibersihkan (6 workflow inti tersisa)
+- [x] UptimeRobot (site health 5 min)
+- [x] Region sync berkala (workflow `region-sync-scheduled.yml`, tanggal 1 03:00 UTC)
+- [x] rclone Backblaze B2 (config + cron offsite backup 05:00, bucket `devanka-backup`)
+- [x] monitor.sh Opsi B (8 cek, cron 5 min, alert Slack webhook)
+- [x] Setup workflows: `setup-monitor.yml`, `final-ops.yml`
 
 ## Documentation Index
 - 01-overview.md — Project info, roles, prefixes, formulas

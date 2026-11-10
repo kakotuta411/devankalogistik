@@ -29,7 +29,7 @@
         }
 
         .title {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: bold;
         }
 
@@ -86,112 +86,145 @@
             word-wrap: break-word;
             overflow-wrap: break-word;
         }
+
+        /* Nomor resi / PO: kotak hitam rounded */
+        .num-box {
+            background: #000;
+            color: #fff;
+            border-radius: 8px;
+            padding: 6px 14px;
+            min-width: 112px;
+        }
+
+        .num-box .num-label {
+            font-size: 8px;
+            color: #bbb;
+            letter-spacing: 0.5px;
+        }
+
+        .num-box .num-value {
+            font-size: 12px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        /* Garis pemisah vertikal kiri - kanan */
+        .divider-v {
+            position: absolute;
+            top: 106px;
+            height: 216px;
+            left: 452px;
+            border-left: 1px solid #ccc;
+        }
     </style>
 </head>
 
 <body>
-    {{-- Logo -- top left --}}
+    {{-- Logo -- top left (lebih tinggi & lebar) --}}
     @if($logoUrl)
-        <div class="abs" style="left: 20px; top: 15px;">
-            <img src="{{ $logoUrl }}" alt="Logo" style="max-height: 60px; max-width: 120px;">
+        <div class="abs" style="left: 30px; top: 20px;">
+            <img src="{{ $logoUrl }}" alt="Logo" style="max-height: 85px; max-width: 175px;">
         </div>
     @endif
 
     {{-- Title --}}
-    <div class="abs title" style="left: 187px; top: 20px;">RESI PENGIRIMAN</div>
+    <div class="abs title" style="left: 240px; top: 20px;">RESI PENGIRIMAN</div>
 
-    {{-- NO. RESI --}}
-    <div class="abs label" style="left: 587px; top: 28px;">NO. RESI</div>
-    <div class="abs value" style="left: 582px; top: 48px; font-weight: bold; font-size: 12px;">{{ $shipment->resi_no }}
+    {{-- NO. RESI (kotak hitam rounded) --}}
+    <div class="abs num-box" style="left: 570px; top: 20px;">
+        <div class="num-label">NO. RESI</div>
+        <div class="num-value">{{ $shipment->resi_no }}</div>
     </div>
 
-    {{-- NO. PO --}}
-    <div class="abs label" style="left: 771px; top: 28px;">NO. PO</div>
-    <div class="abs value" style="left: 772px; top: 48px; font-weight: bold; font-size: 12px;">
-        {{ $shipment->po_number ?? '-' }}</div>
+    {{-- NO. PO (kotak hitam rounded) --}}
+    <div class="abs num-box" style="left: 730px; top: 20px;">
+        <div class="num-label">NO. PO</div>
+        <div class="num-value">{{ $shipment->po_number ?? '-' }}</div>
+    </div>
 
     {{-- Company --}}
-    <div class="abs company" style="left: 190px; top: 55px;">PT. DEVANKA LOGISTIK INDONESIA</div>
+    <div class="abs company" style="left: 240px; top: 56px;">PT. DEVANKA LOGISTIK INDONESIA</div>
 
-    {{-- Section: INFORMASI PENGIRIMAN --}}
-    <div class="abs section" style="left: 21px; top: 104px;">INFORMASI PENGIRIMAN</div>
+    {{-- Garis bawah header --}}
+    <div class="abs" style="left: 20px; top: 98px; width: 872px; border-bottom: 1.5px solid #333;"></div>
 
-    {{-- Tanggal Masuk --}}
-    <div class="abs label" style="left: 24px; top: 149px;">Tanggal Masuk</div>
-    <div class="abs" style="left: 190px; top: 149px;">:</div>
-    <div class="abs value" style="left: 206px; top: 149px;">{{ $shipment->created_at?->format('d/m/Y H:i') }}</div>
+    {{-- Garis pemisah vertikal antara kiri & kanan --}}
+    <div class="divider-v"></div>
 
-    {{-- Status --}}
-    <div class="abs label" style="left: 24px; top: 184px;">Status</div>
-    <div class="abs" style="left: 190px; top: 184px;">:</div>
-    <div class="abs value" style="left: 206px; top: 184px;">{{ $shipment->shipment_status }}</div>
+    {{-- ===== Kolom kiri: INFORMASI PENGIRIMAN ===== --}}
+    <div class="abs section" style="left: 30px; top: 108px;">INFORMASI PENGIRIMAN</div>
 
-    {{-- Jenis Layanan --}}
-    <div class="abs label" style="left: 24px; top: 219px;">Jenis Layanan</div>
-    <div class="abs" style="left: 190px; top: 219px;">:</div>
-    <div class="abs value" style="left: 206px; top: 219px;">{{ $shipment->service_type }}</div>
+    <div class="abs label" style="left: 30px; top: 136px;">Tanggal Masuk</div>
+    <div class="abs" style="left: 170px; top: 136px;">:</div>
+    <div class="abs value" style="left: 186px; top: 136px;">{{ $shipment->created_at?->format('d/m/Y H:i') }}</div>
 
-    {{-- Total Koli --}}
-    <div class="abs label" style="left: 24px; top: 254px;">Total Koli</div>
-    <div class="abs" style="left: 190px; top: 254px;">:</div>
-    <div class="abs value" style="left: 206px; top: 254px;">{{ $shipment->total_koli }}</div>
+    <div class="abs label" style="left: 30px; top: 162px;">Status</div>
+    <div class="abs" style="left: 170px; top: 162px;">:</div>
+    <div class="abs value" style="left: 186px; top: 162px;">{{ $shipment->shipment_status }}</div>
 
-    {{-- Total Berat --}}
-    <div class="abs label" style="left: 24px; top: 289px;">Total Berat</div>
-    <div class="abs" style="left: 190px; top: 289px;">:</div>
-    <div class="abs value" style="left: 206px; top: 289px;">{{ $shipment->total_weight }} kg</div>
+    <div class="abs label" style="left: 30px; top: 188px;">Jenis Layanan</div>
+    <div class="abs" style="left: 170px; top: 188px;">:</div>
+    <div class="abs value" style="left: 186px; top: 188px;">{{ $shipment->service_type }}</div>
 
-    {{-- Isi Barang --}}
-    <div class="abs label" style="left: 24px; top: 324px;">Isi Barang</div>
-    <div class="abs" style="left: 190px; top: 324px;">:</div>
-    <div class="abs value maxw" style="left: 206px; top: 324px;">{{ $shipment->package_description ?? '-' }}</div>
+    <div class="abs label" style="left: 30px; top: 214px;">Total Koli</div>
+    <div class="abs" style="left: 170px; top: 214px;">:</div>
+    <div class="abs value" style="left: 186px; top: 214px;">{{ $shipment->total_koli }}</div>
 
-    {{-- Tipe Pembayaran --}}
-    <div class="abs label" style="left: 24px; top: 394px;">Tipe Pembayaran</div>
-    <div class="abs" style="left: 190px; top: 394px;">:</div>
-    <div class="abs" style="left: 206px; top: 391px;"><span
+    <div class="abs label" style="left: 30px; top: 240px;">Total Berat</div>
+    <div class="abs" style="left: 170px; top: 240px;">:</div>
+    <div class="abs value" style="left: 186px; top: 240px;">{{ $shipment->total_weight }} kg</div>
+
+    <div class="abs label" style="left: 30px; top: 266px;">Isi Barang</div>
+    <div class="abs" style="left: 170px; top: 266px;">:</div>
+    <div class="abs value maxw" style="left: 186px; top: 266px;">{{ $shipment->package_description ?? '-' }}</div>
+
+    <div class="abs label" style="left: 30px; top: 300px;">Tipe Pembayaran</div>
+    <div class="abs" style="left: 170px; top: 298px;">:</div>
+    <div class="abs value" style="left: 186px; top: 297px;"><span
             class="badge">{{ strtoupper($shipment->payment_type ?? 'KREDIT') }}</span></div>
 
-    {{-- Right column: PENGIRIM --}}
-    <div class="abs section" style="left: 468px; top: 147px;">PENGIRIM</div>
+    {{-- ===== Kolom kanan: PENGIRIM ===== --}}
+    <div class="abs section" style="left: 468px; top: 108px;">PENGIRIM</div>
 
-    <div class="abs label" style="left: 472px; top: 182px;">Nama</div>
-    <div class="abs" style="left: 553px; top: 181px;">:</div>
-    <div class="abs value maxw-narrow" style="left: 565px; top: 181px;">{{ $shipment->sender_name }}</div>
+    <div class="abs label" style="left: 472px; top: 136px;">Nama</div>
+    <div class="abs" style="left: 553px; top: 136px;">:</div>
+    <div class="abs value maxw-narrow" style="left: 565px; top: 136px;">{{ $shipment->sender_name }}</div>
 
-    <div class="abs label" style="left: 472px; top: 211px;">Telepon</div>
-    <div class="abs" style="left: 553px; top: 210px;">:</div>
-    <div class="abs value maxw-narrow" style="left: 565px; top: 210px;">{{ $shipment->sender_phone }}</div>
+    <div class="abs label" style="left: 472px; top: 160px;">Telepon</div>
+    <div class="abs" style="left: 553px; top: 160px;">:</div>
+    <div class="abs value maxw-narrow" style="left: 565px; top: 160px;">{{ $shipment->sender_phone }}</div>
 
-    <div class="abs label" style="left: 472px; top: 240px;">Alamat</div>
-    <div class="abs" style="left: 553px; top: 238px;">:</div>
-    <div class="abs value maxw-narrow" style="left: 565px; top: 238px;">{{ $shipment->sender_address }}</div>
+    <div class="abs label" style="left: 472px; top: 184px;">Alamat</div>
+    <div class="abs" style="left: 553px; top: 184px;">:</div>
+    <div class="abs value maxw-narrow" style="left: 565px; top: 184px;">{{ $shipment->sender_address }}</div>
 
-    {{-- Right column: PENERIMA --}}
-    <div class="abs section" style="left: 468px; top: 280px;">PENERIMA</div>
+    {{-- ===== Kolom kanan: PENERIMA ===== --}}
+    <div class="abs section" style="left: 468px; top: 222px;">PENERIMA</div>
 
-    <div class="abs label" style="left: 472px; top: 315px;">Nama</div>
-    <div class="abs" style="left: 553px; top: 314px;">:</div>
-    <div class="abs value maxw-narrow" style="left: 565px; top: 314px;">{{ $shipment->receiver_name }}</div>
+    <div class="abs label" style="left: 472px; top: 250px;">Nama</div>
+    <div class="abs" style="left: 553px; top: 250px;">:</div>
+    <div class="abs value maxw-narrow" style="left: 565px; top: 250px;">{{ $shipment->receiver_name }}</div>
 
-    <div class="abs label" style="left: 472px; top: 344px;">Telepon</div>
-    <div class="abs" style="left: 553px; top: 343px;">:</div>
-    <div class="abs value maxw-narrow" style="left: 565px; top: 343px;">{{ $shipment->receiver_phone }}</div>
+    <div class="abs label" style="left: 472px; top: 274px;">Telepon</div>
+    <div class="abs" style="left: 553px; top: 274px;">:</div>
+    <div class="abs value maxw-narrow" style="left: 565px; top: 274px;">{{ $shipment->receiver_phone }}</div>
 
-    <div class="abs label" style="left: 472px; top: 373px;">Alamat</div>
-    <div class="abs" style="left: 553px; top: 372px;">:</div>
-    <div class="abs value maxw-narrow" style="left: 565px; top: 372px;">{{ $shipment->receiver_address }}</div>
+    <div class="abs label" style="left: 472px; top: 298px;">Alamat</div>
+    <div class="abs" style="left: 553px; top: 298px;">:</div>
+    <div class="abs value maxw-narrow" style="left: 565px; top: 298px;">{{ $shipment->receiver_address }}</div>
 
     {{-- Footer tagline --}}
-    <div class="abs tagline" style="left: 24px; top: 424px;">PARTNER LOGISTIK PROFESIONAL UNTUK BISNIS ANDA</div>
-    <div class="abs small" style="left: 24px; top: 443px;">www.devankalogistik.com</div>
+    <div class="abs tagline" style="left: 30px; top: 450px;">PARTNER LOGISTIK PROFESIONAL UNTUK BISNIS ANDA</div>
+    <div class="abs small" style="left: 30px; top: 468px;">www.devankalogistik.com</div>
 
-    {{-- Signature lines --}}
-    <div class="abs sig" style="left: 548px; top: 435px;">PENERIMA</div>
-    <div class="abs sig" style="left: 765px; top: 435px;">PETUGAS</div>
+    {{-- Signature lines (space lebih banyak) --}}
+    <div class="abs sig" style="left: 548px; top: 450px;">PENERIMA</div>
+    <div class="abs sig" style="left: 750px; top: 450px;">PETUGAS</div>
+    <div class="abs" style="left: 548px; top: 486px; width: 130px; border-top: 1px solid #333;"></div>
+    <div class="abs" style="left: 750px; top: 486px; width: 130px; border-top: 1px solid #333;"></div>
 
     {{-- Bottom note --}}
-    <div class="abs small" style="left: 23px; top: 480px;">Simpan resi ini sebagai bukti pengiriman.</div>
+    <div class="abs small" style="left: 23px; top: 486px;">Simpan resi ini sebagai bukti pengiriman.</div>
 </body>
 
 </html>

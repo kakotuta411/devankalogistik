@@ -7,17 +7,28 @@
     <style>
         @page {
             size: 4in 6in;
-            margin: 0.2cm;
+            margin: 0;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
         }
 
         body {
             font-family: DejaVu Sans, sans-serif;
             font-size: 8pt;
-            margin: 0;
+            padding: 0.2cm;
+            box-sizing: border-box;
         }
 
+        /* dompdf TIDAK support flexbox/justify-content -> pakai absolute */
         .wrap {
+            position: relative;
             border: 1px solid #000;
+            box-sizing: border-box;
+            height: 412pt;
             padding: 3px;
         }
 
@@ -25,7 +36,6 @@
             text-align: center;
             font-weight: bold;
             font-size: 10pt;
-            margin-bottom: 3px;
             border-bottom: 1px solid #000;
             padding-bottom: 2px;
         }
@@ -34,14 +44,12 @@
             text-align: center;
             font-size: 8pt;
             font-weight: bold;
-            margin-bottom: 2px;
         }
 
         .resi {
             text-align: center;
             font-size: 14pt;
             font-weight: bold;
-            margin: 3px 0;
             border-top: 1px dashed #000;
             border-bottom: 1px dashed #000;
             padding: 3px 0;
@@ -49,18 +57,15 @@
 
         .qr {
             text-align: center;
-            margin: 2px 0;
         }
 
         .route {
             text-align: center;
             font-size: 9pt;
             font-weight: bold;
-            margin-bottom: 3px;
         }
 
         .block {
-            margin-bottom: 3px;
             margin-left: 2px;
         }
 
@@ -87,7 +92,6 @@
 
         .box-table {
             width: 100%;
-            margin-top: 3px;
         }
 
         .box-table td {
@@ -108,18 +112,24 @@
         }
 
         .footer {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 14pt;
             text-align: center;
             font-size: 7pt;
-            margin-top: 2px;
             border-top: 1px solid #ccc;
             padding-top: 2px;
         }
 
         .tagline {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 3pt;
             text-align: center;
             font-size: 6.5pt;
             color: #555;
-            margin-top: 1px;
         }
     </style>
 </head>
@@ -128,21 +138,21 @@
     @for($koli = 1; $koli <= $shipment->total_koli; $koli++)
         <div class="wrap">
             @if($logoUrl)
-                <div style="text-align: center; margin-bottom: 3px;">
-                    <img src="{{ $logoUrl }}" alt="Logo" style="max-height: 40px; max-width: 120px;">
+                <div style="text-align: center; margin-bottom: 12pt;">
+                    <img src="{{ $logoUrl }}" alt="Logo" style="height: 30pt; width: auto;">
                 </div>
             @endif
-            <div class="koli-badge">KOLI {{ $koli }} / {{ $shipment->total_koli }}</div>
-            <div class="company">PT. DEVANKA LOGISTIK INDONESIA</div>
-            <div class="resi">{{ $shipment->resi_no }}</div>
-            <div class="qr">
-                <img src="{{ $barcodeBase64 }}" alt="Barcode" style="width: 100%; max-width: 180px; height: 40px;">
+            <div class="koli-badge" style="margin-bottom: 12pt;">KOLI {{ $koli }} / {{ $shipment->total_koli }}</div>
+            <div class="company" style="margin-bottom: 12pt;">PT. DEVANKA LOGISTIK INDONESIA</div>
+            <div class="resi" style="margin-bottom: 12pt;">{{ $shipment->resi_no }}</div>
+            <div class="qr" style="margin-bottom: 12pt;">
+                <img src="{{ $barcodeBase64 }}" alt="Barcode" style="width: 100%; max-width: 180px; height: 38px;">
             </div>
-            <div class="route">{{ strtoupper($shipment->originBranch?->city ?? '') }} -
+            <div class="route" style="margin-bottom: 12pt;">{{ strtoupper($shipment->originBranch?->city ?? '') }} -
                 {{ strtoupper($shipment->destinationBranch?->city ?? '') }}
             </div>
 
-            <div class="block">
+            <div class="block" style="margin-bottom: 12pt;">
                 <div class="lbl">Penerima</div>
                 <div class="name">{{ $shipment->receiver_name }}</div>
                 <div class="phone">{{ $shipment->receiver_phone }}</div>
@@ -157,7 +167,7 @@
                 </div>
             </div>
 
-            <div class="block">
+            <div class="block" style="margin-bottom: 12pt;">
                 <div class="lbl">Pengirim</div>
                 <div class="name">{{ $shipment->sender_name }}</div>
                 <div class="phone">{{ $shipment->sender_phone }}</div>
@@ -172,7 +182,7 @@
                 </div>
             </div>
 
-            <div class="block">
+            <div class="block" style="margin-bottom: 12pt;">
                 <div class="lbl">Isi Barang</div>
                 <div>{{ $shipment->package_description ?? '-' }}</div>
             </div>
@@ -190,10 +200,9 @@
                 </tr>
             </table>
 
-            <div class="footer">
+            <div class="footer" style="display: none;">
                 {{ $printSettings['footer_text'] ?? 'DEVANKA LOGISTIK INDONESIA - Simpan resi ini sebagai bukti pengiriman' }}
             </div>
-            <div class="tagline">PARTNER LOGISTIK PROFESIONAL UNTUK BISNIS ANDA</div>
         </div>
         @if($koli < $shipment->total_koli)
             <div style="page-break-after: always;"></div>

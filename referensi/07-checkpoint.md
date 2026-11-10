@@ -234,6 +234,10 @@
 - [x] rclone Backblaze B2 (config + cron offsite backup 05:00, bucket `devanka-backup`)
 - [x] monitor.sh Opsi B (8 cek, cron 5 min, alert Slack webhook)
 - [x] Setup workflows: `setup-monitor.yml`, `final-ops.yml`
+- [x] Resi detail: layout fix (logo, kotak NO RESI/PO, divider, spacing)
+- [x] Resi label koli: dompdf-safe layout (wrap 412pt, logo 30pt, footer/tagline hidden)
+- [x] Fix login 419 (SESSION_SECURE_COOKIE=false)
+- [x] Docs: template-breakdown + dompdf quirks section
 
 ## Documentation Index
 - 01-overview.md — Project info, roles, prefixes, formulas

@@ -1,6 +1,6 @@
 # Template Dokumen — Breakdown File & Data
 
-> Last Updated: 2026-11-09
+> Last Updated: 2026-11-10
 
 ---
 
@@ -32,7 +32,7 @@
 | Dokumen | File Blade | Route Print | Ukuran Kertas |
 |---|---|---|---|
 | Resi detail | `print/resi-detail.blade.php` | `/print/shipments/{id}/resi` | 9.5×5.5in (684×396pt) |
-| Koli label | `print/resi-label.blade.php` | `/print/shipments/{id}/label` | 10×10cm (283×283pt) |
+| Koli label | `print/resi-label.blade.php` | `/print/shipments/{id}/label` | **4×6in (288×432pt)** — lihat catatan dompdf |
 | Invoice | `print/invoice.blade.php` | `/print/invoices/{id}/pdf` | A4 (sesuai `paper_format`) |
 | Manifest sheet | `print/manifest-sheet.blade.php` | `/print/manifests/{id}/sheet` | A4 (sesuai `paper_format`) |
 | Daftar shipment (export) | `print/shipment-list.blade.php` | `/print/shipments/list` | A4 |
@@ -128,6 +128,32 @@ $logoUrl                         // base64/URL logo siap pakai
 - **Logo**: upload via UI, tersimpan di `storage/app/public/logos/`
 - **Route death**: `/admin/template-management/upload` (method `uploadTemplate`) TIDAK ADA di controller — jangan dipakai
 - **Custom template**: bisa taruh file di `print/custom/` lalu load via `Pdf::loadView('print.custom.nama')` (perlu koding)
+
+---
+
+## 4b. Catatan dompdf (PENTING — layout PDF)
+
+> dompdf v3.1.6. **Browser preview bohong** — flexbox/max-height jalan di browser tapi TIDAK di dompdf. Selalu verifikasi PDF hasil render.
+
+| Quirk | Dampak | Solusi |
+|---|---|---|
+| `justify-content` / flex distribution | Diabaikan → konten numpuk di atas, gap bawah | Pakai `margin-bottom` eksplisit per blok, atau `position: absolute` |
+| `height: 100%` di `html, body` | Tidak berfungsi | Set `height` eksplisit di wrapper (mis. `412pt`) |
+| `<img>` abaikan `max-height`/`max-width` | Render ukuran asli → overflow / tambah halaman | Set `height: 30pt; width: auto` eksplisit |
+| `@page { size }` di Blade | **Mengalahkan** `setPaper()` di controller | Cek `/MediaBox` di PDF (288×432 = 4×6in, bukan 10×10cm) |
+| Overflow | Tambah halaman diam-diam | Cek jumlah halaman setelah tiap perubahan |
+
+**Pola label tinggi-tetap (dompdf-safe):**
+```css
+@page { size: 4in 6in; margin: 0; }
+body { margin:0; padding: 0.2cm; box-sizing: border-box; }
+.wrap { position: relative; border: 1px solid #000; box-sizing: border-box; height: 412pt; padding: 3px; }
+.footer { position: absolute; left:0; right:0; bottom: 14pt; text-align:center; }
+```
+
+**Verify loop:** render via tinker → cek `pages` count → cek `/MediaBox` → kirim PDF ke user untuk konfirmasi visual.
+
+> ⚠️ Setelah edit Blade yang dipakai PDF, jalankan `php artisan view:clear` (view cache bisa bikin perubahan tak terlihat).
 
 ---
 

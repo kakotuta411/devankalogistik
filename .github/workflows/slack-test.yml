@@ -1,0 +1,43 @@
+name: Slack Test
+on:
+  workflow_dispatch:
+    inputs:
+      slack_webhook:
+        description: 'Slack Incoming Webhook URL'
+        required: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test Slack webhook + update cron
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          script: |
+            WEBHOOK='${{ github.event.inputs.slack_webhook }}'
+            cd /var/www/devanka-logistik
+            git stash 2>/dev/null || true
+            git pull origin master 2>&1
+            echo "=== 1. Test webhook (kirim pesan) ==="
+            curl -s -X POST -H 'Content-type: application/json' --data '{"text":"[TEST] Devanka Monitor webhook aktif"}' "$WEBHOOK"
+            echo ""
+            echo "=== 2. Update cron dengan webhook ==="
+            printf '*/5 * * * * root SLACK_WEBHOOK=%s /var/www/devanka-logistik/monitor.sh\n' "$WEBHOOK" | sudo tee /etc/cron.d/vps-monitor
+            sudo chmod 644 /etc/cron.d/vps-monitor
+            cat /etc/cron.d/vps-monitor
+            echo ""
+            echo "=== 3. Test alert ke Slack ==="
+            MESSAGE="[TEST ALERT] Devanka VPS - $(date '+%Y-%m-%d %H:%M')
+            - Disk: 85% (>80%)
+            - RAM: 90% (>85%)"
+            PAYLOAD=$(printf '%s' "$MESSAGE" | python3 -c "import sys,json; print(json.dumps({'text': sys.stdin.read()}))")
+            curl -s -X POST -H 'Content-type: application/json' --data "$PAYLOAD" "$WEBHOOK"
+            echo ""
+            echo "=== 4. Run monitor normal ==="
+            sudo SLACK_WEBHOOK="$WEBHOOK" bash monitor.sh
+            sudo tail -3 /var/log/devanka-monitor.log

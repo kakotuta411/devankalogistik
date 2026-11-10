@@ -93,17 +93,18 @@
 <body>
     <div class="header">
         @if($logoUrl)
-            <img src="{{ $logoUrl }}" style="max-height: 60px; max-width: 120px; margin-bottom: 8px;" alt="Logo"><br>
+            <img src="{{ $logoUrl }}" style="max-height: 60px; max-width: 400px; margin-bottom: 12px;" alt="Logo"><br>
         @endif
-        <div style="font-size: 11pt; font-weight: bold;">{{ $printSettings['company_name'] ?? config('app.name') }}
+        <div style="font-size: 20pt; font-weight: bold; margin-bottom: 12px;">
+            {{ $printSettings['company_name'] ?? config('app.name') }}
         </div>
-        @if(!empty($printSettings['header_text']))
+        <!-- @if(!empty($printSettings['header_text']))
             <small>{{ $printSettings['header_text'] }}</small><br>
-        @endif
+        @endif -->
         <div class="title" style="margin-top: 6px;">PACKING LIST / MANIFEST</div>
     </div>
 
-    <table class="info" style="border: none;">
+    <table class="info" style="border: none; margin-top: 20px;">
         <tr>
             <td>Tanggal Muat</td>
             <td>: {{ $manifest->dispatch_time?->format('d F Y') ?? $manifest->created_at?->format('d F Y') }}</td>
@@ -123,7 +124,8 @@
         <tr>
             <td>Tujuan</td>
             <td>:
-                {{ $manifest->destinationBranch?->city ?? '-' }}{{ $manifest->destinationBranch?->name ? ', ' . $manifest->destinationBranch->name : '' }}
+                {{ $manifest->destinationBranch?->city ?? '-' }}
+                <!-- {{ $manifest->destinationBranch?->name ? ', ' . $manifest->destinationBranch->name : '' }} -->
             </td>
         </tr>
     </table>
@@ -159,7 +161,7 @@
         </tbody>
     </table>
 
-    <div class="note">Note: Ongkos Jalan (Done)</div>
+    <!-- <div class="note">Note: Ongkos Jalan (Done)</div> -->
 
     <div class="sign-wrap" style="margin-top: 40px;">
         <table style="width: 100%; border: none;">
@@ -184,7 +186,9 @@
     </div>
 
     <div class="footer">
-        @if(!empty($printSettings['footer_text'])) {{ $printSettings['footer_text'] }} @endif
+        {{-- Footer tagline --}}
+        <div class="abs tagline" style="left: 30px; top: 450px;">PARTNER LOGISTIK PROFESIONAL UNTUK BISNIS ANDA</div>
+        <div class="abs small" style="left: 30px; top: 468px;">www.devankalogistik.com</div>
     </div>
 </body>
 

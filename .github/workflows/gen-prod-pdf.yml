@@ -20,5 +20,7 @@ jobs:
             git stash 2>/dev/null || true
             git pull origin master 2>&1 | tail -1
             sudo -u www-data /usr/bin/php8.3 scripts/gen-prod-pdf.php
+            sudo cp /tmp/prod-resi-detail.pdf public/
+            sudo cp /tmp/prod-resi-label.pdf public/
             sudo chown www-data:www-data public/prod-resi-detail.pdf public/prod-resi-label.pdf
             ls -lh public/prod-resi-*.pdf

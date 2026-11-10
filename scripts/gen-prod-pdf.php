@@ -9,10 +9,10 @@ if (!$shipment) { echo "no shipment\n"; exit(1); }
 $shipment->load(['originBranch', 'destinationBranch', 'customer']);
 
 $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('print.resi-detail', compact('shipment'))->setPaper([0, 0, 684, 396]);
-file_put_contents('/var/www/devanka-logistik/public/prod-resi-detail.pdf', $pdf->output());
+file_put_contents('/tmp/prod-resi-detail.pdf', $pdf->output());
 
 $barcodeBase64 = \App\Helpers\BarcodeGenerator::code128($shipment->resi_no);
 $pdf2 = \Barryvdh\DomPDF\Facade\Pdf::loadView('print.resi-label', compact('shipment', 'barcodeBase64'))->setPaper([0, 0, 283.46, 283.46]);
-file_put_contents('/var/www/devanka-logistik/public/prod-resi-label.pdf', $pdf2->output());
+file_put_contents('/tmp/prod-resi-label.pdf', $pdf2->output());
 
 echo "OK: resi {$shipment->resi_no}\n";

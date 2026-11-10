@@ -1,5 +1,9 @@
 <?php
 // One-off: generate production resi PDFs to public/ for download
+require __DIR__ . '/../vendor/autoload.php';
+$app = require_once __DIR__ . '/../bootstrap/app.php';
+$app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+
 $s = \App\Models\Shipment::withoutGlobalScopes()->first();
 if (!$s) { echo "no shipment\n"; exit(1); }
 $s->load(['originBranch', 'destinationBranch', 'customer']);

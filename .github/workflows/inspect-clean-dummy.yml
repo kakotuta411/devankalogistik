@@ -6,7 +6,7 @@ jobs:
   inspect:
     runs-on: ubuntu-latest
     steps:
-      - name: Inspect & clean dummy data
+      - name: Inspect dummy data + clean
         uses: appleboy/ssh-action@v1
         timeout-minutes: 5
         with:
@@ -17,15 +17,8 @@ jobs:
           command_timeout: 60s
           script: |
             cd /var/www/devanka-logistik
-            echo "=== SHIPMENTS (dummy Anang / DLI-0000*) ==="
-            sudo -u www-data /usr/bin/php8.3 artisan tinker --execute="
-            \$shipments = \App\Models\Shipment::select('id','customer_id','resi_no','status')->get();
-            foreach(\$shipments as \$s){ echo \$s->id.' | '.$s->customer_id.' | '.$s->resi_no.' | '.$s->status."\n"; }
-            \$customers = \App\Models\Customer::select('id','name','is_dummy')->get();
-            foreach(\$customers as \$c){ echo \$c->id.' | '.$c->name.' | '.$c->is_dummy."\n"; }
-            \$invoices = \App\Models\Invoice::select('id','shipment_id','no_resi','is_dummy','total_amount')->get();
-            foreach(\$invoices as \$i){ echo \$i->id.' | shipment:'.\$i->shipment_id.' | no_resi:'.$i->no_resi.' | dummy:'.$i->is_dummy.' | total:'.\$i->total_amount."\n"; }
-            "
+            echo "=== CUSTOMERS ==="
+            sudo -u www-data /usr/bin/php8.3 scripts/inspect-dummy.php
             echo "=== resi creation routes ==="
             sudo -u www-data /usr/bin/php8.3 artisan route:list --path=resi 2>/dev/null | head -20
             echo "=== error log tail ==="

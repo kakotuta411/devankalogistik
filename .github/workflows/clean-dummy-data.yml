@@ -1,0 +1,42 @@
+name: Clean Dummy Data
+on:
+  workflow_dispatch:
+
+jobs:
+  clean:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clean dummy data + check errors
+        uses: appleboy/ssh-action@v1
+        timeout-minutes: 5
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          command_timeout: 60s
+          script: |
+            cd /var/www/devanka-logistik
+            git stash 2>/dev/null || true
+            git pull origin master 2>&1 | tail -1
+            echo "=== RECENT PRODUCTION ERRORS ==="
+            sudo tail -15 /var/www/devanka-logistik/storage/logs/laravel.log 2>/dev/null | grep -iE "production.ERROR|Exception|error" | tail -15
+            echo "=== CLEANING DUMMY DATA ==="
+            sudo -u www-data /usr/bin/php8.3 artisan tinker --execute="
+            \$cust = \App\Models\Customer::where('name','Anang')->first();
+            \$shipments = \App\Models\Shipment::where('customer_id', \$cust->id)->get();
+            \$invoices = \App\Models\Invoice::where('customer_id', \$cust->id)->get();
+            echo \"Deleting invoices: \".\$invoices->count().\" \n\";
+            \$invoices->each->forceDelete();
+            echo \"Deleting shipments: \".\$shipments->count().\" \n\";
+            \$shipments->each->forceDelete();
+            echo \"Deleting customer \".\$cust->id.\" \n\";
+            \$cust->forceDelete();
+            echo \"DONE \n\";
+            "
+            echo "=== CLEANED ==="
+            sudo -u www-data /usr/bin/php8.3 artisan tinker --execute="
+            echo \"Customers: \".\App\Models\Customer::count().\" \n\";
+            echo \"Shipments: \".\App\Models\Shipment::count().\" \n\";
+            echo \"Invoices: \".\App\Models\Invoice::count().\" \n\";
+            "

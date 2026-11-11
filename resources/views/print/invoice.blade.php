@@ -81,32 +81,72 @@
     </table>
 
     <!-- Payment info (left) + Price detail (right) -->
-    <table style="width: 100%;">
+    <table style="width: 100%; border-collapse: collapse;">
         <tr>
-            <td style="width: 28%; vertical-align: top; border: none; padding: 0;">
-                <table style="width: 100%; border: none;">
-                    <tr><td style="font-weight: bold; text-align: right; border: none; padding: 2px 4px;">Rek</td><td style="text-align: left; border: none; padding: 2px 4px;">BCA</td></tr>
-                    <tr><td style="font-weight: bold; text-align: right; border: none; padding: 2px 4px;">Nama</td><td style="text-align: left; border: none; padding: 2px 4px;">PT. Devanka Logistik Indonesia</td></tr>
-                    <tr><td style="font-weight: bold; text-align: right; border: none; padding: 2px 4px;">Tel</td><td style="text-align: left; border: none; padding: 2px 4px;">645.070.1996</td></tr>
+            <!-- Payment info -->
+            <td style="width: 30%; vertical-align: top; border: none; padding: 0;">
+                <table style="width: 100%; border: none; font-size: 8.5pt;">
+                    <tr>
+                        <td style="width: 42%; font-weight: bold; text-align: right; border: none; padding: 1px 5px;">Rek</td>
+                        <td style="text-align: left; border: none; padding: 1px 4px;">BCA</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: bold; text-align: right; border: none; padding: 1px 4px;">Nama</td>
+                        <td style="text-align: left; border: none; padding: 1px 4px;">PT. DEVANKA LOGISTIK INDONESIA</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: bold; text-align: right; border: none; padding: 1px 4px;">Tel</td>
+                        <td style="text-align: left; border: none; padding: 1px 4px;">645.070.1996</td>
+                    </tr>
                 </table>
             </td>
-            <td style="width: 67%; vertical-align: top; border: none; padding: 0;">
+            <!-- Price detail -->
+            <td style="width: 70%; vertical-align: top; border: none; padding: 0;">
                 @if($invoice->isChild())
-                    <table style="width: 100%;">
-                        <tr><td>Sisa dari invoice {{ $invoice->parentInvoice?->invoice_no }}</td></tr>
-                        <tr class="total grand"><td><strong>TOTAL</strong></td><td class="text-right"><strong>Rp {{ number_format($invoice->displayTotal(), 0, ',', '.') }}</strong></td></tr>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr>
+                            <td style="font-weight: bold; border: none; padding: 2px 4px;">Sisa dari invoice {{ $invoice->parentInvoice?->invoice_no }}</td>
+                            <td style="text-align: right; border: none; padding: 2px 4px;">Rp {{ number_format($invoice->displayTotal(), 0, ',', '.') }}</td>
+                        </tr>
                     </table>
                 @else
-                    <table style="width: 100%;">
-                        <tr><td>Biaya Pengiriman ({{ number_format($invoice->shipping_cost, 0, ',', '.') }}/kg x {{ number_format($invoice->total_weight, 2, ',', '.') }} kg)</td><td class="text-right">Rp {{ number_format($invoice->shipping_cost * $invoice->total_weight, 0, ',', '.') }}</td></tr>
-                        <tr><td>Biaya Packaging</td><td class="text-right">Rp {{ number_format($invoice->packaging_cost, 0, ',', '.') }}</td></tr>
-                        <tr><td>Charge Alat</td><td class="text-right">Rp {{ number_format($invoice->equipment_charge, 0, ',', '.') }}</td></tr>
-                        <tr><td>Biaya Lain-lain</td><td class="text-right">Rp {{ number_format($invoice->other_costs, 0, ',', '.') }}</td></tr>
-                        <tr><td>Diskon ({{ number_format($invoice->discount_value, 2, ',', '.') }}%)</td><td class="text-right">-Rp {{ number_format($invoice->discount, 0, ',', '.') }}</td></tr>
-                        <tr><td>PPFTZ 03</td><td class="text-right">Rp {{ number_format($invoice->ppftz03, 0, ',', '.') }}</td></tr>
-                        <tr><td>PPN ({{ number_format($invoice->ppn, 2, ',', '.') }}%)</td><td class="text-right">Rp {{ number_format($invoice->ppnAmount(), 0, ',', '.') }}</td></tr>
-                        <tr><td>PPH ({{ number_format($invoice->pph, 2, ',', '.') }}%)</td><td class="text-right">Rp {{ number_format($invoice->pphAmount(), 0, ',', '.') }}</td></tr>
-                        <tr class="total grand"><td><strong>TOTAL</strong></td><td class="text-right"><strong>Rp {{ number_format($invoice->displayTotal(), 0, ',', '.') }}</strong></td></tr>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr>
+                            <td style="font-weight: bold; border: none; padding: 2px 4px;">Biaya Pengiriman ({{ number_format($invoice->shipping_cost, 0, ',', '.') }}/kg x {{ number_format($invoice->total_weight, 2, ',', '.') }} kg)</td>
+                            <td class="text-right" style="border: none; padding: 2px 4px;">Rp {{ number_format($invoice->shipping_cost * $invoice->total_weight, 0, ',', '.') }}</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold; border: none; padding: 2px 4px;">Biaya Packaging</td>
+                            <td class="text-right" style="border: none; padding: 2px 4px;">Rp {{ number_format($invoice->packaging_cost, 0, ',', '.') }}</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold; border: none; padding: 2px 4px;">Charge Alat</td>
+                            <td class="text-right" style="border: none; padding: 2px 4px;">Rp {{ number_format($invoice->equipment_charge, 0, ',', '.') }}</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold; border: none; padding: 2px 4px;">Biaya Lain-lain</td>
+                            <td class="text-right" style="border: none; padding: 2px 4px;">Rp {{ number_format($invoice->other_costs, 0, ',', '.') }}</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold; border: none; padding: 2px 4px;">Diskon ({{ number_format($invoice->discount_value, 2, ',', '.') }}%)</td>
+                            <td class="text-right" style="border: none; padding: 2px 4px;">-Rp {{ number_format($invoice->discount, 0, ',', '.') }}</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold; border: none; padding: 2px 4px;">PPFTZ 03</td>
+                            <td class="text-right" style="border: none; padding: 2px 4px;">Rp {{ number_format($invoice->ppftz03, 0, ',', '.') }}</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold; border: none; padding: 2px 4px;">PPN ({{ number_format($invoice->ppn, 2, ',', '.') }}%)</td>
+                            <td class="text-right" style="border: none; padding: 2px 4px;">Rp {{ number_format($invoice->ppnAmount(), 0, ',', '.') }}</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold; border: none; padding: 2px 4px;">PPH ({{ number_format($invoice->pph, 2, ',', '.') }}%)</td>
+                            <td class="text-right" style="border: none; padding: 2px 4px;">Rp {{ number_format($invoice->pphAmount(), 0, ',', '.') }}</td>
+                        </tr>
+                        <tr class="total grand">
+                            <td style="font-weight: bold; border: none; padding: 3px 4px;">TOTAL</td>
+                            <td class="text-right" style="font-weight: bold; border: none; padding: 3px 4px;">Rp {{ number_format($invoice->displayTotal(), 0, ',', '.') }}</td>
+                        </tr>
                     </table>
                 @endif
             </td>

@@ -17,6 +17,8 @@ jobs:
           command_timeout: 60s
           script: |
             cd /var/www/devanka-logistik
+            git stash 2>/dev/null || true
+            git pull origin master 2>&1 | tail -1
             echo "=== CUSTOMERS ==="
             sudo -u www-data /usr/bin/php8.3 scripts/inspect-dummy.php
             echo "=== resi creation routes ==="

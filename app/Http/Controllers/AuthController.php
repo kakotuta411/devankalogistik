@@ -17,7 +17,15 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended('/dashboard');
+            $user = Auth::user();
+            switch ($user->role) {
+                case 'Staff_Invoice':
+                    return redirect('/invoices');
+                case 'Staff_Shipment':
+                    return redirect('/shipments');
+                default:
+                    return redirect()->intended('/dashboard');
+            }
         }
         return back()->withErrors(['email' => 'Email atau password salah']);
     }

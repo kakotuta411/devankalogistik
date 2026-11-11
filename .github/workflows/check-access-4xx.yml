@@ -21,5 +21,7 @@ jobs:
             git pull origin master 2>&1 | tail -1
             echo "=== 4xx/5xx responses in access log (last 30) ==="
             sudo tail -30 /var/www/devanka-logistik/storage/logs/laravel.log 2>/dev/null | grep -iE "422|403|404|500|503|invalid|required" | tail -30
-            echo "=== GET /shipments (form) response codes ==="
-            sudo tail -20 /var/www/devanka-logistik/storage/logs/laravel.log 2>/dev/null | grep -E "200|302|301" | tail -20
+            echo "=== NGINX ACCESS LOG (last 30) ==="
+            sudo tail -30 /var/log/nginx/access.log 2>/dev/null | awk '{print $9, $7, $11}' | tail -30
+            echo "=== NGINX ERROR LOG (last 10) ==="
+            sudo tail -10 /var/log/nginx/error.log 2>/dev/null | tail -10

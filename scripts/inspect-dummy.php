@@ -19,10 +19,7 @@ foreach (Shipment::all(['id','customer_id','resi_no','shipment_status'])->toArra
 echo "\n=== INVOICES (using DB to avoid model quirks) ===\n";
 $invoices = DB::table('invoices')->get();
 foreach ($invoices->toArray() as $i) {
-    $keys = array_keys((array)$i);
-    echo "row keys: ".implode(', ', $keys)."\n";
-    echo sprintf("#%s po:%s parent:%s customer:%s no_resi:%s total:%s status:%s\n",
-        $i->id, $i->po_id, $i->parent_invoice_id, $i->customer_id, $i->no_resi, $i->total_amount, $i->invoice_status);
+    echo json_encode((array) $i)."\n";
 }
 echo "\n=== INVOICE TABLE COLUMNS ===\n";
 echo implode(', ', DB::getSchemaBuilder()->getColumnListing('invoices'))." \n";

@@ -138,21 +138,21 @@
     @for($koli = 1; $koli <= $shipment->total_koli; $koli++)
         <div class="wrap">
             @if($logoUrl)
-                <div style="text-align: center; margin-bottom: 12pt;">
-                    <img src="{{ $logoUrl }}" alt="Logo" style="height: 30pt; width: auto;">
+                <div style="text-align: center; margin-bottom: 8pt;">
+                    <img src="{{ $logoUrl }}" alt="Logo" style="height: 25pt; width: auto;">
                 </div>
             @endif
-            <div class="koli-badge" style="margin-bottom: 12pt;">KOLI {{ $koli }} / {{ $shipment->total_koli }}</div>
-            <div class="company" style="margin-bottom: 12pt;">PT. DEVANKA LOGISTIK INDONESIA</div>
-            <div class="resi" style="margin-bottom: 12pt;">{{ $shipment->resi_no }}</div>
-            <div class="qr" style="margin-bottom: 12pt;">
+            <div class="koli-badge" style="margin-bottom: 8pt;">KOLI {{ $koli }} / {{ $shipment->total_koli }}</div>
+            <div class="company" style="margin-bottom: 8pt;">PT. DEVANKA LOGISTIK INDONESIA</div>
+            <div class="resi" style="margin-bottom: 8pt;">{{ $shipment->resi_no }}</div>
+            <div class="qr" style="margin-bottom: 8pt;">
                 <img src="{{ $barcodeBase64 }}" alt="Barcode" style="width: 100%; max-width: 180px; height: 38px;">
             </div>
-            <div class="route" style="margin-bottom: 12pt;">{{ strtoupper($shipment->originBranch?->city ?? '') }} -
+            <div class="route" style="margin-bottom: 8pt;">{{ strtoupper($shipment->originBranch?->city ?? '') }} -
                 {{ strtoupper($shipment->destinationBranch?->city ?? '') }}
             </div>
 
-            <div class="block" style="margin-bottom: 12pt;">
+            <div class="block" style="margin-bottom: 8pt;">
                 <div class="lbl">Penerima</div>
                 <div class="name">{{ $shipment->receiver_name }}</div>
                 <div class="phone">{{ $shipment->receiver_phone }}</div>
@@ -167,7 +167,7 @@
                 </div>
             </div>
 
-            <div class="block" style="margin-bottom: 12pt;">
+            <div class="block" style="margin-bottom: 8pt;">
                 <div class="lbl">Pengirim</div>
                 <div class="name">{{ $shipment->sender_name }}</div>
                 <div class="phone">{{ $shipment->sender_phone }}</div>
@@ -182,7 +182,7 @@
                 </div>
             </div>
 
-            <div class="block" style="margin-bottom: 12pt;">
+            <div class="block" style="margin-bottom: 8pt;">
                 <div class="lbl">Isi Barang</div>
                 <div>{{ $shipment->package_description ?? '-' }}</div>
             </div>

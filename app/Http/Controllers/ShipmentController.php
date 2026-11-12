@@ -71,18 +71,21 @@ class ShipmentController extends Controller
         $data['shipment_status'] = 'Created';
         $data['origin_branch_id'] = auth()->user()->branch_id;
 
-        // Auto-create customer if not selected but sender_name provided
+        // Auto-create customer if not selected but sender_name provided.
+        // firstOrCreate based on name to prevent duplicate customers.
         if (empty($data['customer_id']) && !empty($data['sender_name'])) {
-            $customer = \App\Models\Customer::create([
-                'name' => $data['sender_name'],
-                'company_name' => $data['sender_name'],
-                'phone' => $data['sender_phone'] ?? null,
-                'address' => $data['sender_address'] ?? null,
-                'province_code' => $data['sender_province_code'] ?? null,
-                'regency_code' => $data['sender_regency_code'] ?? null,
-                'district_code' => $data['sender_district_code'] ?? null,
-                'village_code' => $data['sender_village_code'] ?? null,
-            ]);
+            $customer = \App\Models\Customer::firstOrCreate(
+                ['name' => $data['sender_name']],
+                [
+                    'company_name' => $data['sender_name'],
+                    'phone' => $data['sender_phone'] ?? null,
+                    'address' => $data['sender_address'] ?? null,
+                    'province_code' => $data['sender_province_code'] ?? null,
+                    'regency_code' => $data['sender_regency_code'] ?? null,
+                    'district_code' => $data['sender_district_code'] ?? null,
+                    'village_code' => $data['sender_village_code'] ?? null,
+                ]
+            );
             $data['customer_id'] = $customer->id;
         }
 

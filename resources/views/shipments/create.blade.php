@@ -10,10 +10,10 @@
             <div class="row g-3">
                 <div class="col-12">
                     <label for="customer_id" class="form-label">Customer (Perusahaan)</label>
-                    <select name="customer_id" class="form-select" id="customer_id" style="max-height: 200px; overflow-y: auto;">
-                        <option value="">-- Pilih Customer --</option>
+                    <select name="customer_id" class="form-select" id="customer_id" style="max-height: 200px; overflow-y: auto;" required>
+                        <option value="">-- Pilih Customer (wajib) --</option>
                     </select>
-                    <small class="text-muted">Ketik manual nama pengirim jika customer baru</small>
+                    <div class="invalid-feedback">Customer (perusahaan) wajib dipilih.</div>
                 </div>
                 <div class="col-12">
                     <label for="sender_name" class="form-label">Nama Pengirim</label>

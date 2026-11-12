@@ -71,24 +71,7 @@ class ShipmentController extends Controller
         $data['shipment_status'] = 'Created';
         $data['origin_branch_id'] = auth()->user()->branch_id;
 
-        // Auto-create customer if not selected but sender_name provided.
-        // Use sender_name, fallback to receiver_name to prevent orphan shipments.
-        if (empty($data['customer_id'])) {
-            $name = trim($data['sender_name'] ?: $data['receiver_name'] ?: 'Customer ' . now()->format('YmdHis'));
-            $customer = \App\Models\Customer::firstOrCreate(
-                ['name' => $name],
-                [
-                    'company_name' => $name,
-                    'phone' => $data['sender_phone'] ?? $data['receiver_phone'] ?? null,
-                    'address' => $data['sender_address'] ?? null,
-                    'province_code' => $data['sender_province_code'] ?? null,
-                    'regency_code' => $data['sender_regency_code'] ?? null,
-                    'district_code' => $data['sender_district_code'] ?? null,
-                    'village_code' => $data['sender_village_code'] ?? null,
-                ]
-            );
-            $data['customer_id'] = $customer->id;
-        }
+        // NOTE: customer_id is required (See StoreShipmentRequest). No auto-create fallback.
 
         $shipment = Shipment::create($data);
 

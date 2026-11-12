@@ -8,7 +8,7 @@ class StoreShipmentRequest extends FormRequest
     public function rules(): array {
         return [
             'destination_branch_id' => 'required|uuid|exists:branches,id',
-            'customer_id' => 'nullable|uuid|exists:customers,id',
+            'customer_id' => 'required|uuid|exists:customers,id',
             'po_number' => 'nullable|string|max:100',
             'payment_type' => 'nullable|string|in:kredit,lunas,cod',
             'sender_name' => 'nullable|string|max:255',

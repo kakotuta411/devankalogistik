@@ -105,47 +105,47 @@
                 @if($invoice->isChild())
                     <table style="width: 100%; border-collapse: collapse;">
                         <tr>
-                            <td style="font-weight: bold; border: none; padding: 2px 4px;">Sisa dari invoice {{ $invoice->parentInvoice?->invoice_no }}</td>
-                            <td style="text-align: right; border: none; padding: 2px 4px;">Rp {{ number_format($invoice->displayTotal(), 0, ',', '.') }}</td>
+                            <td style="font-weight: bold; border: 1px solid #000; padding: 5px 6px;">Sisa dari invoice {{ $invoice->parentInvoice?->invoice_no }}</td>
+                            <td style="text-align: right; border: 1px solid #000; padding: 5px 6px;">Rp {{ number_format($invoice->displayTotal(), 0, ',', '.') }}</td>
                         </tr>
                     </table>
                 @else
                     <table style="width: 100%; border-collapse: collapse;">
                         <tr>
-                            <td style="font-weight: bold; border: none; padding: 2px 4px;">Biaya Pengiriman ({{ number_format($invoice->shipping_cost, 0, ',', '.') }}/kg x {{ number_format($invoice->total_weight, 2, ',', '.') }} kg)</td>
-                            <td class="text-right" style="border: none; padding: 2px 4px;">Rp {{ number_format($invoice->shipping_cost * $invoice->total_weight, 0, ',', '.') }}</td>
+                            <td style="font-weight: bold; border: 1px solid #000; padding: 5px 6px;">Biaya Pengiriman ({{ number_format($invoice->shipping_cost, 0, ',', '.') }}/kg x {{ number_format($invoice->total_weight, 2, ',', '.') }} kg)</td>
+                            <td class="text-right" style="border: 1px solid #000; padding: 5px 6px;">Rp {{ number_format($invoice->shipping_cost * $invoice->total_weight, 0, ',', '.') }}</td>
                         </tr>
                         <tr>
-                            <td style="font-weight: bold; border: none; padding: 2px 4px;">Biaya Packaging</td>
-                            <td class="text-right" style="border: none; padding: 2px 4px;">Rp {{ number_format($invoice->packaging_cost, 0, ',', '.') }}</td>
+                            <td style="font-weight: bold; border: 1px solid #000; padding: 5px 6px;">Biaya Packaging</td>
+                            <td class="text-right" style="border: 1px solid #000; padding: 5px 6px;">Rp {{ number_format($invoice->packaging_cost, 0, ',', '.') }}</td>
                         </tr>
                         <tr>
-                            <td style="font-weight: bold; border: none; padding: 2px 4px;">Charge Alat</td>
-                            <td class="text-right" style="border: none; padding: 2px 4px;">Rp {{ number_format($invoice->equipment_charge, 0, ',', '.') }}</td>
+                            <td style="font-weight: bold; border: 1px solid #000; padding: 5px 6px;">Charge Alat</td>
+                            <td class="text-right" style="border: 1px solid #000; padding: 5px 6px;">Rp {{ number_format($invoice->equipment_charge, 0, ',', '.') }}</td>
                         </tr>
                         <tr>
-                            <td style="font-weight: bold; border: none; padding: 2px 4px;">Biaya Lain-lain</td>
-                            <td class="text-right" style="border: none; padding: 2px 4px;">Rp {{ number_format($invoice->other_costs, 0, ',', '.') }}</td>
+                            <td style="font-weight: bold; border: 1px solid #000; padding: 5px 6px;">Biaya Lain-lain</td>
+                            <td class="text-right" style="border: 1px solid #000; padding: 5px 6px;">Rp {{ number_format($invoice->other_costs, 0, ',', '.') }}</td>
                         </tr>
                         <tr>
-                            <td style="font-weight: bold; border: none; padding: 2px 4px;">Diskon ({{ number_format($invoice->discount_value, 2, ',', '.') }}%)</td>
-                            <td class="text-right" style="border: none; padding: 2px 4px;">-Rp {{ number_format($invoice->discount, 0, ',', '.') }}</td>
+                            <td style="font-weight: bold; border: 1px solid #000; padding: 5px 6px;">Diskon ({{ number_format($invoice->discount_value, 2, ',', '.') }}%)</td>
+                            <td class="text-right" style="border: 1px solid #000; padding: 5px 6px;">-Rp {{ number_format($invoice->discount, 0, ',', '.') }}</td>
                         </tr>
                         <tr>
-                            <td style="font-weight: bold; border: none; padding: 2px 4px;">PPFTZ 03</td>
-                            <td class="text-right" style="border: none; padding: 2px 4px;">Rp {{ number_format($invoice->ppftz03, 0, ',', '.') }}</td>
+                            <td style="font-weight: bold; border: 1px solid #000; padding: 5px 6px;">PPFTZ 03</td>
+                            <td class="text-right" style="border: 1px solid #000; padding: 5px 6px;">Rp {{ number_format($invoice->ppftz03, 0, ',', '.') }}</td>
                         </tr>
                         <tr>
-                            <td style="font-weight: bold; border: none; padding: 2px 4px;">PPN ({{ number_format($invoice->ppn, 2, ',', '.') }}%)</td>
-                            <td class="text-right" style="border: none; padding: 2px 4px;">Rp {{ number_format($invoice->ppnAmount(), 0, ',', '.') }}</td>
+                            <td style="font-weight: bold; border: 1px solid #000; padding: 5px 6px;">PPN ({{ number_format($invoice->ppn, 2, ',', '.') }}%)</td>
+                            <td class="text-right" style="border: 1px solid #000; padding: 5px 6px;">Rp {{ number_format($invoice->ppnAmount(), 0, ',', '.') }}</td>
                         </tr>
                         <tr>
-                            <td style="font-weight: bold; border: none; padding: 2px 4px;">PPH ({{ number_format($invoice->pph, 2, ',', '.') }}%)</td>
-                            <td class="text-right" style="border: none; padding: 2px 4px;">Rp {{ number_format($invoice->pphAmount(), 0, ',', '.') }}</td>
+                            <td style="font-weight: bold; border: 1px solid #000; padding: 5px 6px;">PPH ({{ number_format($invoice->pph, 2, ',', '.') }}%)</td>
+                            <td class="text-right" style="border: 1px solid #000; padding: 5px 6px;">Rp {{ number_format($invoice->pphAmount(), 0, ',', '.') }}</td>
                         </tr>
                         <tr class="total grand">
-                            <td style="font-weight: bold; border: none; padding: 3px 4px;">TOTAL</td>
-                            <td class="text-right" style="font-weight: bold; border: none; padding: 3px 4px;">Rp {{ number_format($invoice->displayTotal(), 0, ',', '.') }}</td>
+                            <td style="font-weight: bold; border: 1px solid #000; padding: 5px 6px;">TOTAL</td>
+                            <td class="text-right" style="font-weight: bold; border: 1px solid #000; padding: 5px 6px;">Rp {{ number_format($invoice->displayTotal(), 0, ',', '.') }}</td>
                         </tr>
                     </table>
                 @endif

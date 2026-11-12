@@ -2,19 +2,21 @@
 namespace App\Services;
 
 use App\Models\Shipment;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class ResiGenerator
 {
     public static function generate(): string
     {
-        $date = now()->format('Ymd');
-        $dailyCount = Shipment::withoutGlobalScopes()
-            ->whereDate('created_at', now()->toDateString())
-            ->lockForUpdate()
-            ->get()
-            ->count();
-        $sequence = str_pad((string) ($dailyCount + 1), 5, '0', STR_PAD_LEFT);
-        return "DLI-{$sequence}";
+        return DB::transaction(function () {
+            // Count ALL shipments (not just today) so the sequence never collides
+            // with a resi_no from a previous day. Lock rows to prevent race condition.
+            $totalCount = Shipment::withoutGlobalScopes()
+                ->lockForUpdate()
+                ->get()
+                ->count();
+            $sequence = str_pad((string) ($totalCount + 1), 5, '0', STR_PAD_LEFT);
+            return "DLI-{$sequence}";
+        });
     }
 }

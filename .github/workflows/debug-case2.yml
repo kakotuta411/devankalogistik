@@ -1,0 +1,47 @@
+name: debug-case2
+
+on:
+  workflow_dispatch:
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Inspect data
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          script: |
+            cd /var/www/devanka-logistik
+            sudo -u www-data /usr/bin/php8.3 artisan tinker --execute="
+              echo '=== CUSTOMERS ===' . PHP_EOL;
+              App\Models\Customer::all(['id','name','company_name','phone'])->each(function(\$c) {
+                echo \$c->id . ' | name=' . \$c->name . ' | company=' . \$c->company_name . ' | phone=' . \$c->phone . PHP_EOL;
+              });
+
+              echo PHP_EOL . '=== SHIPMENTS ===' . PHP_EOL;
+              App\Models\Shipment::withoutGlobalScopes()->all(['id','resi_no','customer_id','po_number','origin_branch_id','shipment_status'])->each(function(\$s) {
+                echo \$s->resi_no . ' | cust=' . \$s->customer_id . ' | po=' . var_export(\$s->po_number, true) . ' | orig=' . \$s->origin_branch_id . PHP_EOL;
+              });
+
+              echo PHP_EOL . '=== PO ===' . PHP_EOL;
+              App\Models\PurchaseOrder::all(['id','po_number','customer_id','status'])->each(function(\$p) {
+                echo 'po=' . \$p->po_number . ' | cust=' . \$p->customer_id . ' | ' . \$p->status . PHP_EOL;
+              });
+
+              echo PHP_EOL . '=== API TEST shipmentsByCustomer ===' . PHP_EOL;
+              foreach (App\Models\Customer::all() as \$cust) {
+                \$activeInvoiceIds = App\Models\Invoice::where('invoice_status','!=','Cancelled')->pluck('id')->toArray();
+                \$excluded = App\Models\InvoiceItem::whereIn('invoice_id',\$activeInvoiceIds)
+                    ->join('shipments','invoice_items.shipment_id','=','shipments.id')
+                    ->whereNotNull('shipments.po_number')
+                    ->pluck('shipments.po_number')->unique()->toArray();
+                \$found = App\Models\Shipment::where('customer_id',\$cust->id)
+                    ->where(function(\$q) use (\$excluded) { \$q->whereNull('po_number')->orWhereNotIn('po_number',\$excluded); })
+                    ->count();
+                echo \$cust->name . ' => resi ditemukan: ' . \$found . PHP_EOL;
+              }
+            " 2>&1 | tail -60

@@ -1,0 +1,63 @@
+name: debug-shipment-list
+
+on:
+  workflow_dispatch:
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Debug shipment/customer/PO data
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          script: |
+            cd /var/www/devanka-logistik
+            sudo -u www-data /usr/bin/php8.3 artisan tinker --execute="
+              echo '=== CUSTOMERS ===' . PHP_EOL;
+              App\Models\Customer::all(['id','name','company_name','phone'])->each(function(\$c) {
+                echo \$c->id . ' | ' . \$c->name . ' | ' . \$c->company_name . ' | ' . \$c->phone . PHP_EOL;
+              });
+
+              echo PHP_EOL . '=== SHIPMENTS ===' . PHP_EOL;
+              App\Models\Shipment::withoutGlobalScopes()->all(['id','resi_no','customer_id','po_number','origin_branch_id','destination_branch_id','shipment_status'])->each(function(\$s) {
+                echo \$s->resi_no . ' | cust=' . \$s->customer_id . ' | po=' . \$s->po_number . ' | orig=' . \$s->origin_branch_id . ' | dest=' . \$s->destination_branch_id . ' | ' . \$s->shipment_status . PHP_EOL;
+              });
+
+              echo PHP_EOL . '=== PURCHASE ORDERS ===' . PHP_EOL;
+              App\Models\PurchaseOrder::all(['id','po_number','customer_id','status'])->each(function(\$p) {
+                echo \$p->po_number . ' | cust=' . \$p->customer_id . ' | ' . \$p->status . PHP_EOL;
+              });
+
+              echo PHP_EOL . '=== INVOICES ===' . PHP_EOL;
+              App\Models\Invoice::all(['id','invoice_no','po_id','invoice_status'])->each(function(\$i) {
+                echo \$i->invoice_no . ' | po=' . \$i->po_id . ' | ' . \$i->invoice_status . PHP_EOL;
+              });
+
+              echo PHP_EOL . '=== INVOICE ITEMS ===' . PHP_EOL;
+              App\Models\InvoiceItem::all(['invoice_id','shipment_id'])->each(function(\$it) {
+                echo 'inv=' . \$it->invoice_id . ' | ship=' . \$it->shipment_id . PHP_EOL;
+              });
+
+              echo PHP_EOL . '=== SIMULATE shipmentsByCustomer ===' . PHP_EOL;
+              \$customer = App\Models\Customer::where('name','like','%Mandiri%')->orWhere('company_name','like','%Mandiri%')->first();
+              if (!\$customer) { echo 'Customer Mandiri NOT FOUND' . PHP_EOL; exit; }
+              echo 'Customer: ' . \$customer->id . ' | ' . \$customer->name . PHP_EOL;
+
+              \$activeInvoiceIds = App\Models\Invoice::where('invoice_status','!=','Cancelled')->pluck('id')->toArray();
+              echo 'Active invoice IDs: ' . json_encode(\$activeInvoiceIds) . PHP_EOL;
+
+              \$excludedPoNumbers = App\Models\InvoiceItem::whereIn('invoice_id',\$activeInvoiceIds)
+                  ->join('shipments','invoice_items.shipment_id','=','shipments.id')
+                  ->pluck('shipments.po_number')->unique()->toArray();
+              echo 'Excluded PO numbers: ' . json_encode(\$excludedPoNumbers) . PHP_EOL;
+
+              \$shipments = App\Models\Shipment::where('customer_id',\$customer->id)
+                  ->whereNotIn('po_number',\$excludedPoNumbers)
+                  ->get(['id','resi_no','po_number']);
+              echo 'Shipments found: ' . \$shipments->count() . PHP_EOL;
+              \$shipments->each(function(\$s) { echo '  ' . \$s->resi_no . ' | po=' . \$s->po_number . PHP_EOL; });
+            " 2>&1 | tail -80

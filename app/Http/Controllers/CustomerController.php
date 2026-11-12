@@ -25,12 +25,17 @@ class CustomerController extends Controller
 
         $excludedPoNumbers = \App\Models\InvoiceItem::whereIn('invoice_id', $activeInvoiceIds)
             ->join('shipments', 'invoice_items.shipment_id', '=', 'shipments.id')
+            ->whereNotNull('shipments.po_number')
             ->pluck('shipments.po_number')
             ->unique()
             ->toArray();
 
         $shipments = \App\Models\Shipment::where('customer_id', $customerId)
-            ->whereNotIn('po_number', $excludedPoNumbers)
+            ->where(function ($q) use ($excludedPoNumbers) {
+                // Shipment tanpa PO tetap tampil (grup "Tanpa PO"); sisanya harus
+                // bukan PO yang sudah punya invoice aktif.
+                $q->whereNull('po_number')->orWhereNotIn('po_number', $excludedPoNumbers);
+            })
             ->select('id', 'resi_no', 'po_number', 'sender_name', 'receiver_name', 'total_koli', 'total_weight', 'service_type', 'shipment_status')
             ->orderBy('po_number')
             ->get();

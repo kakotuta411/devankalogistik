@@ -1,0 +1,54 @@
+name: verify-fixes
+
+on:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify generators + shipment create
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          script: |
+            cd /var/www/devanka-logistik
+            echo "=== GIT LOG ==="
+            git log --oneline -3
+            echo ""
+            echo "=== GENERATOR TEST ==="
+            sudo -u www-data /usr/bin/php8.3 artisan tinker --execute="
+              echo 'Resi: ' . App\Services\ResiGenerator::generate() . PHP_EOL;
+              echo 'Manifest: ' . App\Services\ManifestGenerator::generate() . PHP_EOL;
+              echo 'Invoice: ' . App\Services\InvoiceGenerator::generate() . PHP_EOL;
+            " 2>&1 | tail -10
+            echo ""
+            echo "=== CREATE SHIPMENT TEST ==="
+            sudo -u www-data /usr/bin/php8.3 artisan tinker --execute="
+              try {
+                \$branch = App\Models\Branch::first();
+                echo 'Branch: ' . (\$branch ? \$branch->city : 'NONE') . PHP_EOL;
+                \$s = App\Models\Shipment::create([
+                  'destination_branch_id' => \$branch ? \$branch->id : null,
+                  'sender_name' => 'Test',
+                  'receiver_name' => 'Test',
+                  'total_koli' => 1,
+                  'total_weight' => 1,
+                  'service_type' => 'reguler',
+                ]);
+                echo 'Shipment OK: ' . \$s->resi_no . PHP_EOL;
+                \$s->delete();
+                echo 'Cleaned up' . PHP_EOL;
+              } catch (\Throwable \$e) {
+                echo 'ERROR: ' . \$e->getMessage() . PHP_EOL;
+                echo 'FILE: ' . \$e->getFile() . ':' . \$e->getLine() . PHP_EOL;
+              }
+            " 2>&1 | tail -15
+            echo ""
+            echo "=== REDIRECT TEST (HTTP) ==="
+            curl -s -o /dev/null -w "GET / (no auth): %{http_code} → %{redirect_url}\n" https://devankalogistik.web.id/
+            echo ""
+            echo "=== DONE ==="

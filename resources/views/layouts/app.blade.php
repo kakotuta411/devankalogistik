@@ -111,7 +111,7 @@
     <!-- Navbar: brand + nav pills + sign out -->
     <header class="navbar fixed-top shadow-sm" style="background-color: #E3F2FD;" data-bs-theme="light">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/dashboard">
+            <a class="navbar-brand" href="/">
                 <img src="{{ asset('images/logo.png') . '?v=' . filemtime(public_path('images/logo.png')) }}"
                     alt="{{ config('app.name') }}" height="32"
                     onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">

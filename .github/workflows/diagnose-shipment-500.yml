@@ -1,0 +1,55 @@
+name: diagnose-shipment-500
+
+on:
+  workflow_dispatch:
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Laravel logs
+        env:
+          SSH_HOST: ${{ secrets.VPS_HOST }}
+          SSH_USER: ${{ secrets.VPS_USER }}
+          SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no -o ConnectTimeout=30 $SSH_USER@$SSH_HOST << 'EOF'
+            echo "=== LAST 100 LINES LARAVEL LOG ==="
+            sudo tail -100 /var/www/devanka-logistik/storage/logs/laravel.log 2>/dev/null || echo "No laravel.log"
+            echo ""
+            echo "=== LAST 50 LINES NGINX ERROR LOG ==="
+            sudo tail -50 /var/log/nginx/error.log 2>/dev/null || echo "No nginx error.log"
+            echo ""
+            echo "=== PHP-FPM STATUS ==="
+            sudo systemctl status php8.3-fpm --no-pager | head -20
+            echo ""
+            echo "=== PHP-FPM ERROR LOG ==="
+            sudo tail -30 /var/log/php8.3-fpm.log 2>/dev/null || echo "No php-fpm log"
+            echo ""
+            echo "=== RECENT DEPLOY LOG ==="
+            cd /var/www/devanka-logistik
+            git log --oneline -5
+            echo ""
+            echo "=== STORAGE PERMISSIONS ==="
+            ls -la storage/logs/
+            echo ""
+            echo "=== APP DEBUG ==="
+            grep -E "^APP_DEBUG|^APP_ENV|^DB_" .env | sed 's/PASSWORD=[REDACTED]'
+            echo ""
+            echo "=== ROUTE LIST (dashboard) ==="
+            sudo -u www-data php artisan route:list --path=dashboard 2>/dev/null || echo "route:list failed"
+            echo ""
+            echo "=== TEST SHIPMENT CREATE (tinker) ==="
+            sudo -u www-data php artisan tinker --execute="
+              try {
+                \$s = new App\Models\Shipment();
+                \$s->destination_branch_id = 'test';
+                echo 'Shipment model OK';
+              } catch (\Throwable \$e) {
+                echo 'ERROR: ' . \$e->getMessage();
+              }
+            " 2>&1 | tail -20
+          EOF

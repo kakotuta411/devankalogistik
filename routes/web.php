@@ -21,9 +21,17 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Protected routes
 Route::middleware(['auth', 'readonly'])->group(function () {
+    // Root redirect based on role
+    Route::get('/', function () {
+        return match (auth()->user()->role) {
+            'Staff_Invoice' => redirect('/invoices'),
+            'Staff_Shipment' => redirect('/shipments'),
+            default => redirect('/dashboard'),
+        };
+    });
+
     // Dashboard hanya untuk Admin, Management_View, Head_of_Branch
     Route::middleware('role:Admin,Management_View,Head_of_Branch')->group(function () {
-        Route::get('/', fn() => redirect('/dashboard'));
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     });
 

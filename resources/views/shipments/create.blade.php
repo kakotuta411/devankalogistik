@@ -342,7 +342,7 @@ if (poInput) {
                 }
             });
     });
-}
+</script>
 </div>
     </div>
 </div>

@@ -1,6 +1,6 @@
 # Checkpoint — Current State
 
-## Last Updated: 2026-11-08
+## Last Updated: 2026-11-13
 
 ## Project Info
 - **Name**: devanka-logistik
@@ -205,10 +205,20 @@
 - Menu Dashboard disembunyikan untuk role Staff_Invoice & Staff_Shipment
 - Workflow `region-migrate-v2.yml` untuk migrasi production
 
-## Pending (per 2026-11-10)
+## Recent Changes (2026-11-13 Customer Create from Sender Data)
+
+- **Create Customer from Sender Data**: New button "Buat Customer Baru (dari data pengirim)" on shipment create page
+- **Flow**: Admin fills sender fields (name, phone, address, region) → clicks button → POST to `/api/customers` → page reloads → new customer appears in dropdown
+- **Data mapping**: `sender_name` → `name` + `company_name` (both), `sender_phone`, `sender_address`, `sender_*_code` → customer region fields
+- **Removed**: Modal-based customer creation (was buggy with region cascading)
+- **CSRF fix**: Added `<meta name="csrf-token">` to layout + `credentials: 'same-origin'` on all fetch calls
+- **API auth**: Fixed fetch calls to send session cookies (API endpoints under `auth` middleware)
+
+## Pending (per 2026-11-13)
 
 ### Manual (perlu user/VPS console)
 - [ ] **Template resi**: user verifikasi layout resi baru cocok dengan PDF asli
+- [ ] **Deploy changes to VPS**: Push to GitHub → GitHub Actions deploy.yml → verify on devankalogistik.web.id
 
 ### Data
 - [ ] **Cleanup demo data**: data dummy (Anang, DLI-00001..00006, invoice dummy) mau dihapus?

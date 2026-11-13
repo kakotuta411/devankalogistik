@@ -13,6 +13,9 @@
                     <select name="customer_id" class="form-select" id="customer_id" style="max-height: 200px; overflow-y: auto;" required>
                         <option value="">-- Pilih Customer (wajib) --</option>
                     </select>
+                    <button type="button" class="btn btn-outline-success btn-sm mt-2" id="btnCreateCustomer">
+                        <i class="bi bi-plus-circle me-1"></i>Buat Customer Baru (dari data pengirim)
+                    </button>
                     <div class="invalid-feedback">Customer (perusahaan) wajib dipilih.</div>
                 </div>
                 <div class="col-12">
@@ -199,11 +202,20 @@
 
 <script>
 function loadOptions(url, selectId) {
-    fetch(url)
-        .then(r => r.json())
+    console.log('loadOptions called:', url, '→', selectId);
+    fetch(url, { credentials: 'same-origin' })
+        .then(r => {
+            console.log('loadOptions response status:', r.status);
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            return r.json();
+        })
         .then(data => {
+            console.log('loadOptions data:', selectId, data.length, 'items');
             const sel = document.getElementById(selectId);
-            if (!sel) return;
+            if (!sel) {
+                console.error('Element not found:', selectId);
+                return;
+            }
             sel.innerHTML = '<option value="">-- Pilih --</option>';
             data.forEach(item => {
                 const opt = document.createElement('option');
@@ -212,7 +224,9 @@ function loadOptions(url, selectId) {
                 sel.appendChild(opt);
             });
         })
-        .catch(() => {});
+        .catch(err => {
+            console.error('loadOptions error:', err);
+        });
 }
 function setupCascading(prefix) {
     const prov = document.getElementById(prefix + '_province');
@@ -240,7 +254,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Load customers into dropdown
     function loadCustomers() {
-        fetch('/api/customers/search?q=')
+        fetch('/api/customers/search?q=', { credentials: 'same-origin' })
             .then(function(r) { return r.json(); })
             .then(function(data) {
                 var sel = document.getElementById('customer_id');
@@ -272,7 +286,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (opt.dataset.province) {
             var provSel = document.getElementById('sender_province');
             provSel.value = opt.dataset.province;
-            fetch('/api/regions/regencies?province=' + opt.dataset.province)
+            fetch('/api/regions/regencies?province=' + opt.dataset.province, { credentials: 'same-origin' })
                 .then(function(r) { return r.json(); })
                 .then(function(data) {
                     var regSel = document.getElementById('sender_regency');
@@ -285,7 +299,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                     if (opt.dataset.regency) regSel.value = opt.dataset.regency;
                     if (opt.dataset.regency) {
-                        fetch('/api/regions/districts?regency=' + opt.dataset.regency)
+                        fetch('/api/regions/districts?regency=' + opt.dataset.regency, { credentials: 'same-origin' })
                             .then(function(r) { return r.json(); })
                             .then(function(data2) {
                                 var distSel = document.getElementById('sender_district');
@@ -298,7 +312,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 });
                                 if (opt.dataset.district) distSel.value = opt.dataset.district;
                                 if (opt.dataset.district) {
-                                    fetch('/api/regions/villages?district=' + opt.dataset.district)
+                                    fetch('/api/regions/villages?district=' + opt.dataset.district, { credentials: 'same-origin' })
                                         .then(function(r) { return r.json(); })
                                         .then(function(data3) {
                                             var villSel = document.getElementById('sender_village');
@@ -327,7 +341,7 @@ if (poInput) {
         if (!poVal) return;
         var custSelect = document.querySelector('select[name="customer_id"]');
         var custId = custSelect ? custSelect.value : '';
-        fetch('/api/check-po?po_number=' + encodeURIComponent(poVal) + '&customer_id=' + encodeURIComponent(custId))
+        fetch('/api/check-po?po_number=' + encodeURIComponent(poVal) + '&customer_id=' + encodeURIComponent(custId), { credentials: 'same-origin' })
             .then(function(r) { return r.json(); })
             .then(function(data) {
                 if (data.exists) {
@@ -336,6 +350,78 @@ if (poInput) {
                     modal.show();
                 }
             });
+    });
+}
+
+// === BUAT CUSTOMER BARU DARI DATA PENGIRIM ===
+var btnCreateCustomer = document.getElementById('btnCreateCustomer');
+if (btnCreateCustomer) {
+    btnCreateCustomer.addEventListener('click', function() {
+        // Ambil data pengirim dari form
+        var senderName = document.getElementById('sender_name').value.trim();
+        var senderPhone = document.getElementById('sender_phone').value.trim();
+        var senderAddress = document.getElementById('sender_address').value.trim();
+        var senderProvince = document.getElementById('sender_province').value;
+        var senderRegency = document.getElementById('sender_regency').value;
+        var senderDistrict = document.getElementById('sender_district').value;
+        var senderVillage = document.getElementById('sender_village').value;
+        
+        if (!senderName) {
+            alert('Nama pengirim wajib diisi terlebih dahulu.');
+            return;
+        }
+        
+        var formData = new FormData();
+        formData.append('name', senderName);
+        formData.append('company_name', senderName);
+        formData.append('phone', senderPhone);
+        formData.append('address', senderAddress);
+        formData.append('province_code', senderProvince);
+        formData.append('regency_code', senderRegency);
+        formData.append('district_code', senderDistrict);
+        formData.append('village_code', senderVillage);
+        
+        // Disable button
+        this.disabled = true;
+        this.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Menyimpan...';
+        
+        var csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || document.querySelector('input[name="_token"]')?.value || '';
+        
+        fetch('/api/customers', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json',
+            },
+            body: formData,
+        })
+        .then(function(r) {
+            console.log('Response status:', r.status);
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            return r.json();
+        })
+        .then(function(data) {
+            console.log('Response data:', data);
+            
+            if (data.id) {
+                // Reload page to refresh customer dropdown
+                alert('Customer berhasil dibuat! Halaman akan di-refresh.');
+                window.location.reload();
+            } else {
+                alert('Gagal membuat customer: ' + (data.message || 'Unknown error'));
+                // Re-enable button
+                btnCreateCustomer.disabled = false;
+                btnCreateCustomer.innerHTML = '<i class="bi bi-plus-circle me-1"></i>Buat Customer Baru (dari data pengirim)';
+            }
+        })
+        .catch(function(err) {
+            console.error('Error:', err);
+            alert('Terjadi kesalahan: ' + err.message);
+            // Re-enable button
+            btnCreateCustomer.disabled = false;
+            btnCreateCustomer.innerHTML = '<i class="bi bi-plus-circle me-1"></i>Buat Customer Baru (dari data pengirim)';
+        });
     });
 }
 </script>

@@ -10,14 +10,9 @@
             <div class="row g-3">
                 <div class="col-12">
                     <label for="customer_id" class="form-label">Customer (Perusahaan)</label>
-                    <div class="d-flex align-items-center gap-2">
-                        <select name="customer_id" class="form-select" id="customer_id" style="max-height: 200px; overflow-y: auto;" required>
-                            <option value="">-- Pilih Customer (wajib) --</option>
-                        </select>
-                        <button type="button" class="btn btn-outline-secondary btn-sm" id="btnCreateCustomer" data-bs-toggle="modal" data-bs-target="#customerModal">
-                            + Buat Customer Baru
-                        </button>
-                    </div>
+                    <select name="customer_id" class="form-select" id="customer_id" style="max-height: 200px; overflow-y: auto;" required>
+                        <option value="">-- Pilih Customer (wajib) --</option>
+                    </select>
                     <div class="invalid-feedback">Customer (perusahaan) wajib dipilih.</div>
                 </div>
                 <div class="col-12">
@@ -342,187 +337,25 @@ if (poInput) {
                 }
             });
     });
+}
 </script>
-</div>
-    </div>
-</div>
 
-<!-- Customer Create Modal -->
-<div class="modal fade" id="customerModal" tabindex="-1">
+<!-- PO Warning Modal -->
+<div class="modal fade" id="poWarningModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Buat Customer Baru</h5>
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title">Peringatan: PO Number Duplikat</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form id="customerCreateForm">
-                    @csrf
-                    <div class="mb-3">
-                        <label class="form-label">Nama (Perusahaan) *</label>
-                        <input type="text" class="form-control" id="customer_name" placeholder="Contoh: PT. Egaraya" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Telepon</label>
-                        <input type="text" class="form-control" id="customer_phone" placeholder="08xxxxxxxxxx">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Provinsi</label>
-                        <select class="form-control" id="customer_province">
-                            <option value="">Pilih...</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Kab/Kota</label>
-                        <select class="form-control" id="customer_regency">
-                            <option value="">Pilih...</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Kecamatan</label>
-                        <select class="form-control" id="customer_district">
-                            <option value="">Pilih...</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Kelurahan/Desa</label>
-                        <select class="form-control" id="customer_village">
-                            <option value="">Pilih...</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Alamat</label>
-                        <textarea class="form-control" id="customer_address" rows="2" placeholder="Alamat lengkap"></textarea>
-                    </div>
-                </form>
+                <p id="poWarningText"></p>
+                <p class="text-muted small">Anda tetap bisa melanjutkan, tapi pastikan PO number ini memang benar untuk customer ini.</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
-                <button type="button" class="btn btn-primary" id="saveCustomerBtn">Simpan</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">OK</button>
             </div>
         </div>
     </div>
 </div>
-
-<script>
-// Customer Create Modal Logic
-function loadCustomerProvinces() {
-    fetch('/api/regions/provinces')
-        .then(r => r.json())
-        .then(data => {
-            const sel = document.getElementById('customer_province');
-            sel.innerHTML = '<option value="">Pilih...</option>';
-            data.forEach(item => {
-                const o = document.createElement('option');
-                o.value = item.code;
-                o.textContent = item.name;
-                sel.appendChild(o);
-            });
-        });
-}
-
-function setupCustomerCascading(prefix) {
-    const prov = document.getElementById(prefix + '_province');
-    const reg = document.getElementById(prefix + '_regency');
-    const dist = document.getElementById(prefix + '_district');
-    const vill = document.getElementById(prefix + '_village');
-    if (prov) prov.addEventListener('change', function() {
-        loadOptions('/api/regions/regencies?province=' + this.value, prefix + '_regency');
-        if (dist) dist.innerHTML = '<option value="">-- Pilih --</option>';
-        if (vill) vill.innerHTML = '<option value="">-- Pilih --</option>';
-    });
-    if (reg) reg.addEventListener('change', function() {
-        loadOptions('/api/regions/districts?regency=' + this.value, prefix + '_district');
-        if (vill) vill.innerHTML = '<option value="">-- Pilih --</option>';
-    });
-    if (dist) dist.addEventListener('change', function() {
-        loadOptions('/api/regions/villages?district=' + this.value, prefix + '_village');
-    });
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Load customer provinces when modal is shown
-    const customerModal = document.getElementById('customerModal');
-    if (customerModal) {
-        customerModal.addEventListener('show.bs.modal', function() {
-            loadCustomerProvinces();
-            setupCustomerCascading('customer');
-        });
-    }
-
-    // Save customer
-    const saveBtn = document.getElementById('saveCustomerBtn');
-    if (saveBtn) {
-        saveBtn.addEventListener('click', function() {
-            const name = document.getElementById('customer_name').value.trim();
-            if (!name) {
-                alert('Nama customer wajib diisi.');
-                return;
-            }
-            const data = {
-                name: name,
-                phone: document.getElementById('customer_phone').value.trim(),
-                address: document.getElementById('customer_address').value.trim(),
-                province_code: document.getElementById('customer_province').value,
-                regency_code: document.getElementById('customer_regency').value,
-                district_code: document.getElementById('customer_district').value,
-                village_code: document.getElementById('customer_village').value
-            };
-            fetch('/api/customers', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                },
-                body: JSON.stringify(data)
-            })
-            .then(r => r.json())
-            .then(c => {
-                // Refresh customer dropdown
-                const sel = document.getElementById('customer_id');
-                sel.innerHTML = '<option value="">-- Pilih Customer --</option>';
-                if (c && c.id) {
-                    const opt = document.createElement('option');
-                    opt.value = c.id;
-                    opt.textContent = (c.company_name || c.name || 'Unknown') + (c.phone ? ' - ' + c.phone : '');
-                    opt.dataset.name = c.name || '';
-                    opt.dataset.phone = c.phone || '';
-                    opt.dataset.address = c.address || '';
-                    opt.dataset.province = c.province_code || '';
-                    opt.dataset.regency = c.regency_code || '';
-                    opt.dataset.district = c.district_code || '';
-                    opt.dataset.village = c.village_code || '';
-                    sel.appendChild(opt);
-                    sel.value = c.id;
-                    // Auto-fill sender fields
-                    document.getElementById('sender_name').value = opt.dataset.name || '';
-                    document.getElementById('sender_phone').value = opt.dataset.phone || '';
-                    document.getElementById('sender_address').value = opt.dataset.address || '';
-                    if (opt.dataset.province) {
-                        const provSel = document.getElementById('sender_province');
-                        provSel.value = opt.dataset.province;
-                        fetch('/api/regions/regencies?province=' + opt.dataset.province)
-                            .then(r => r.json())
-                            .then(data2 => {
-                                const regSel = document.getElementById('sender_regency');
-                                regSel.innerHTML = '<option value="">-- Pilih --</option>';
-                                data2.forEach(item => {
-                                    const o = document.createElement('option');
-                                    o.value = item.code;
-                                    o.textContent = item.name;
-                                    regSel.appendChild(o);
-                                });
-                                if (opt.dataset.regency) regSel.value = opt.dataset.regency;
-                            });
-                    }
-                }
-                // Close modal
-                const modal = bootstrap.Modal.getInstance(document.getElementById('customerModal'));
-                if (modal) modal.hide();
-            })
-            .catch(err => {
-                alert('Gagal membuat customer: ' + (err.message || 'Unknown error'));
-            });
-        });
-    }
-});
+@endsection

@@ -69,4 +69,16 @@ class Shipment extends Model
     {
         return $this->hasMany(ManifestItem::class);
     }
+
+    // Region relationships for sender
+    public function senderProvince() { return $this->belongsTo(Region::class, 'sender_province_code', 'code'); }
+    public function senderRegency() { return $this->belongsTo(Region::class, 'sender_regency_code', 'code'); }
+    public function senderDistrict() { return $this->belongsTo(Region::class, 'sender_district_code', 'code'); }
+    public function senderVillage() { return $this->belongsTo(Region::class, 'sender_village_code', 'code'); }
+
+    // Region relationships for receiver
+    public function receiverProvince() { return $this->belongsTo(Region::class, 'receiver_province_code', 'code'); }
+    public function receiverRegency() { return $this->belongsTo(Region::class, 'receiver_regency_code', 'code'); }
+    public function receiverDistrict() { return $this->belongsTo(Region::class, 'receiver_district_code', 'code'); }
+    public function receiverVillage() { return $this->belongsTo(Region::class, 'receiver_village_code', 'code'); }
 }

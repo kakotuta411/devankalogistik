@@ -69,19 +69,22 @@
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th>{!! sortLink('resi_no', 'Resi') !!}</th>
-                        <th>{!! sortLink('origin_city', 'Asal') !!}</th>
-                        <th>{!! sortLink('destination_city', 'Tujuan') !!}</th>
-                        <th>{!! sortLink('total_koli', 'Koli') !!}</th>
-                        <th>{!! sortLink('shipment_status', 'Status') !!}</th>
-                        <th>{!! sortLink('created_at', 'Dibuat') !!}</th>
-                        <th class="text-end">Aksi</th>
+                        <th class="text-center">{!! sortLink('resi_no', 'Resi') !!}</th>
+                        <th class="text-center">Pengirim</th>
+                        <th class="text-center">{!! sortLink('origin_city', 'Asal') !!}</th>
+                        <th class="text-center">{!! sortLink('destination_city', 'Tujuan') !!}</th>
+                        <th class="text-center">{!! sortLink('total_koli', 'Koli') !!}</th>
+                        <th class="text-center">{!! sortLink('shipment_status', 'Status') !!}</th>
+                        <th class="text-center">{!! sortLink('created_at', 'Dibuat') !!}</th>
+                        <th class="text-center">{!! sortLink('updated_at', 'Perubahan Status') !!}</th>
+                        <th class="text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($shipments as $s)
                     <tr>
                         <td><a href="/shipments/{{ $s->id }}" class="fw-medium text-decoration-none">{{ $s->resi_no }}</a></td>
+                        <td>{{ $s->sender_name ?? '-' }}</td>
                         <td>{{ $s->originBranch?->city ?? '-' }}</td>
                         <td>{{ $s->destinationBranch?->city ?? '-' }}</td>
                         <td>{{ $s->total_koli }}</td>
@@ -92,6 +95,7 @@
                             <span class="badge text-bg-{{ $statusClasses[$s->shipment_status] ?? 'secondary' }}">{{ $s->shipment_status }}</span>
                         </td>
                         <td><small class="text-body-secondary" data-uts="{{ $s->created_at?->getTimestamp() }}">{{ $s->created_at?->format('d/m/Y H:i') }}</small></td>
+                        <td><small class="text-body-secondary" data-uts="{{ $s->updated_at?->getTimestamp() }}">{{ $s->updated_at?->format('d/m/Y H:i') }}</small></td>
                         <td class="text-end">
                             <div class="btn-group btn-group-sm" role="group">
                                 <a href="/shipments/{{ $s->id }}" class="btn btn-outline-secondary" title="View"><i class="bi bi-eye"></i></a>
@@ -100,7 +104,7 @@
                         </td>
                     </tr>
                     @empty
-                    <tr><td colspan="7" class="text-center text-body-secondary">Tidak ada data</td></tr>
+                    <tr><td colspan="9" class="text-center text-body-secondary">Tidak ada data</td></tr>
                     @endforelse
                 </tbody>
             </table>

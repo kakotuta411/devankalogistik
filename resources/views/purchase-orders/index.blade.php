@@ -82,32 +82,34 @@
 
     <div class="table-responsive">
         <table class="table table-hover table-sm">
-            <thead>
+            <thead class="table-light">
                 <tr>
-                    <th>No. PO</th>
-                    <th>Customer</th>
-                    <th>Total</th>
-                    <th>Dibayar</th>
-                    <th>Sisa</th>
-                    <th>Status</th>
-                    <th>Aksi</th>
+                    <th class="text-center">Customer</th>
+                    <th class="text-center">No. PO</th>
+                    <th class="text-center">Total</th>
+                    <th class="text-center text-end">Dibayar</th>
+                    <th class="text-center text-end">Sisa</th>
+                    <th class="text-center">Status</th>
+                    <th class="text-center">Dibuat</th>
+                    <th class="text-center">Aksi</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($pos as $po)
                 <tr>
-                    <td><a href="{{ route('purchase-orders.show', $po) }}">{{ $po->po_number }}</a></td>
                     <td>{{ $po->customer?->company_name ?? $po->customer?->name ?? '-' }}</td>
+                    <td><a href="{{ route('purchase-orders.show', $po) }}">{{ $po->po_number }}</a></td>
                     <td>{{ number_format($po->total_amount, 0, ',', '.') }}</td>
-                    <td>{{ number_format($po->paid_amount, 0, ',', '.') }}</td>
-                    <td>{{ number_format($po->getRemainingAmount(), 0, ',', '.') }}</td>
+                    <td class="text-end">{{ number_format($po->paid_amount, 0, ',', '.') }}</td>
+                    <td class="text-end">{{ number_format($po->getRemainingAmount(), 0, ',', '.') }}</td>
                     <td><span class="badge {{ $po->getStatusBadgeClass() }}">{{ ucfirst($po->status) }}</span></td>
+                    <td><small class="text-body-secondary" data-uts="{{ $po->created_at?->getTimestamp() }}">{{ $po->created_at?->format('d/m/Y H:i') }}</small></td>
                     <td>
                         <a href="{{ route('purchase-orders.show', $po) }}" class="btn btn-sm btn-outline-primary">Detail</a>
                     </td>
                 </tr>
                 @empty
-                <tr><td colspan="7" class="text-center text-muted">Belum ada PO</td></tr>
+                <tr><td colspan="8" class="text-center text-muted">Belum ada PO</td></tr>
                 @endforelse
             </tbody>
         </table>
@@ -136,30 +138,32 @@
             <div class="modal-body p-0">
                 <div class="table-responsive">
                     <table class="table table-hover table-sm align-middle mb-0">
-                        <thead>
+                        <thead class="table-light">
                             <tr>
-                                <th>No. PO</th>
-                                <th>Customer</th>
-                                <th class="text-end">Total</th>
-                                <th class="text-end">Dibayar</th>
-                                <th class="text-end">Sisa</th>
-                                <th>Status</th>
-                                <th class="text-end">Aksi</th>
+                                <th class="text-center">Customer</th>
+                                <th class="text-center">No. PO</th>
+                                <th class="text-center">Total</th>
+                                <th class="text-center text-end">Dibayar</th>
+                                <th class="text-center text-end">Sisa</th>
+                                <th class="text-center">Status</th>
+                                <th class="text-center">Dibuat</th>
+                                <th class="text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($modal['items'] as $po)
                             <tr>
-                                <td><a href="{{ route('purchase-orders.show', $po) }}" class="fw-medium text-decoration-none">{{ $po->po_number }}</a></td>
                                 <td>{{ $po->customer?->company_name ?? $po->customer?->name ?? '-' }}</td>
-                                <td class="text-end">{{ number_format($po->total_amount, 0, ',', '.') }}</td>
+                                <td><a href="{{ route('purchase-orders.show', $po) }}" class="fw-medium text-decoration-none">{{ $po->po_number }}</a></td>
+                                <td>{{ number_format($po->total_amount, 0, ',', '.') }}</td>
                                 <td class="text-end">{{ number_format($po->paid_amount, 0, ',', '.') }}</td>
                                 <td class="text-end">{{ number_format($po->getRemainingAmount(), 0, ',', '.') }}</td>
                                 <td><span class="badge {{ $po->getStatusBadgeClass() }}">{{ ucfirst($po->status) }}</span></td>
+                                <td><small class="text-body-secondary" data-uts="{{ $po->created_at?->getTimestamp() }}">{{ $po->created_at?->format('d/m/Y H:i') }}</small></td>
                                 <td class="text-end"><a href="{{ route('purchase-orders.show', $po) }}" class="btn btn-sm btn-outline-secondary">Detail</a></td>
                             </tr>
                             @empty
-                            <tr><td colspan="7" class="text-center text-muted">Tidak ada data</td></tr>
+                            <tr><td colspan="8" class="text-center text-muted">Tidak ada data</td></tr>
                             @endforelse
                         </tbody>
                     </table>

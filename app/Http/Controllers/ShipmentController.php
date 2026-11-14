@@ -106,6 +106,13 @@ class ShipmentController extends Controller
     {
         $shipment = Shipment::withoutGlobalScopes()->findOrFail($id);
         $shipment->load(['originBranch', 'destinationBranch', 'package', 'manifests.originBranch', 'manifests.destinationBranch', 'trackingEvents' => fn($q) => $q->latest()]);
+        
+        // Load region names for sender/receiver
+        $shipment->load([
+            'senderProvince', 'senderRegency', 'senderDistrict', 'senderVillage',
+            'receiverProvince', 'receiverRegency', 'receiverDistrict', 'receiverVillage',
+        ]);
+        
         return view('shipments.show', compact('shipment'));
     }
 

@@ -89,15 +89,15 @@
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th>{!! sortLink('customer_name', 'Customer') !!}</th>
-                        <th>PO</th>
-                        <th>{!! sortLink('invoice_no', 'No Invoice') !!}</th>
-                        <th>{!! sortLink('invoice_status', 'Status') !!}</th>
-                        <th class="text-end">{!! sortLink('subtotal', 'Total') !!}</th>
-                        <th class="text-end">Terbayar</th>
-                        <th>Tanggal Pembayaran</th>
-                        <th>{!! sortLink('created_at', 'Dibuat') !!}</th>
-                        <th class="text-end">Aksi</th>
+                        <th class="text-center">{!! sortLink('customer_name', 'Customer') !!}</th>
+                        <th class="text-center">PO</th>
+                        <th class="text-center">{!! sortLink('invoice_no', 'No Invoice') !!}</th>
+                        <th class="text-center">{!! sortLink('invoice_status', 'Status') !!}</th>
+                        <th class="text-center text-end">{!! sortLink('subtotal', 'Total') !!}</th>
+                        <th class="text-center text-end">Terbayar</th>
+                        <th class="text-center">Tanggal Pembayaran</th>
+                        <th class="text-center">{!! sortLink('created_at', 'Dibuat') !!}</th>
+                        <th class="text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -115,7 +115,7 @@
                         </td>
                         <td class="text-end">Rp {{ number_format($inv->total_amount ?? 0, 0, ',', '.') }}</td>
                         <td class="text-end">Rp {{ number_format($inv->amount_paid ?? 0, 0, ',', '.') }}</td>
-                        <td><small class="text-body-secondary">{{ $lastPayment?->payment_date ? \Carbon\Carbon::parse($lastPayment->payment_date)->format('d/m/Y') : '-' }}</small></td>
+                        <td><small class="text-body-secondary">{{ $lastPayment?->payment_date ? \Carbon\Carbon::parse($lastPayment->payment_date)->format('d/m/Y H:i') : '-' }}</small></td>
                         <td><small class="text-body-secondary" data-uts="{{ $inv->created_at?->getTimestamp() }}">{{ $inv->created_at?->format('d/m/Y H:i') }}</small></td>
                         <td class="text-end">
                             <div class="btn-group btn-group-sm" role="group">
@@ -167,14 +167,14 @@
                     <table class="table table-hover align-middle mb-0">
                         <thead class="table-light">
                             <tr>
-                                <th>Customer</th>
-                                <th>PO</th>
-                                <th>No Invoice</th>
-                                <th>Status</th>
-                                <th class="text-end">Total</th>
-                                <th class="text-end">Terbayar</th>
-                                <th>Tanggal Pembayaran</th>
-                                <th class="text-end">Aksi</th>
+                                <th class="text-center">Customer</th>
+                                <th class="text-center">PO</th>
+                                <th class="text-center">No Invoice</th>
+                                <th class="text-center">Status</th>
+                                <th class="text-center text-end">Total</th>
+                                <th class="text-center text-end">Terbayar</th>
+                                <th class="text-center">Tanggal Pembayaran</th>
+                                <th class="text-center text-end">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -189,7 +189,7 @@
                                 <td><span class="badge text-bg-success">{{ $inv->invoice_status }}</span></td>
                                 <td class="text-end">Rp {{ number_format($inv->total_amount ?? 0, 0, ',', '.') }}</td>
                                 <td class="text-end">Rp {{ number_format($inv->amount_paid ?? 0, 0, ',', '.') }}</td>
-                                <td><small class="text-body-secondary">{{ $lastPayment?->payment_date ? \Carbon\Carbon::parse($lastPayment->payment_date)->format('d/m/Y') : '-' }}</small></td>
+                                <td><small class="text-body-secondary">{{ $lastPayment?->payment_date ? \Carbon\Carbon::parse($lastPayment->payment_date)->format('d/m/Y H:i') : '-' }}</small></td>
                                 <td class="text-end"><a href="/invoices/{{ $inv->id }}" class="btn btn-sm btn-outline-secondary">Detail</a></td>
                             </tr>
                             @empty
@@ -216,14 +216,14 @@
                     <table class="table table-hover align-middle mb-0">
                         <thead class="table-light">
                             <tr>
-                                <th>Customer</th>
-                                <th>PO</th>
-                                <th>No Invoice</th>
-                                <th>Status</th>
-                                <th class="text-end">Total</th>
-                                <th class="text-end">Terbayar</th>
-                                <th>Tanggal Pembayaran</th>
-                                <th class="text-end">Aksi</th>
+                                <th class="text-center">Customer</th>
+                                <th class="text-center">PO</th>
+                                <th class="text-center">No Invoice</th>
+                                <th class="text-center">Status</th>
+                                <th class="text-center text-end">Total</th>
+                                <th class="text-center text-end">Terbayar</th>
+                                <th class="text-center">Tanggal Pembayaran</th>
+                                <th class="text-center text-end">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -238,7 +238,7 @@
                                 <td><span class="badge text-bg-warning">{{ $inv->invoice_status }}</span></td>
                                 <td class="text-end">Rp {{ number_format($inv->total_amount ?? 0, 0, ',', '.') }}</td>
                                 <td class="text-end">Rp {{ number_format($inv->amount_paid ?? 0, 0, ',', '.') }}</td>
-                                <td><small class="text-body-secondary">{{ $lastPayment?->payment_date ? \Carbon\Carbon::parse($lastPayment->payment_date)->format('d/m/Y') : '-' }}</small></td>
+                                <td><small class="text-body-secondary">{{ $lastPayment?->payment_date ? \Carbon\Carbon::parse($lastPayment->payment_date)->format('d/m/Y H:i') : '-' }}</small></td>
                                 <td class="text-end"><a href="/invoices/{{ $inv->id }}" class="btn btn-sm btn-outline-secondary">Detail</a></td>
                             </tr>
                             @empty

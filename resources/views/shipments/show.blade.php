@@ -32,9 +32,11 @@
                 <p class="mb-1"><strong>Asal:</strong> {{ $s->originBranch?->name }} ({{ $s->originBranch?->city }})</p>
                 <p class="mb-1"><strong>Tujuan:</strong> {{ $s->destinationBranch?->name }} ({{ $s->destinationBranch?->city }})</p>
                 <p class="mb-1"><strong>Koli:</strong> {{ $s->total_koli }}</p>
-                <p class="mb-0"><strong>Berat:</strong> {{ $s->total_weight }} kg</p>
-                <p class="mb-0"><strong>Layanan:</strong> {{ $s->service_type }}</p>
-                <p class="mb-0"><strong>Detail Paket:</strong> {{ $s->package_description ?? '-' }}</p>
+                <p class="mb-1"><strong>Berat:</strong> {{ $s->total_weight }} kg</p>
+                <p class="mb-1"><strong>Layanan:</strong> {{ $s->service_type }}</p>
+                <p class="mb-1"><strong>Detail Paket:</strong> {{ $s->package_description ?? '-' }}</p>
+                <p class="mb-1"><strong>Nomor PO:</strong> {{ $s->po_number ?? '-' }}</p>
+                <p class="mb-0"><strong>Tipe Pembayaran:</strong> {{ $s->payment_type ?? '-' }}</p>
             </div>
         </div>
     </div>
@@ -42,13 +44,47 @@
         <div class="card h-100">
             <div class="card-header"><strong>Pengirim & Penerima</strong></div>
             <div class="card-body">
-                <div class="mb-3">
-                    <strong>Pengirim:</strong> {{ $s->sender_name }}
-                    <br><small class="text-muted">{{ $s->sender_phone }} | {{ $s->sender_address }}</small>
+                <div class="mb-4">
+                    <h6 class="text-muted mb-2">Pengirim</h6>
+                    <dl class="row mb-0">
+                        <dt class="col-sm-3">Nama</dt>
+                        <dd class="col-sm-9">{{ $s->sender_name ?? '-' }}</dd>
+                        <dt class="col-sm-3">No HP</dt>
+                        <dd class="col-sm-9">{{ $s->sender_phone ?? '-' }}</dd>
+                        <dt class="col-sm-3">Alamat</dt>
+                        <dd class="col-sm-9">
+                            {{ $s->sender_address ?? '-' }}
+                            @if($s->senderVillage || $s->senderDistrict || $s->senderRegency || $s->senderProvince)
+                            <br><small class="text-muted">
+                                {{ $s->senderVillage?->name ?? '' }}
+                                {{ $s->senderDistrict?->name ?? '' }}
+                                {{ $s->senderRegency?->name ?? '' }}
+                                {{ $s->senderProvince?->name ?? '' }}
+                            </small>
+                            @endif
+                        </dd>
+                    </dl>
                 </div>
                 <div>
-                    <strong>Penerima:</strong> {{ $s->receiver_name }}
-                    <br><small class="text-muted">{{ $s->receiver_phone }} | {{ $s->receiver_address }}</small>
+                    <h6 class="text-muted mb-2">Penerima</h6>
+                    <dl class="row mb-0">
+                        <dt class="col-sm-3">Nama</dt>
+                        <dd class="col-sm-9">{{ $s->receiver_name ?? '-' }}</dd>
+                        <dt class="col-sm-3">No HP</dt>
+                        <dd class="col-sm-9">{{ $s->receiver_phone ?? '-' }}</dd>
+                        <dt class="col-sm-3">Alamat</dt>
+                        <dd class="col-sm-9">
+                            {{ $s->receiver_address ?? '-' }}
+                            @if($s->receiverVillage || $s->receiverDistrict || $s->receiverRegency || $s->receiverProvince)
+                            <br><small class="text-muted">
+                                {{ $s->receiverVillage?->name ?? '' }}
+                                {{ $s->receiverDistrict?->name ?? '' }}
+                                {{ $s->receiverRegency?->name ?? '' }}
+                                {{ $s->receiverProvince?->name ?? '' }}
+                            </small>
+                            @endif
+                        </dd>
+                    </dl>
                 </div>
             </div>
         </div>

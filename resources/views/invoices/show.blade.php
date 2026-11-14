@@ -49,7 +49,7 @@
                     <tr><td>Sisa dari invoice <a href="/invoices/{{ $inv->parentInvoice->id }}" class="text-decoration-none">{{ $inv->parentInvoice->invoice_no }}</a></td><td class="text-end"></td></tr>
                     <tr class="table-active"><td><strong>TOTAL</strong></td><td class="text-end"><strong>Rp {{ number_format($inv->displayTotal(), 0, ',', '.') }}</strong></td></tr>
                     @else
-                    <tr><td>Biaya Pengiriman ({{ number_format($inv->shipping_cost, 0, ',', '.') }}/kg x {{ number_format($inv->total_weight, 2, ',', '.') }} kg)</td><td class="text-end">Rp {{ number_format($inv->items->sum(function($item) { return ($item->shipment?->total_weight ?? 0) * (strtoupper($item->shipment?->service_type ?? '') === 'EXPRESS' ? (float) env('SHIPPING_RATE_EXPRESS', 15000) : (float) env('SHIPPING_RATE_REGULAR', 10000)); }), 0, ',', '.') }}</td></tr>
+                    <tr><td>Biaya Pengiriman ({{ number_format($inv->shipping_cost, 0, ',', '.') }}/kg x {{ number_format($inv->total_weight, 2, ',', '.') }} kg)</td><td class="text-end">Rp {{ number_format($inv->shipping_cost * $inv->total_weight, 0, ',', '.') }}</td></tr>
                     <tr><td>Biaya Packaging</td><td class="text-end">Rp {{ number_format($inv->packaging_cost, 0, ',', '.') }}</td></tr>
                     <tr><td>Charge Alat</td><td class="text-end">Rp {{ number_format($inv->equipment_charge, 0, ',', '.') }}</td></tr>
                     <tr><td>Biaya Lain-lain</td><td class="text-end">Rp {{ number_format($inv->other_costs, 0, ',', '.') }}</td></tr>

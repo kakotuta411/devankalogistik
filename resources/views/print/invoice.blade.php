@@ -154,7 +154,7 @@
                     <td style="text-align: center;">{{ $item->shipment?->total_weight }} kg</td>
                     <td style="text-align: center;">{{ $item->shipment?->service_type }}</td>
                     <td class="text-right">Rp
-                     {{ number_format(($item->shipment?->total_weight ?? 0) * (strtoupper($item->shipment?->service_type ?? '') === 'EXPRESS' ? (float) env('SHIPPING_RATE_EXPRESS', 15000) : (float) env('SHIPPING_RATE_REGULAR', 10000)), 0, ',', '.') }}
+                     {{ number_format(($item->shipment?->total_weight ?? 0) * $invoice->shipping_cost, 0, ',', '.') }}
                     </td>
                 </tr>
             @empty
@@ -204,9 +204,7 @@
                                 ({{ number_format($invoice->shipping_cost, 0, ',', '.') }}/kg x
                                 {{ number_format($invoice->total_weight, 2, ',', '.') }} kg)</td>
                             <td class="text-right" style="border: 1px solid #000; padding: 5px 6px;">Rp
-                                {{ number_format($invoice->items->sum(function($item) {
-                                    return ($item->shipment?->total_weight ?? 0) * (strtoupper($item->shipment?->service_type ?? '') === 'EXPRESS' ? (float) env('SHIPPING_RATE_EXPRESS', 15000) : (float) env('SHIPPING_RATE_REGULAR', 10000));
-                                }), 0, ',', '.') }}</td>
+                                {{ number_format($invoice->shipping_cost * $invoice->total_weight, 0, ',', '.') }}</td>
                         </tr>
                         <tr>
                             <td style="font-weight: bold; border: 1px solid #000; padding: 5px 6px;">Biaya Packaging</td>

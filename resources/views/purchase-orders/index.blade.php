@@ -87,8 +87,8 @@
                     <th>Customer</th>
                     <th>No. PO</th>
                     <th>Total</th>
-                    <th class="text-end">Dibayar</th>
-                    <th class="text-end">Sisa</th>
+                    <th>Dibayar</th>
+                    <th>Sisa</th>
                     <th>Status</th>
                     <th>Dibuat</th>
                     <th class="text-end">Aksi</th>
@@ -99,12 +99,12 @@
                 <tr>
                     <td>{{ $po->customer?->company_name ?? $po->customer?->name ?? '-' }}</td>
                     <td><a href="{{ route('purchase-orders.show', $po) }}">{{ $po->po_number }}</a></td>
-                    <td>{{ number_format($po->total_amount, 0, ',', '.') }}</td>
-                    <td class="text-end">{{ number_format($po->paid_amount, 0, ',', '.') }}</td>
-                    <td class="text-end">{{ number_format($po->getRemainingAmount(), 0, ',', '.') }}</td>
+                    <td>Rp {{ number_format($po->total_amount, 0, ',', '.') }}</td>
+                    <td>Rp {{ number_format($po->paid_amount, 0, ',', '.') }}</td>
+                    <td>Rp {{ number_format($po->getRemainingAmount(), 0, ',', '.') }}</td>
                     <td><span class="badge {{ $po->getStatusBadgeClass() }}">{{ ucfirst($po->status) }}</span></td>
                     <td><small class="text-body-secondary" data-uts="{{ $po->created_at?->getTimestamp() }}">{{ $po->created_at?->format('d/m/Y H:i') }}</small></td>
-                    <td>
+                    <td class="text-end">
                         <a href="{{ route('purchase-orders.show', $po) }}" class="btn btn-sm btn-outline-primary">Detail</a>
                     </td>
                 </tr>
@@ -143,8 +143,8 @@
                                 <th>Customer</th>
                                 <th>No. PO</th>
                                 <th>Total</th>
-                                <th class="text-end">Dibayar</th>
-                                <th class="text-end">Sisa</th>
+                                <th>Dibayar</th>
+                                <th>Sisa</th>
                                 <th>Status</th>
                                 <th>Dibuat</th>
                                 <th class="text-end">Aksi</th>
@@ -155,9 +155,9 @@
                             <tr>
                                 <td>{{ $po->customer?->company_name ?? $po->customer?->name ?? '-' }}</td>
                                 <td><a href="{{ route('purchase-orders.show', $po) }}" class="fw-medium text-decoration-none">{{ $po->po_number }}</a></td>
-                                <td>{{ number_format($po->total_amount, 0, ',', '.') }}</td>
-                                <td class="text-end">{{ number_format($po->paid_amount, 0, ',', '.') }}</td>
-                                <td class="text-end">{{ number_format($po->getRemainingAmount(), 0, ',', '.') }}</td>
+                                <td>Rp {{ number_format($po->total_amount, 0, ',', '.') }}</td>
+                                <td>Rp {{ number_format($po->paid_amount, 0, ',', '.') }}</td>
+                                <td>Rp {{ number_format($po->getRemainingAmount(), 0, ',', '.') }}</td>
                                 <td><span class="badge {{ $po->getStatusBadgeClass() }}">{{ ucfirst($po->status) }}</span></td>
                                 <td><small class="text-body-secondary" data-uts="{{ $po->created_at?->getTimestamp() }}">{{ $po->created_at?->format('d/m/Y H:i') }}</small></td>
                                 <td class="text-end"><a href="{{ route('purchase-orders.show', $po) }}" class="btn btn-sm btn-outline-secondary">Detail</a></td>

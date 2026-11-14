@@ -69,8 +69,8 @@
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th>{!! sortLink('resi_no', 'Resi') !!}</th>
                         <th>Customer</th>
+                        <th>{!! sortLink('resi_no', 'Resi') !!}</th>
                         <th>{!! sortLink('origin_city', 'Asal') !!}</th>
                         <th>{!! sortLink('destination_city', 'Tujuan') !!}</th>
                         <th>{!! sortLink('total_koli', 'Koli') !!}</th>
@@ -83,8 +83,8 @@
                 <tbody>
                     @forelse($shipments as $s)
                     <tr>
-                        <td><a href="/shipments/{{ $s->id }}" class="fw-medium text-decoration-none">{{ $s->resi_no }}</a></td>
                         <td>{{ $s->customer?->company_name ?? $s->customer?->name ?? '-' }}</td>
+                        <td><a href="/shipments/{{ $s->id }}" class="fw-medium text-decoration-none">{{ $s->resi_no }}</a></td>
                         <td>{{ $s->originBranch?->city ?? '-' }}</td>
                         <td>{{ $s->destinationBranch?->city ?? '-' }}</td>
                         <td>{{ $s->total_koli }}</td>

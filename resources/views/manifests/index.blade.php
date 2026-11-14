@@ -69,14 +69,14 @@
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th class="text-center">{!! sortLink('manifest_no', 'No Manifest') !!}</th>
-                        <th class="text-center">{!! sortLink('origin_city', 'Asal') !!}</th>
-                        <th class="text-center">{!! sortLink('destination_city', 'Tujuan') !!}</th>
-                        <th class="text-center">{!! sortLink('manifest_status', 'Status') !!}</th>
-                        <th class="text-center">{!! sortLink('vehicle_no', 'Kendaraan') !!}</th>
-                        <th class="text-center">{!! sortLink('driver_name', 'Driver') !!}</th>
-                        <th class="text-center">{!! sortLink('created_at', 'Dibuat') !!}</th>
-                        <th class="text-center">Aksi</th>
+                        <th>{!! sortLink('manifest_no', 'No Manifest') !!}</th>
+                        <th>{!! sortLink('origin_city', 'Asal') !!}</th>
+                        <th>{!! sortLink('destination_city', 'Tujuan') !!}</th>
+                        <th>{!! sortLink('manifest_status', 'Status') !!}</th>
+                        <th>{!! sortLink('vehicle_no', 'Kendaraan') !!}</th>
+                        <th>{!! sortLink('driver_name', 'Driver') !!}</th>
+                        <th>{!! sortLink('created_at', 'Dibuat') !!}</th>
+                        <th class="text-end">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>

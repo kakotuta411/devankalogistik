@@ -84,14 +84,14 @@
         <table class="table table-hover table-sm">
             <thead class="table-light">
                 <tr>
-                    <th class="text-center">Customer</th>
-                    <th class="text-center">No. PO</th>
-                    <th class="text-center">Total</th>
-                    <th class="text-center text-end">Dibayar</th>
-                    <th class="text-center text-end">Sisa</th>
-                    <th class="text-center">Status</th>
-                    <th class="text-center">Dibuat</th>
-                    <th class="text-center">Aksi</th>
+                    <th>Customer</th>
+                    <th>No. PO</th>
+                    <th>Total</th>
+                    <th class="text-end">Dibayar</th>
+                    <th class="text-end">Sisa</th>
+                    <th>Status</th>
+                    <th>Dibuat</th>
+                    <th class="text-end">Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -140,14 +140,14 @@
                     <table class="table table-hover table-sm align-middle mb-0">
                         <thead class="table-light">
                             <tr>
-                                <th class="text-center">Customer</th>
-                                <th class="text-center">No. PO</th>
-                                <th class="text-center">Total</th>
-                                <th class="text-center text-end">Dibayar</th>
-                                <th class="text-center text-end">Sisa</th>
-                                <th class="text-center">Status</th>
-                                <th class="text-center">Dibuat</th>
-                                <th class="text-center">Aksi</th>
+                                <th>Customer</th>
+                                <th>No. PO</th>
+                                <th>Total</th>
+                                <th class="text-end">Dibayar</th>
+                                <th class="text-end">Sisa</th>
+                                <th>Status</th>
+                                <th>Dibuat</th>
+                                <th class="text-end">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>

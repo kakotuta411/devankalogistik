@@ -89,15 +89,15 @@
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th class="text-center">{!! sortLink('customer_name', 'Customer') !!}</th>
-                        <th class="text-center">PO</th>
-                        <th class="text-center">{!! sortLink('invoice_no', 'No Invoice') !!}</th>
-                        <th class="text-center">{!! sortLink('invoice_status', 'Status') !!}</th>
-                        <th class="text-center text-end">{!! sortLink('subtotal', 'Total') !!}</th>
-                        <th class="text-center text-end">Terbayar</th>
-                        <th class="text-center">Tanggal Pembayaran</th>
-                        <th class="text-center">{!! sortLink('created_at', 'Dibuat') !!}</th>
-                        <th class="text-center">Aksi</th>
+                        <th>{!! sortLink('customer_name', 'Customer') !!}</th>
+                        <th>PO</th>
+                        <th>{!! sortLink('invoice_no', 'No Invoice') !!}</th>
+                        <th>{!! sortLink('invoice_status', 'Status') !!}</th>
+                        <th class="text-end">{!! sortLink('subtotal', 'Total') !!}</th>
+                        <th class="text-end">Terbayar</th>
+                        <th>Tanggal Pembayaran</th>
+                        <th>{!! sortLink('created_at', 'Dibuat') !!}</th>
+                        <th class="text-end">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -167,14 +167,14 @@
                     <table class="table table-hover align-middle mb-0">
                         <thead class="table-light">
                             <tr>
-                                <th class="text-center">Customer</th>
-                                <th class="text-center">PO</th>
-                                <th class="text-center">No Invoice</th>
-                                <th class="text-center">Status</th>
-                                <th class="text-center text-end">Total</th>
-                                <th class="text-center text-end">Terbayar</th>
-                                <th class="text-center">Tanggal Pembayaran</th>
-                                <th class="text-center text-end">Aksi</th>
+                                <th>Customer</th>
+                                <th>PO</th>
+                                <th>No Invoice</th>
+                                <th>Status</th>
+                                <th class="text-end">Total</th>
+                                <th class="text-end">Terbayar</th>
+                                <th>Tanggal Pembayaran</th>
+                                <th class="text-end">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -216,14 +216,14 @@
                     <table class="table table-hover align-middle mb-0">
                         <thead class="table-light">
                             <tr>
-                                <th class="text-center">Customer</th>
-                                <th class="text-center">PO</th>
-                                <th class="text-center">No Invoice</th>
-                                <th class="text-center">Status</th>
-                                <th class="text-center text-end">Total</th>
-                                <th class="text-center text-end">Terbayar</th>
-                                <th class="text-center">Tanggal Pembayaran</th>
-                                <th class="text-center text-end">Aksi</th>
+                                <th>Customer</th>
+                                <th>PO</th>
+                                <th>No Invoice</th>
+                                <th>Status</th>
+                                <th class="text-end">Total</th>
+                                <th class="text-end">Terbayar</th>
+                                <th>Tanggal Pembayaran</th>
+                                <th class="text-end">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>

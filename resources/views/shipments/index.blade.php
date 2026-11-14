@@ -69,22 +69,22 @@
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th class="text-center">{!! sortLink('resi_no', 'Resi') !!}</th>
-                        <th class="text-center">Pengirim</th>
-                        <th class="text-center">{!! sortLink('origin_city', 'Asal') !!}</th>
-                        <th class="text-center">{!! sortLink('destination_city', 'Tujuan') !!}</th>
-                        <th class="text-center">{!! sortLink('total_koli', 'Koli') !!}</th>
-                        <th class="text-center">{!! sortLink('shipment_status', 'Status') !!}</th>
-                        <th class="text-center">{!! sortLink('created_at', 'Dibuat') !!}</th>
-                        <th class="text-center">{!! sortLink('updated_at', 'Perubahan Status') !!}</th>
-                        <th class="text-center">Aksi</th>
+                        <th>{!! sortLink('resi_no', 'Resi') !!}</th>
+                        <th>Customer</th>
+                        <th>{!! sortLink('origin_city', 'Asal') !!}</th>
+                        <th>{!! sortLink('destination_city', 'Tujuan') !!}</th>
+                        <th>{!! sortLink('total_koli', 'Koli') !!}</th>
+                        <th>{!! sortLink('shipment_status', 'Status') !!}</th>
+                        <th>{!! sortLink('created_at', 'Dibuat') !!}</th>
+                        <th>{!! sortLink('updated_at', 'Perubahan Status') !!}</th>
+                        <th class="text-end">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($shipments as $s)
                     <tr>
                         <td><a href="/shipments/{{ $s->id }}" class="fw-medium text-decoration-none">{{ $s->resi_no }}</a></td>
-                        <td>{{ $s->sender_name ?? '-' }}</td>
+                        <td>{{ $s->customer?->company_name ?? $s->customer?->name ?? '-' }}</td>
                         <td>{{ $s->originBranch?->city ?? '-' }}</td>
                         <td>{{ $s->destinationBranch?->city ?? '-' }}</td>
                         <td>{{ $s->total_koli }}</td>

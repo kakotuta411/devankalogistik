@@ -195,7 +195,7 @@
 
     <!-- Modal: Shipments -->
     <div class="modal fade" id="modalShipments" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Shipments ({{ $stats['shipments_today'] }})</h5>
@@ -243,7 +243,7 @@
 
     <!-- Modal: Manifests -->
     <div class="modal fade" id="modalManifests" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Manifests ({{ $stats['manifests_today'] }})</h5>
@@ -293,7 +293,7 @@
 
     <!-- Modal: Invoices -->
     <div class="modal fade" id="modalInvoices" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Invoices ({{ $stats['invoices_today'] }})</h5>
